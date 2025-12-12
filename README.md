@@ -47,10 +47,69 @@ This repository contains the following components:
   - DeepSeek-R1  
   - Qwen-2.5-7B  
 
-### 🛡️ Kubecurity
-- **Kubecurity**, a schema-guided correction engine enforcing Kubernetes JSON schemas.
-- Pre- and post-LLM validation to ensure syntactic correctness and structural compliance.
+## 🛡️ Kubecurity: Schema-Guided Kubernetes Configuration Correction
 
+Kubecurity is a schema-guided, rule-based correction framework designed to improve the reliability of Large Language Model (LLM)–generated Kubernetes configurations.
+
+While LLMs are effective at reasoning about misconfigurations and proposing semantic fixes, their outputs may violate Kubernetes structural constraints, including missing required fields, incorrect nesting, invalid data types, or schema-incompatible values. Kubecurity addresses this limitation by enforcing **deterministic compliance with official Kubernetes JSON schemas**.
+
+### Design Principles
+
+Kubecurity is built on the following principles:
+
+- **Schema Awareness**  
+  Each Kubernetes object is validated against its corresponding official JSON schema.
+- **Deterministic Correction**  
+  Fixes are rule-based and reproducible, independent of probabilistic model behavior.
+- **LLM Complementarity**  
+  Kubecurity does not replace LLM reasoning but reinforces it with structural guarantees.
+- **Minimal Intervention**  
+  Only schema-violating elements are modified or reconstructed.
+
+### Correction Workflow
+
+Kubecurity operates in two complementary stages:
+
+1. **Pre-LLM Validation**
+   - Repairs deterministic structural issues (e.g., invalid field placement, missing mandatory attributes)
+   - Normalizes indentation, ordering, and object hierarchy
+
+2. **Post-LLM Validation**
+   - Re-validates LLM-generated configurations
+   - Corrects residual schema violations introduced during generation
+   - Ensures full compliance before final evaluation
+
+### Correction Capabilities
+
+Kubecurity performs the following actions:
+
+- Reconstructs configuration trees to ensure correct parent–child relationships
+- Inserts missing required fields using schema defaults
+- Resolves type mismatches (e.g., string vs integer)
+- Removes obsolete or invalid sections
+- Enforces canonical Kubernetes object structure
+
+### Role in the Experimental Pipeline
+
+In the MSR 2026 experiments, Kubecurity is applied after LLM-based correction prompts. A configuration is considered **successfully corrected** only if:
+
+1. It passes Kubernetes JSON schema validation, and  
+2. It is no longer flagged by Datree, Kube-Score, or Snyk.
+
+The integration of Kubecurity significantly improves correction robustness, reducing parsing failures and eliminating structurally invalid outputs. When combined with LLM reasoning, the framework achieves correction accuracy exceeding **97%**, demonstrating the effectiveness of hybrid semantic–syntactic correction.
+
+### Limitations
+
+Kubecurity focuses exclusively on **schema-level correctness**. It does not:
+- Infer semantic intent beyond schema definitions
+- Optimize configurations for performance or best practices
+- Replace security reasoning performed by detection tools or LLMs
+
+Its role is strictly to guarantee structural validity and deterministic compliance.
+
+---
+
+Kubecurity enables reliable, reproducible, and verifiable automated correction of Kubernetes configurations by bridging the gap between LLM reasoning and formal schema enforcement.
 ---
 
 ## 🔁 Replication Workflow

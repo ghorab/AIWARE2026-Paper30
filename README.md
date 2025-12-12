@@ -161,7 +161,7 @@ This replication package will be extended with:
 
 Additional datasets
 
-Full Kubecurity source code
+New Kubecurity Version
 
 Fully automated experiment pipelines
 

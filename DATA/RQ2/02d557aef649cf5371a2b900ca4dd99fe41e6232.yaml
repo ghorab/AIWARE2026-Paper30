@@ -1,0 +1,60 @@
+apiVersion: v1
+data:
+  nginx.conf: |
+    user  nginx;
+    worker_processes  auto;
+    error_log  /var/log/nginx/error.log warn;
+    pid        /var/run/nginx.pid;
+    events {
+      worker_connections  4096;  ## Default: 1024
+    }
+    http {
+        log_format   main '$remote_addr - $remote_user [$time_local]  $status '
+         '"$request" $body_bytes_sent "$http_referer" '
+         '"$http_user_agent" "$http_x_forwarded_for"';
+        resolver 10.43.0.10 valid=30s;
+        access_log  /var/log/nginx/access.log  main;
+        sendfile        on;
+        #tcp_nopush     on;
+        client_max_body_size 60M;
+        keepalive_timeout  65s;
+        keepalive_requests 200;
+        upstream nginx{
+          server standalone-nginx-backend.default.svc.cluster.local:4011;
+          keepalive 1000;
+        }
+        server {
+          listen 80;
+          listen [::]:80;
+           location /local {
+            proxy_connect_timeout 5;
+            proxy_send_timeout 60;
+            proxy_read_timeout 70;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_pass http://127.0.0.1:4000;
+          }
+           location / {
+            proxy_connect_timeout 5;
+            proxy_send_timeout 60;
+            proxy_read_timeout 70;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_pass http://nginx;
+          }
+          location /api/ {
+            set $target http://kong.default.svc.cluster.local:8000;
+            rewrite ^/api/(.*) /$1 break;
+            proxy_connect_timeout 5;
+            proxy_send_timeout 60;
+            proxy_read_timeout 70;
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_pass $target;
+          }
+        }
+    }
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+  namespace: default

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shartan-view
+  namespace: shartan
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: shartan-view
+  template:
+    metadata:
+      labels:
+        app: shartan-view
+    spec:
+      containers:
+        - name: shartan-view
+          image: houseofmoran/shartan:2.4.2
+          env:
+            - name: PORT
+              value: "3000"
+          resources:
+            limits:
+              memory: 200Mi
+            requests:
+              memory: 100Mi
+          ports:
+            - name: http
+              containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            timeoutSeconds: 1

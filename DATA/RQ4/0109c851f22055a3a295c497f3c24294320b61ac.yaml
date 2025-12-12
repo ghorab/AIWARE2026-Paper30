@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: martian-imperial-year-table
+  annotations:
+    cert-manager.io/issuer: letsencrypt
+    kubernetes.io/ingress.class: nginx
+spec:
+  type: NodePort
+  ports:
+    - name: martian-imperial-year-table
+      port: 80
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    app: martian-imperial-year-table
+    role: web

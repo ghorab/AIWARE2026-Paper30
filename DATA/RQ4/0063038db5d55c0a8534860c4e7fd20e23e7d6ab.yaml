@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hello-world-config
+data:
+  greeting: 'Hello from k8s dev environment!'
+  dbtype: 'SQLite'

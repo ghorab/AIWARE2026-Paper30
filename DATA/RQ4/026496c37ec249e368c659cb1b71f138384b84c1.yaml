@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: server-app-postgres
+  labels:
+    app: server-app-postgres
+    group: sample
+type: Opaque
+data:
+  #  postgres
+  POSTGRESQL_USERNAME: "cG9zdGdyZXM="
+  POSTGRESQL_PASSWORD: "TDgyQm5wTE5RdGpSQkQycmJiQ2tMOHA4QUk3dzBuaEJ5d3RFbkRVaDZVc1RpSzhHVG9qdVY1RWpOa0NMRTVKUw=="
+  #  foo
+  #  POSTGRESQL_USERNAME: "Zm9vX3VzZXI="
+  #  POSTGRESQL_PASSWORD: "SVhyaEh1TDJDZmdEUWYzVzF5bk5HMmljWmRuZGpnU2pBNUtvN0NZcGRXN2FhaEFxSVRpUmllZmExVkt6V2pTVQ=="
+  #  zalando
+  #  POSTGRESQL_USERNAME: "emFsYW5kbw=="
+  #  POSTGRESQL_PASSWORD: "cElhSW0wRVFxYTh0R0kzZFUxeHZ0b3RmQXY5Y3VMdDBxVGlVMkZLOTh5cWFMaGVONWp5Y3RwMUpTWFh3Nkdkcg=="

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: www-server-servicebus
+  labels:
+    app: php-www-servicebus
+spec:
+  replicas: 1
+  selector:
+    # will match template label(s)
+    matchLabels:
+      app: php-www-servicebus
+  template:
+    metadata:
+      labels:
+        # (this one)
+        app: php-www-servicebus
+    spec:
+      containers:
+        - name: php-www-servicebus
+          image: rmbsousa/4bop:php70_xdebug_active
+          volumeMounts:
+            - name: app-code
+              mountPath: /www
+      volumes:
+        - name: app-code
+          hostPath:
+            path: "/c/Users/NBxxxxx/Zend/workspaces/DefaultWorkspace"

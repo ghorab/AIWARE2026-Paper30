@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+      app: trips
+  name: trips
+  namespace: api
+spec:
+  replicas: 1
+  selector:
+      matchLabels:
+        app: trips
+  strategy:
+      rollingUpdate:
+        maxSurge: 1
+        maxUnavailable: 1
+      type: RollingUpdate
+  template:
+      metadata:
+        labels:
+            app: trips
+        name: trips
+      spec:
+        containers:
+        - image: registryfxn1231.azurecr.io/trips:1.0
+          env:
+          - name: SQL_USER
+            value: "sqladminfXn1231"
+          - name: SQL_PASSWORD
+            value: "mQ0ps4Iq6"
+          - name: SQL_SERVER
+            value: "sqlserverfxn1231.database.windows.net"
+          imagePullPolicy: Always
+          name: trips
+          ports:
+            - containerPort: 80
+              hostPort: 80
+              protocol: TCP
+          resources:
+            requests:
+                cpu: 1000m
+                memory: 128Mi
+          securityContext:
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30

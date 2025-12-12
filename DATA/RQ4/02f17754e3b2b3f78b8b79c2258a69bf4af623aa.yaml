@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: kingdonb
+  name: commits-to
+  labels:
+    app.kubernetes.io/instance: commits-to
+  annotations:
+    fluxcd.io/ignore: "true"
+    dev.okteto.com/auto-ingress: "domain"
+spec:
+  ports:
+  - name: http
+    port: 5000
+    targetPort: 5000
+  selector:
+    app: commits-to
+  type: ClusterIP

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nr-nodejs-app-service
+spec:
+  selector:
+    app: nr-nodejs-app
+  ports:
+  - port: 80
+    targetPort: 3030
+  type: LoadBalancer

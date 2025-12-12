@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logiweb
+  labels:
+    app: logiweb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logiweb
+  template:
+    metadata:
+      labels:
+        app: logiweb
+    spec:
+      containers:
+        - name: logiweb
+          image: tuanalexeu/logiweb-service:production-v3
+          ports:
+            - containerPort: 8080

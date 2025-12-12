@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userprofile
+  namespace: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userprofile
+  template:
+    metadata:
+      labels:
+        app: userprofile
+    spec:
+      containers:
+      - name: userprofile
+        image: registrysiq8419.azurecr.io/tripinsights/userprofile:1.0
+        volumeMounts:
+        - name: secrets-store-inline
+          mountPath: "/secrets" # the mount path needs to be checked wrt to the api doc 
+          readOnly: true         
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: 200m
+        ports:
+        - containerPort: 80
+          name: userprofile
+      volumes:
+      - name: secrets-store-inline
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: "openhack-key-vault"

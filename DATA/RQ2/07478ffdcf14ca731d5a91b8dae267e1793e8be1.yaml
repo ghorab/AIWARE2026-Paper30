@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bwa-1-60k
+spec:
+  template:
+    spec:
+      containers:
+      - name: bwa
+        image: pegi3s/bwa
+        command: ["/bin/sh", "-c"]
+        args: ["bwa aln -t 1 /data/grch38/GRCh38_latest_genomic.fna /data/patients/sample60k.fasta > /results/all.sai"]
+        volumeMounts:
+        - name: out
+          mountPath: /results
+        - name: in
+          mountPath: /data
+        securityContext:
+          runAsUser: 1000
+        resources:
+          requests:
+            memory: 30Gi
+      volumes:
+      - name: out
+        persistentVolumeClaim:
+          claimName: results
+      - name: in
+        persistentVolumeClaim:
+          claimName: data
+      restartPolicy: Never
+  backoffLimit: 0

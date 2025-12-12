@@ -1,0 +1,23 @@
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bl-02
+  namespace: bgp
+  labels:
+    app: tor
+  annotations:
+    cni.projectcalico.org/ipAddrs: "[\"111.111.78.172\"]"
+spec:
+  nodeName: testvm-deploy1 
+  containers:
+  - name: myapp-container
+    securityContext:
+      privileged: true
+    image: ubuntu18.04
+    imagePullPolicy: IfNotPresent
+    command: [ "/bin/bash", "-c", "--" ]
+    args: [ "while true; do sleep 30; done;" ]
+
+

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  labels:
+    app: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: api-gateway:v1.6
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MONGO_URI
+              value: 'mongodb://mongo:27017/qconveniente'
+            - name: REDIS_HOST
+              value: 'redis'
+            - name: ESTABELECIMENTO_SERVICE_URL
+              value: 'http://estabelecimento-service:8081'
+            - name: PEDIDO_SERVICE_URL
+              value: 'http://pedido-service:8082'
+            - name: USUARIO_SERVICE_URL
+              value: 'http://usuario-service:8083'

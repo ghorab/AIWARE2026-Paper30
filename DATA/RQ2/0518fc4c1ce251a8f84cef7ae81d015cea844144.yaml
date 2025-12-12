@@ -1,0 +1,10 @@
+# Source: php-test-quickstart/templates/sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: php-test-quickstart-php-test-quickstart
+  annotations:
+    meta.helm.sh/release-name: 'php-test-quickstart'
+  namespace: jx-staging
+  labels:
+    gitops.jenkins-x.io/pipeline: 'namespaces'

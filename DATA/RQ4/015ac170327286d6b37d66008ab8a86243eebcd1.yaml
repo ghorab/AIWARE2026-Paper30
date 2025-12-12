@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gcloud
+spec:
+  containers:
+  - image: navikt/gcloud-psql:8
+    imagePullPolicy: IfNotPresent
+    name: gcloud
+    volumeMounts:
+    - mountPath: /etc/ssl/ca-bundle.pem
+      name: ca-bundle-pem
+      readOnly: true
+      subPath: ca-bundle.pem
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: ca-bundle-pem
+    name: ca-bundle-pem
+

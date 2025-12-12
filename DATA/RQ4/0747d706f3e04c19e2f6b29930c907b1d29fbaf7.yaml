@@ -1,0 +1,33 @@
+---
+# Source: spring-boot-app-ui/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-ui
+spec:
+  selector:
+    matchLabels:
+      app: spring-boot-ui
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: spring-boot-ui
+    spec:
+      containers:
+        - name: spring-boot-app-ui
+          image: "mtarng/jackson-ui:v1.1"
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            
+          ports:
+          - containerPort: 8080
+            name: ui
+          
+

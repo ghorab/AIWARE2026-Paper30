@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "aad-58ef"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "aad-58ef"
+  template:
+    metadata:
+      labels:
+        app: "aad-58ef"
+    spec:
+      containers:
+        - name: "aad-58ef"
+          image: "testdep.azurecr.io/aad"
+          ports:
+          - containerPort: 80

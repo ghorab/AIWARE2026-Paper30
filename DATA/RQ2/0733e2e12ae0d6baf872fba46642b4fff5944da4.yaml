@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: fahclient
+  name: fahclient
+  namespace: folding
+spec:
+  serviceName: "fahclient"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fahclient
+  volumeClaimTemplates:
+    - metadata:
+        name: fahclient-vol
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+  template:
+    metadata:
+      labels:
+        app: fahclient
+    spec:
+      priorityClassName: low-priority
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - fahclient
+              topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: fahclient-secret
+          secret:
+            secretName: fahclient
+      containers:
+        - name: fahclient
+          image: debian:buster-slim
+          env:
+            - name: power
+              value: full
+            - name: command-enable
+              value: "true"
+          command:
+            - /shared/usr/bin/FAHClient
+          args:
+            - -v
+            - --power=$(power)
+            - --gpu=true
+            - --fold-anon=true
+            - --gui-enabled=false
+            - --allow=0/0
+            - --web-enable=false
+            - --command-enable=$(command-enable)
+            - --command-allow-no-pass=127.0.0.1
+            - --run-as=nobody
+          ports:
+            - name: web
+              containerPort: 7396
+            - name: command
+              containerPort: 36330
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {}
+            privileged: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 65534
+          volumeMounts:
+            - name: fahclient-vol
+              mountPath: /shared
+          workingDir: /shared/usr/bin/
+      initContainers:
+        - name: install-fah
+          image: debian:buster-slim
+          args:
+            - -c
+            - apt update && apt install -y wget && wget https://download.foldingathome.org/releases/public/release/fahclient/debian-stable-64bit/v${major_version}/fahclient_${minor_version}_amd64.deb && dpkg -x fahclient_${minor_version}_amd64.deb /shared/ && touch /shared/usr/bin/log.txt && cp /etc/fahclient-config.xml /shared/usr/bin/config.xml && chown -R 65534:65534 /shared
+          command:
+            - /bin/sh
+          env:
+            - name: major_version
+              value: "7.5"
+            - name: minor_version
+              value: "7.5.1"
+          resources:
+            limits:
+              cpu: "1"
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: false
+            runAsUser: 0
+          volumeMounts:
+            - name: fahclient-vol
+              mountPath: /shared
+            - name: fahclient-secret
+              mountPath: "/etc/fahclient-config.xml"
+              subPath: "config.xml"

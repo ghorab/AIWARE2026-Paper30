@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-translation-service
+spec:
+  selector:
+    matchLabels:
+      app: file-translation-service
+  template:
+    metadata:
+      labels:
+        app: file-translation-service
+    spec:
+      containers:
+        - name: file-translation-service
+          image: ghcr.io/project-mtee/file-translation-service:latest
+          env:
+            - name: Services__RabbitMQ__UserName
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: rabbitmq
+            - name: Services__RabbitMQ__Password
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: rabbitmq
+            - name: Services__RabbitMQ__Host
+              value: $(RABBITMQ_SERVICE_HOST)
+            - name: Services__RabbitMQ__Port
+              value: $(RABBITMQ_SERVICE_PORT)
+            - name: Services__FileTranslation__UserName
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: file-service
+            - name: Services__FileTranslation__Password
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: file-service
+            - name: Configuration__FileSystemStoragePath
+              value: "/filetranslation_storage"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: mysql-filetranslation
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: mysql-filetranslation
+            - name: DB_HOST
+              value: $(MYSQL_SERVICE_HOST)
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: filetranslation
+                  name: databases
+            - name: Services__Database__ConnectionString
+              value: server=$(DB_HOST);database=$(DB_NAME);uid=$(DB_USER);pwd=$(DB_PASSWORD)
+            - name: Configuration__UserGroupMetadataExpiration____default__
+              value: "7:00:00"
+            - name: Services__TranslationSystem__Url
+              valueFrom:
+                configMapKeyRef:
+                  key: translation-api
+                  name: hosts
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: file-service-storage
+              mountPath: /filetranslation_storage
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 80
+            initialDelaySeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 80
+            initialDelaySeconds: 10
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "1.0"
+            limits:
+              memory: "256Mi"
+      volumes:
+        - name: file-service-storage
+          persistentVolumeClaim:
+            claimName: file-service-storage

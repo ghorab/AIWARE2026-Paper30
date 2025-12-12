@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: legacy-system-service
+  labels:
+    app: legacy-system
+spec:
+  type: NodePort
+  ports:
+    - name: employer
+      # port是暴露在cluster ip上的端口，:port提供了集群内部客户端访问service的入口，即clusterIP:port
+      port: 9000
+      # nodePort提供了集群外部客户端访问service的一种方式，:nodePort提供了集群外部客户端访问service的端口，即nodeIP:nodePort提供了外部流量访问k8s集群中service的入口
+      nodePort: 30009
+      # targetPort是pod上的端口，从port/nodePort上来的数据，经过kube-proxy流入到后端pod的targetPort上，最后进入容器
+      targetPort: 9000
+    - name: order
+      port: 9001
+      nodePort: 30109
+      targetPort: 9001
+    - name: shift
+      port: 9002
+      nodePort: 30209
+      targetPort: 9002
+    - name: erp
+      port: 9003
+      nodePort: 30309
+      targetPort: 9003
+
+  selector:
+    app: legacy-system
+  # 单实例MySQL，让DNS直接解析为Pod的IP地址，即headless service
+  clusterIP: 10.98.5.213

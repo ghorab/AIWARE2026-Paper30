@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: observer
+  namespace: fortress
+spec:
+  serviceAccount: observer
+  containers:
+  - image: hub.zahariev.pro/alpine
+    name: main
+    args:
+    - /bin/sh
+    - -c
+    - sleep 86400

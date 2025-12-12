@@ -1,0 +1,10 @@
+# Source: twitter-ui/templates/sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: twitter-ui-twitter-ui
+  annotations:
+    meta.helm.sh/release-name: 'twitter-ui'
+  namespace: jx-production
+  labels:
+    gitops.jenkins-x.io/pipeline: 'namespaces'

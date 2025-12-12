@@ -1,0 +1,203 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: query-layer
+    app.kubernetes.io/instance: thanos-querier
+    app.kubernetes.io/name: thanos-query
+    app.kubernetes.io/version: 0.17.2
+  name: thanos-querier
+  namespace: openshift-monitoring
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: query-layer
+      app.kubernetes.io/instance: thanos-querier
+      app.kubernetes.io/name: thanos-query
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      annotations:
+        workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
+      labels:
+        app.kubernetes.io/component: query-layer
+        app.kubernetes.io/instance: thanos-querier
+        app.kubernetes.io/name: thanos-query
+        app.kubernetes.io/version: 0.17.2
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/component: query-layer
+                app.kubernetes.io/instance: thanos-querier
+                app.kubernetes.io/name: thanos-query
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - query
+        - --grpc-address=127.0.0.1:10901
+        - --http-address=127.0.0.1:9090
+        - --log.format=logfmt
+        - --query.replica-label=prometheus_replica
+        - --query.replica-label=thanos_ruler_replica
+        - --store=dnssrv+_grpc._tcp.prometheus-operated.openshift-monitoring.svc.cluster.local
+        - --store.sd-dns-resolver=miekgdns
+        - --grpc-client-tls-secure
+        - --grpc-client-tls-cert=/etc/tls/grpc/client.crt
+        - --grpc-client-tls-key=/etc/tls/grpc/client.key
+        - --grpc-client-tls-ca=/etc/tls/grpc/ca.crt
+        - --grpc-client-server-name=prometheus-grpc
+        - --rule=dnssrv+_grpc._tcp.prometheus-operated.openshift-monitoring.svc.cluster.local
+        image: quay.io/thanos/thanos:v0.17.2
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - if [ -x "$(command -v curl)" ]; then exec curl http://localhost:9090/-/healthy;
+              elif [ -x "$(command -v wget)" ]; then exec wget --quiet --tries=1 --spider
+              http://localhost:9090/-/healthy; else exit 1; fi
+        name: thanos-query
+        ports:
+        - containerPort: 9090
+          name: http
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - if [ -x "$(command -v curl)" ]; then exec curl http://localhost:9090/-/ready;
+              elif [ -x "$(command -v wget)" ]; then exec wget --quiet --tries=1 --spider
+              http://localhost:9090/-/ready; else exit 1; fi
+        resources:
+          requests:
+            cpu: 10m
+            memory: 12Mi
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+        - mountPath: /etc/tls/grpc
+          name: secret-grpc-tls
+      - args:
+        - -provider=openshift
+        - -https-address=:9091
+        - -http-address=
+        - -email-domain=*
+        - -upstream=http://localhost:9090
+        - -htpasswd-file=/etc/proxy/htpasswd/auth
+        - -openshift-service-account=thanos-querier
+        - '-openshift-sar={"resource": "namespaces", "verb": "get"}'
+        - '-openshift-delegate-urls={"/": {"resource": "namespaces", "verb": "get"}}'
+        - -tls-cert=/etc/tls/private/tls.crt
+        - -tls-key=/etc/tls/private/tls.key
+        - -client-secret-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+        - -cookie-secret-file=/etc/proxy/secrets/session_secret
+        - -openshift-ca=/etc/pki/tls/cert.pem
+        - -openshift-ca=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        - -skip-auth-regex=^/metrics
+        env:
+        - name: HTTP_PROXY
+          value: ""
+        - name: HTTPS_PROXY
+          value: ""
+        - name: NO_PROXY
+          value: ""
+        image: quay.io/openshift/oauth-proxy:latest
+        name: oauth-proxy
+        ports:
+        - containerPort: 9091
+          name: web
+        resources:
+          requests:
+            cpu: 1m
+            memory: 20Mi
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+        - mountPath: /etc/tls/private
+          name: secret-thanos-querier-tls
+        - mountPath: /etc/proxy/secrets
+          name: secret-thanos-querier-oauth-cookie
+        - mountPath: /etc/proxy/htpasswd
+          name: secret-thanos-querier-oauth-htpasswd
+      - args:
+        - --secure-listen-address=0.0.0.0:9092
+        - --upstream=http://127.0.0.1:9095
+        - --config-file=/etc/kube-rbac-proxy/config.yaml
+        - --tls-cert-file=/etc/tls/private/tls.crt
+        - --tls-private-key-file=/etc/tls/private/tls.key
+        - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+        - --logtostderr=true
+        - --allow-paths=/api/v1/query,/api/v1/query_range
+        image: quay.io/coreos/kube-rbac-proxy:v0.8.0
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 9092
+          name: tenancy
+        resources:
+          requests:
+            cpu: 1m
+            memory: 20Mi
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+        - mountPath: /etc/tls/private
+          name: secret-thanos-querier-tls
+        - mountPath: /etc/kube-rbac-proxy
+          name: secret-thanos-querier-kube-rbac-proxy
+      - args:
+        - --insecure-listen-address=127.0.0.1:9095
+        - --upstream=http://127.0.0.1:9090
+        - --label=namespace
+        image: quay.io/coreos/prom-label-proxy:v0.2.0
+        name: prom-label-proxy
+        resources:
+          requests:
+            cpu: 1m
+            memory: 20Mi
+        terminationMessagePolicy: FallbackToLogsOnError
+      - args:
+        - --secure-listen-address=0.0.0.0:9093
+        - --upstream=http://127.0.0.1:9095
+        - --config-file=/etc/kube-rbac-proxy/config.yaml
+        - --tls-cert-file=/etc/tls/private/tls.crt
+        - --tls-private-key-file=/etc/tls/private/tls.key
+        - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+        - --logtostderr=true
+        - --allow-paths=/api/v1/rules
+        image: quay.io/coreos/kube-rbac-proxy:v0.8.0
+        name: kube-rbac-proxy-rules
+        ports:
+        - containerPort: 9093
+          name: tenancy-rules
+        resources:
+          requests:
+            cpu: 1m
+            memory: 20Mi
+        terminationMessagePolicy: FallbackToLogsOnError
+        volumeMounts:
+        - mountPath: /etc/tls/private
+          name: secret-thanos-querier-tls
+        - mountPath: /etc/kube-rbac-proxy
+          name: secret-thanos-querier-kube-rbac-proxy-rules
+      priorityClassName: system-cluster-critical
+      serviceAccountName: thanos-querier
+      terminationGracePeriodSeconds: 120
+      volumes:
+      - name: secret-thanos-querier-tls
+        secret:
+          secretName: thanos-querier-tls
+      - name: secret-thanos-querier-oauth-cookie
+        secret:
+          secretName: thanos-querier-oauth-cookie
+      - name: secret-thanos-querier-oauth-htpasswd
+        secret:
+          secretName: thanos-querier-oauth-htpasswd
+      - name: secret-thanos-querier-kube-rbac-proxy
+        secret:
+          secretName: thanos-querier-kube-rbac-proxy
+      - name: secret-thanos-querier-kube-rbac-proxy-rules
+        secret:
+          secretName: thanos-querier-kube-rbac-proxy-rules

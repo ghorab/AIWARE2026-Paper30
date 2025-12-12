@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: payment-dashboard
+  namespace: ${KUBE_NAMESPACE}
+  labels:
+    app: payment-dashboard
+data:
+  PORT: ${KUBE_CONFIGMAP_PORT}
+  API_UPSTREAM: ${KUBE_CONFIGMAP_API_UPSTREAM}
+  SDK_ENV: ${KUBE_CONFIGMAP_SDK_ENV}
+  NAMESPACE: ${KUBE_NAMESPACE}

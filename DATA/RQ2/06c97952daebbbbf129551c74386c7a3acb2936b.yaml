@@ -1,0 +1,22 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-vertx-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-vertx-consumer
+  template:
+    metadata:
+      labels:
+        app: kafka-vertx-consumer
+    spec:
+      containers:
+        - env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: my-cluster-kafka-bootstrap.kafka.svc:9092
+          name: kafka-vertx-consumer
+          image: docker.io/matzew/kafka-vertx-consumer
+          imagePullPolicy: IfNotPresent

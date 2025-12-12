@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: workflow-controller-configmap
+data:
+  workflowDefaults: |
+    metadata:
+      annotations:
+        argo: workflows
+      labels:
+        foo: bar
+    spec:
+      serviceAccountName: runner

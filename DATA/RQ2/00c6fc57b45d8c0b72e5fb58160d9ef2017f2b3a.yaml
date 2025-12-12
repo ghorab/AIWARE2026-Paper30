@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ahoy-server
+  name: ahoy-server
+  namespace: ahoy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ahoy-server
+  template:
+    metadata:
+      labels:
+        app: ahoy-server
+    spec:
+      serviceAccountName: ahoy
+      volumes:
+        - name: properties-prod
+          configMap:
+            name: ahoy-properties-prod
+      containers:
+        - image: lsdopen/ahoy:{{ .Chart.AppVersion }}
+          imagePullPolicy: Always
+          name: ahoy-server
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: properties-prod
+              mountPath: "/tmp/config"
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 300
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources: {}

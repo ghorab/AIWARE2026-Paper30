@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: crimson-credentials
+data:
+  userName: userName
+  password: password

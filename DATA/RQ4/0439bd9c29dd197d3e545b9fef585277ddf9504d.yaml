@@ -1,0 +1,14 @@
+apiVersion: v1
+data:
+  mongo-init.js: "db.createUser(\r\n    {\r\n        user: \"myuser\",\r\n        pwd:
+    \"1234\",\r\n        roles: [\r\n            {\r\n                role: \"readWrite\",\r\n
+    \               db: \"test\"\r\n            }\r\n        ]\r\n    }\r\n);"
+  script.sh: "#! /bin/sh \nmongoimport  --uri \"mongodb://myuser:1234@localhost:27017/\"
+    --db test --collection restaurant  --type json --file /init.json\n"
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2021-08-07T21:38:17Z"
+  name: init-script-cm
+  namespace: default
+  resourceVersion: "189219"
+  uid: e699a9e2-fbde-4f0d-a973-a6fd0526870d

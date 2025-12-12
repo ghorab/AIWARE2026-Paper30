@@ -1,0 +1,12 @@
+# Source: bot/templates/vs-bot.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vs-bot
+  annotations:
+    meta.helm.sh/release-name: 'bots'
+  namespace: jx
+  labels:
+    gitops.jenkins-x.io/pipeline: 'namespaces'
+secrets:
+  - name: vs-git

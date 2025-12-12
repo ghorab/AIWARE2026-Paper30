@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mendix-app-config
+  namespace: mendix-app-dev
+  labels:
+    app: YourApp
+    parentApp: mendix
+data:
+  KEY: "VALUE"

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: daniscarpa-frontend
+  namespace: frontend
+  labels:
+    app: daniscarpa-frontend
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 20%
+      maxUnavailable: 0
+  replicas: 3
+  selector:
+    matchLabels:
+      app: daniscarpa-frontend
+  template:
+    metadata:
+      labels:
+        app: daniscarpa-frontend
+    spec:
+      containers:
+      - name: daniscarpa-frontend
+        image: gcr.io/daniscarpa/frontend:latest
+        resources:
+          requests:
+            cpu: 10m
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 3
+          periodSeconds: 10
+          timeoutSeconds: 5
+        env:
+        - name: DANGEROUSLY_DISABLE_HOST_CHECK
+          value: "true"
+        - name: API_URL
+          value: "http://daniscarpa-backend.backend.svc:5000"

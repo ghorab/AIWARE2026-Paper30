@@ -1,0 +1,66 @@
+container-runs-as-root ==> Missing securityContext at container level
+run-as-non-root-not-set ==> Missing securityContext at container level
+run-as-user-not-set ==> Missing securityContext at container level
+run-as-group-not-set ==> Missing securityContext at container level
+allow-privilege-escalation ==> allowPrivilegeEscalation
+privileged-container ==> allowPrivilegeEscalation
+read-only-root-filesystem-disabled ==> Absence of readOnlyRootFilesystem
+linux-capabilities-not-dropped ==> Default capabilities not dropped
+capabilities-drop-all-missing ==> Unrestricted Linux capabilities
+seccomp-profile-missing ==> Unrestricted Linux capabilities
+seccomp-profile-unconfined ==> Unrestricted Linux capabilities
+apparmor-profile-missing ==> Unrestricted Linux capabilities
+docker-socket-mounted ==> HostPath volume mounting without restrictions
+host-network-enabled ==> Overly permissive ingress/egress rules
+host-pid-enabled ==> Unrestricted Linux capabilities
+host-ipc-enabled ==> Unrestricted Linux capabilities
+hostpath-volume-used ==> HostPath volume mounting without restrictions
+host-sensitive-path-mounted ==> HostPath volume mounting without restrictions
+host-device-mounted ==> HostPath volume mounting without restrictions
+image-tag-latest ==> Use of latest tag
+image-not-pinned-by-digest ==> Unsigned or unverified container images
+image-from-untrusted-registry ==> Image pulled from untrusted or public registry
+image-trust-policy-missing ==> Unsigned or unverified container images
+image-outdated ==> Outdated base images with CVEs
+image-pull-policy-misconfigured ==> Image pulled from untrusted or public registry
+secret-in-plain-text ==> Plaintext secrets
+secret-in-environment-variable ==> Hardcoded credentials in images or ENV variables
+configmap-used-for-secret ==> Plaintext secrets
+secret-not-mounted-as-volume ==> Cross-namespace volume or secret sharing
+serviceaccount-token-exposed ==> Hardcoded tokens
+secrets-encryption-not-guaranteed ==> No integration with external secret managers (Vault, AWS)
+networkpolicy-missing ==> Absence of NetworkPolicy objects
+networkpolicy-default-deny-missing ==> Missing NetworkPolicy for namespace isolation
+service-nodeport-exposed ==> Use of NodePort services in production
+service-loadbalancer-exposed ==> Public LoadBalancer with unrestricted IP access
+ingress-tls-disabled ==> Missing TLS in Ingress configuration
+unnecessary-port-exposed ==> Hardcoded endpoints or insecure API communication
+publicly-accessible-service ==> Public LoadBalancer with unrestricted IP access
+default-serviceaccount-used ==> Default namespace used for workloads
+serviceaccount-token-automounted ==> Automatic token mounting not disabled
+rbac-permissions-too-broad ==> Broad role bindings
+rbac-wildcards-used ==> Broad role bindings
+clusterrolebinding-overprivileged ==> Broad role bindings
+cluster-admin-used ==> Use of cluster-admin role in production workloads
+least-privilege-not-enforced ==> Least-privilege-not-enforced
+cpu-limits-missing ==> Missing resources.requests or resources.limits
+memory-limits-missing ==> Missing resources.requests or resources.limits
+cpu-requests-missing ==> Missing resources.requests or resources.limits
+memory-requests-missing ==> Missing resources.requests or resources.limits
+resourcequota-missing ==> No namespace-level ResourceQuota
+limitrange-missing ==> No namespace-level ResourceQuota
+liveness-probe-missing ==> Improperly tuned HPA thresholds (too low or high)
+readiness-probe-missing ==> Improperly tuned HPA thresholds (too low or high)
+probe-misconfigured ==> Improperly tuned HPA thresholds (too low or high)
+poddisruptionbudget-missing ==> No PodDisruptionBudget (PDB) for critical workloads
+replicas-insufficient ==> Improperly tuned HPA thresholds (too low or high)
+deprecated-api-version-used ==> Use of deprecated API versions
+incompatible-api-version ==> Use of deprecated API versions
+obsolete-kubernetes-resource ==> Use of deprecated API versions
+invalid-or-ignored-fields ==> Use of deprecated API versions
+default-namespace-used ==> Default namespace used for workloads
+pod-securitycontext-missing ==> Missing securityContext at container level
+emptydir-used-for-sensitive-data ==> Use of emptyDir for stateful workloads
+pvc-without-secure-storageclass ==> Missing or misconfigured storageClassName
+writable-volume-not-required ==> Unencrypted or shared volumes across namespaces
+persistent-volume-encryption-missing ==> Persistent volume data not encrypted

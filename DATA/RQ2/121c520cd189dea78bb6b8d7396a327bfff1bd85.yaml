@@ -1,0 +1,46 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: k8s-master
+  namespace: default
+spec:
+  hostNetwork: true
+  restartPolicy: Always
+  containers:
+  - name: etcd
+    image: quay.io/coreos/etcd:v2.3.1
+    imagePullPolicy: IfNotPresent
+    args:
+    - "--listen-peer-urls=http://127.0.0.1:2380"
+    - "--listen-client-urls=http://127.0.0.1:2379"
+    - "--advertise-client-urls=http://127.0.0.1:2379"
+    - "--data-dir=/var/etcd/data"
+  - name: k8s-apiserver
+    image: gcr.io/google_containers/hyperkube:v1.2.2
+    imagePullPolicy: IfNotPresent
+    command:
+    - "/hyperkube"
+    - apiserver
+    - "--insecure-bind-address=127.0.0.1"
+    - "--insecure-port=8080"
+    - "--secure-port=0"
+    - "--etcd-servers=http://127.0.0.1:2379"
+    - "--service-cluster-ip-range=10.0.0.0/24"
+    - "--service-node-port-range=1-65535"
+    - "--allow-privileged=true"
+  - name: k8s-controller-manager
+    image: gcr.io/google_containers/hyperkube:v1.2.2
+    imagePullPolicy: IfNotPresent
+    command:
+    - "/hyperkube"
+    - controller-manager
+    - "--address=127.0.0.1"
+    - "--master=127.0.0.1:8080"
+  - name: k8s-scheduler
+    image: gcr.io/google_containers/hyperkube:v1.2.2
+    imagePullPolicy: IfNotPresent
+    command:
+    - "/hyperkube"
+    - scheduler
+    - "--address=127.0.0.1"
+    - "--master=127.0.0.1:8080"

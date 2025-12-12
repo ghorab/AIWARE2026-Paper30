@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ethercalc-config
+data:
+  REDIS_PORT_6379_TCP_ADDR: "localhost"
+  REDIS_PORT_6379_TCP_PORT: "6379"

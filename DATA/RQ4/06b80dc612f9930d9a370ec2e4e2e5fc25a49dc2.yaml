@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafkanetes
+  namespace: explore-example
+  selfLink: /api/v1/namespaces/explore-example/services/kafkanetes
+  uid: 6830eec1-13a9-11e7-92c7-005056112152
+  resourceVersion: '1481406'
+  creationTimestamp: '2017-03-28T11:26:37Z'
+  labels:
+    app: kafkanetes
+  annotations:
+    openshift.io/generated-by: OpenShiftWebConsole
+spec:
+  ports:
+    - name: 2181-tcp
+      protocol: TCP
+      port: 2181
+      targetPort: 2181
+    - name: 2888-tcp
+      protocol: TCP
+      port: 2888
+      targetPort: 2888
+    - name: 3888-tcp
+      protocol: TCP
+      port: 3888
+      targetPort: 3888
+    - name: 9092-tcp
+      protocol: TCP
+      port: 9092
+      targetPort: 9092
+    - name: 9093-tcp
+      protocol: TCP
+      port: 9093
+      targetPort: 9093
+  selector:
+    deploymentconfig: kafkanetes
+  clusterIP: 172.30.186.43
+  type: ClusterIP
+  sessionAffinity: None
+status:
+  loadBalancer: {}

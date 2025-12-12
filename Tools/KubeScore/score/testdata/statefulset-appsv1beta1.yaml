@@ -1,0 +1,17 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: statefulset-test-1
+spec:
+  selector:
+    matchLabels:
+      app: foo
+  template:
+    spec:
+      containers:
+      - name: foobar
+        image: foo/bar:123
+        resources:
+          limits:
+            cpu: 200m
+            memory: 1Gi

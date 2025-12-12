@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-apps-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-apps
+  template:
+    metadata:
+      labels:
+        app: demo-apps
+    spec:
+      serviceAccountName: demo-apps-service-account
+      containers:
+        - name: app
+          image: fpommerening/monitoring-training:demo-apps
+          ports:
+            - name: http
+              containerPort: 80
+          env:
+            - name: "BaseUrl"
+              value: "container-training.de"
+            - name: "Namespace"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace

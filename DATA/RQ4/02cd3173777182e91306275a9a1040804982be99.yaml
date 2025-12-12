@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: go-service
+  name: go-service
+spec:
+  ports:
+  - name: grpc-web-81
+    port: 81
+    targetPort: 8080
+  selector:
+    app: go-service

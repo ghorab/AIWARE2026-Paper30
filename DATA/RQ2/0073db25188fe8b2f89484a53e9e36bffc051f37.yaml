@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-database-fiap-grupo26
+  namespace: mbaaso-grupo26
+spec:
+  selector:
+    name: database-fiap-grupo26
+  ports:
+    - name: postgresql
+      protocol: TCP
+      port: 5432
+      targetPort: 5432

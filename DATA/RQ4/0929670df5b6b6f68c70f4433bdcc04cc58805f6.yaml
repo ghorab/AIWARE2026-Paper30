@@ -1,0 +1,22 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: k8s-isi-provisioner
+spec:
+  containers:
+    - name: k8s-isi-provisioner
+      image: xphyr/k8s_isi_provisioner:latest
+      imagePullPolicy: "IfNotPresent"
+      env:
+        - name: ISI_SERVER
+          value: 192.168.5.200
+        - name: ISI_PATH
+          value: /ifs/test
+        - name: ISI_USER
+          value: admin
+        - name: ISI_PASS
+          value: password
+        - name: ISI_GROUP
+          value: Users
+        - name: ISI_QUOTA_ENABLE
+          value: "true"

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgen
+  namespace: fsi
+spec:
+  selector:
+    matchLabels:
+      app: loadgen
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: loadgen
+    spec:
+      containers:
+        - name: loadgen-container
+          image: loadgen
+          env:
+            - name: PROFILE_SVC_URL
+              value: "http://go-app-svc:8080"
+            - name: TRANSACTION_SVC_URL
+              value: "http://transaction-app-svc:5050"
+            - name: TRANSFER_SVC_URL
+              value: "http://transfer-app-svc:5000"

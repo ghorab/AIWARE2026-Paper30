@@ -1,0 +1,8 @@
+kind: Secret
+apiVersion: v1
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeS
+metadata:
+  name: xxxxxxxx
+  namespace: cicd
+type: kubernetes.io/dockerconfigjson

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: agent
+  name: agent
+  namespace: runscope
+spec:
+  selector:
+    matchLabels:
+      app: agent
+  template:
+    metadata:
+      labels:
+        app: agent
+    spec:
+      volumes:
+        - name: runscope-config-volume
+          configMap:
+            name: runscope-config
+      containers:
+        - image: "crawlyltda/runscope-agent:latest"
+          imagePullPolicy: Always
+          name: agent
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+          envFrom:
+            - configMapRef:
+                name: runscope-config

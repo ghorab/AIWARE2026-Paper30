@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: origin-web-console-smoke-test-pod
+  labels:
+    app: origin-web-console-smoke-test
+spec:
+  restartPolicy: Never
+  containers:
+  - name: origin-web-console-smoke-test
+    image: jhadvig/protractor-smoke-test:latest
+    imagePullPolicy: Always
+    env:
+    - name: CONSOLE_URL
+      value: https://192.168.100.3:8443

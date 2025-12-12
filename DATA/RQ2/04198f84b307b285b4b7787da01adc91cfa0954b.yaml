@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: import-annotations-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: annotations-importer
+        image: gcr.io/devenv-215523/annotations-importer:${IMPORTER_VERSION}
+        imagePullPolicy: Always
+        command: ["java", "-Xms256M", "-Xmx1G", "-jar", "/app/annotations-importer.jar"]
+        resources:
+          requests:
+            memory: "512M"
+          limits:
+            memory: "1G"
+        env:
+          - name: JVM_OPTS
+            value: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+          - name: LIST_URL
+            value: "http://hgdownload.cse.ucsc.edu/downloads.html"
+          - name: DB_SCHEMA
+            value: "${DB_SCHEMA}"
+          - name: DB_URL
+            value: "jdbc:postgresql://127.0.0.1:5432/annotations-db"
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: annotations-db-credentials
+                key: username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: annotations-db-credentials
+                key: password
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.11
+        command: ["/cloud_sql_proxy",
+                  "-instances=devenv-215523:us-east1:annotations-instance=tcp:5432",
+                  "-credential_file=/secrets/cloudsql/staging-service-account.json"]
+        securityContext:
+          runAsUser: 2  # non-root user
+          allowPrivilegeEscalation: false
+        volumeMounts:
+          - name: service-account-key
+            mountPath: /secrets/cloudsql
+            readOnly: true
+      volumes:
+        - name: service-account-key
+          secret:
+            secretName: service-account-key
+      restartPolicy: Never

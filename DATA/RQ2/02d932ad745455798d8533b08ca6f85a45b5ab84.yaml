@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: helloworld-client
+  # namespace: kube-system
+  namespace: default
+  labels:
+    app: helloworld-client
+    # version: v1
+    # kubernetes.io/cluster-service: "true"
+spec:
+  # minReadySeconds: 30
+  # updateStrategy:
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     maxUnavailable: 2
+  selector:
+    matchLabels:
+      app: helloworld-client
+      # version: v1
+      # kubernetes.io/cluster-service: "true"
+  template:
+    metadata:
+      labels:
+        app: helloworld-client
+        # version: v1
+        # kubernetes.io/cluster-service: "true"
+    spec:
+      serviceAccountName: helloworld-client
+      # priorityClassName: system-node-critical
+      tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/loadbalancer
+        effect: NoSchedule
+      containers:
+      - name: helloworld-client
+        image: cclhsu/opensuse_leap_helloworld:latest
+        # image: registry.suse.de/home/cclhsu/branches/devel/caasp/4.5/containers/containers/caasp/v4.5/helloworld:beta
+        imagePullPolicy: Always
+        # command: [ "helloworld" ]
+        # args: [ "-n", "-f", "/etc/helloworld.conf" ]
+        # command: [ "helloworld", "-n", "-f", "/etc/helloworld.conf" ]
+        # securityContext:
+        #   allowPrivilegeEscalation: true
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        env:
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: HELLOWORLD_TARGET
+          # value: "127.0.0.1"
+          value: "helloworld-server-service.default.svc.cluster.local"
+          # value: "helloworld-server-service.kube-system.svc.cluster.local"
+        - name: HELLOWORLD_PORT
+          value: "514"
+        - name: HELLOWORLD_PROTOCOL
+          value: "tcp"
+          # value: "udp"
+        volumeMounts:
+        - name: certs-volume
+          mountPath: /etc/certs
+          readOnly: true
+        - name: helloworld-conf-volume
+          mountPath: /etc/helloworld.conf
+          subPath: helloworld.conf
+          readOnly: true
+        - name: helloworld-d-volume
+          mountPath: /etc/helloworld.d
+        # - name: host-var-log
+        #   mountPath: /var/log
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: certs-volume
+        secret:
+          secretName: certs-client
+      - name: helloworld-conf-volume
+        configMap:
+          name: helloworld-conf-client
+      - name: helloworld-d-volume
+        configMap:
+          name: helloworld-d-client
+      # - name: host-var-log
+      #   hostPath:
+      #     path: /var/log

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-backups-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-backups
+  template:
+    metadata:
+      labels:
+        app: mongo-backups
+    spec:
+      containers:
+        - image: dominiek/mongodb-backups
+          imagePullPolicy: Always
+          name: main
+          resources:
+            limits:
+              cpu: "1000m"
+              memory: "4Gi"
+          env:
+            - name: MONGO_HOST
+              value: "mongo"
+            - name: MONGO_DB
+              value: "bedrock_staging"
+            - name: BACKUPS_GS_BUCKET
+              value: "bedrock-staging-mongodb-backups"

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: jnlp
+    image: registry.redhat.io/openshift4/ose-jenkins-agent-maven
+

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paymentservice
+  labels:
+    app: paymentservice
+spec:
+  replicas: 1
+  strategy:
+        type: Recreate
+  selector:
+    matchLabels:
+      app: paymentservice
+  template:
+    metadata:
+      labels:
+        app: paymentservice
+    spec:
+      containers:
+      - name: paymentsrv
+        image: ttl.sh/otus-demo-paymentsrv:7h
+        env:
+        - name : PORT
+          value: "9000"
+        - name: DISABLE_PROFILER
+          value: "1"

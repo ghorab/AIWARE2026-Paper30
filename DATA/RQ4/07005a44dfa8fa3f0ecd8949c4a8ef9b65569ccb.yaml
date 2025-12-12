@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debug-deployment
+  labels:
+    app: debug
+  #namespace: geonode
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: debug
+  template:
+    metadata:
+      labels:
+        app: debug
+    spec:
+      containers:
+      - name: debug
+        image: ubuntu:21.10
+        command:
+          - tail
+          - "-f" 
+          - "/dev/null"

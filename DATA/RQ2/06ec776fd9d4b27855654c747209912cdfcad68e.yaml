@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: only-cidr-network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: pod
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - ipBlock:
+    # CIDR YOU WANT ALLOW
+        cidr: x.x.x.x/24
+    # CALICO-RANG
+    - ipBlock:
+        cidr: 10.0.0.0/24
+    

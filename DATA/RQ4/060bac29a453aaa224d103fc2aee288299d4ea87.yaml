@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: kjwikigdocker
+  labels:
+    app: kjwikigdocker
+spec:
+  # type ClusterIP(default) / NodePort(for minikube) / LoadBalancer(for GKE)
+  # type: NodePort
+  type: NodePort
+  selector:
+    app: kjwikigdocker
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080

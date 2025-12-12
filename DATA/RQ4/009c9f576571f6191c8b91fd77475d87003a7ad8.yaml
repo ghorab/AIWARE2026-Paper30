@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cloud-controller-manager
+  namespace: kube-system
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ''
+  labels:
+    tier: control-plane
+    component: cloud-controller-manager
+spec:
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+    runAsUser: 0
+    runAsGroup: 0
+  priorityClassName: system-node-critical
+  hostNetwork: true
+  serviceAccountName: cloud-controller-manager
+  containers:
+    - name: cloud-controller-manager
+      image: ghcr.io/nberlee/cloud-provider-gcp/cloud-controller-manager:v1.21.0-alpha_5b83205a006bbd53e20c798185e461e8f0df3c70
+      resources:
+        requests:
+          cpu: 50m
+      command:
+        - /cloud-controller-manager
+      args:
+        - --bind-address=127.0.0.1
+        - --port=0
+        - --cluster-cidr=10.244.0.0/16
+        - --port=10253
+        - --use-service-account-credentials
+        - --cloud-provider=gce
+        - -v=9
+      livenessProbe:
+        httpGet:
+          host: localhost
+          port: 10258
+          path: /healthz
+          scheme: HTTPS
+        initialDelaySeconds: 15
+        timeoutSeconds: 15
+      volumeMounts:
+        - name: varlibetc
+          mountPath: /etc/gce.conf
+          readOnly: true
+  volumes:
+    - name: varlibetc
+      hostPath:
+        path: /var/lib/etc/gce.conf

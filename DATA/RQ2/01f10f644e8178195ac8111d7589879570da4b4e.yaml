@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2019-07-11T21:56:39Z"
+  labels:
+    app: hack-deployments
+  name: hack-service
+  namespace: default
+  resourceVersion: "4124"
+  selfLink: /api/v1/namespaces/default/services/hack-service
+  uid: c2ac1789-a426-11e9-aff4-5e3f56b1012b
+spec:
+  clusterIP: 172.21.136.116
+  externalTrafficPolicy: Cluster
+  ports:
+  - nodePort: 31248
+    port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: hack-deployments
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}

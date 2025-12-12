@@ -1,0 +1,20 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: PODNAME
+spec:
+  containers:
+  - name: CONNAME
+    image: ubuntu
+    command: [ "/bin/sh", "-c", "--" ]
+    args: [ "while true; do sleep 30; done;" ]
+    volumeMounts:
+      - name: VOLNAME
+        mountPath: "MOUNTPATH"
+  restartPolicy: "Never"
+  volumes:
+    - name: VOLNAME
+      persistentVolumeClaim:
+        claimName: PVCNAME
+  nodeSelector:
+    kubernetes.io/hostname: NODESELECTOR

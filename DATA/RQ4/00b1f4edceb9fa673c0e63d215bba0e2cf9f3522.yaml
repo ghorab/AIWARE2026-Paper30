@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meal-planner
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: meal-planner
+  template:
+    metadata:
+      labels:
+        app: meal-planner
+    spec:
+      containers:
+      - name: meal-planner
+        image: afeeblechild/meal-planner:1.1
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP

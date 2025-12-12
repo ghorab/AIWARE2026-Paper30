@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: queue
+  name: queue
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: queue
+  template:
+    metadata:
+      labels:
+        run: queue
+    spec:
+      containers:
+      - image: rabbitmq:3.6.6-management
+        name: queue

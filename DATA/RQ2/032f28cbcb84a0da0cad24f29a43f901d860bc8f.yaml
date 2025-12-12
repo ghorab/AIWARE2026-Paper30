@@ -1,0 +1,21 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: postgres-pv
+spec:
+  storageClassName: hostpath # provided by docker desktop, must be the same as PersistentVolumeClaim
+  accessModes:
+    - ReadWriteMany # must be the same as PersistentVolumeClaim
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 2Gi
+  hostPath:
+    path: /Users/redtank/var/lib/postgresql/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - docker-desktop

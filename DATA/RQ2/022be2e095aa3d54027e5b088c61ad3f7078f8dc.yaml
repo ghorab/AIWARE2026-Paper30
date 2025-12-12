@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-app
+  labels:
+    name: worker-app
+    app: demo-voting-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: worker-app
+      app: demo-voting-app
+
+  template:
+    metadata:
+      name: worker-app
+      labels:
+        name: worker-app
+        app: demo-voting-app
+      annotations:
+        'consul.hashicorp.com/connect-inject': 'true'
+        'consul.hashicorp.com/connect-service-upstreams': 'postgres:5432'
+    spec:
+      containers:
+        - name: worker-app
+          image: kodekloud/examplevotingapp_worker:v1
+          ports:
+            - containerPort: 80

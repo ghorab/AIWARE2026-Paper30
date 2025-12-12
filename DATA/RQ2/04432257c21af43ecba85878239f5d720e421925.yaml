@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contoso-renderer
+spec:
+  selector:
+    matchLabels:
+      app: contoso-renderer
+  template:
+    metadata:
+      labels:
+        app: contoso-renderer
+    spec:
+      containers:
+        - image: mcr.microsoft.com/mslearn/samples/contoso-renderer
+          name: contoso-renderer
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          ports:
+            - containerPort: 3000
+              name: http

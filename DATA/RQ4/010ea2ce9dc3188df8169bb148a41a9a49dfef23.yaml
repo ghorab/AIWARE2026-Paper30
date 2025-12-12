@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox-swap-pvc-0
+spec:
+  imagePullSecrets:
+    - name: ibm-isc-pull-secret
+    - name: ibm-entitlement-key
+  volumes:
+    - name: volume-source
+      persistentVolumeClaim:
+        claimName: soar-postgres-data-soar-postgres-keeper-0
+    - name: volume-destination
+      persistentVolumeClaim:
+        claimName: temp-pvc-keeper-0
+  containers:
+    - name: debug
+      image: cp.icr.io/cp/cp4s/busybox:1.8.0.0-amd64
+      command: ['sleep', '3600']
+      volumeMounts:
+        - name: volume-source
+          mountPath: /data-source
+        - name: volume-destination
+          mountPath: /data-destination

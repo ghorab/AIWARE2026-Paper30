@@ -1,0 +1,93 @@
+# Source: lighthouse/templates/webhooks-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lighthouse-webhooks
+  labels:
+    chart: "lighthouse-0.0.939"
+    app: lighthouse-webhooks
+    git.jenkins-x.io/sha: annotate
+    gitops.jenkins-x.io/pipeline: 'namespaces'
+  annotations:
+    checksum/config: e718c47f868324d43eb072bfb006a73b6f26046fdc0dee46862f6e3c8fb35089
+    wave.pusher.com/update-on-config-change: 'true'
+    jenkins-x.io/hash: 'c458ad42c9b866a9c4b7cd3f8d450c137e7805af5ce557acb3470e1ba9459ef9'
+  namespace: jx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lighthouse-webhooks
+  template:
+    metadata:
+      labels:
+        app: lighthouse-webhooks
+    spec:
+      serviceAccountName: lighthouse-webhooks
+      containers:
+        - name: lighthouse-webhooks
+          image: gcr.io/jenkinsxio/lighthouse-webhooks:0.0.939
+          imagePullPolicy: IfNotPresent
+          args:
+            - "--namespace=jx"
+          env:
+            - name: "GIT_KIND"
+              value: "github"
+            - name: "LH_CUSTOM_TRIGGER_COMMAND"
+              value: "jx"
+            - name: "GIT_SERVER"
+              value: "https://github.com"
+            - name: "GIT_USER"
+              value: rdawoud
+            - name: "GIT_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: lighthouse-oauth-token
+                  key: oauth
+            - name: "HMAC_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: "lighthouse-hmac-token"
+                  key: hmac
+                  optional: false
+            - name: "JX_LOG_FORMAT"
+              value: "json"
+            - name: "LOGRUS_FORMAT"
+              value: "json"
+            - name: DEFAULT_PIPELINE_RUN_SERVICE_ACCOUNT
+              value: "tekton-bot"
+            - name: DEFAULT_PIPELINE_RUN_TIMEOUT
+              value: "2h0m0s"
+            - name: FILE_BROWSER
+              value: "git"
+            - name: JX_DEFAULT_IMAGE
+              value: "gcr.io/jenkinsxio/builder-maven:2.1.142-761"
+            - name: LIGHTHOUSE_DASHBOARD_TEMPLATE
+              value: "namespaces/{{ .Namespace }}/pipelineruns/{{ .PipelineRun }}"
+            - name: LIGHTHOUSE_VERSIONSTREAM_JENKINS_X_JX3_PIPELINE_CATALOG
+              value: "4e8615321aafaee7cce7a8b5bb7dc370950db91a"
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 100m
+              memory: 512Mi
+            requests:
+              cpu: 80m
+              memory: 128Mi
+      terminationGracePeriodSeconds: 180

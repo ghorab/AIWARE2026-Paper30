@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: gcr.io/bitshift-225317/frountend@sha256:bcc609eaf3402062c32e9402a94c0d650d180139f2c536a715d8f6e6e8655dd6
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080

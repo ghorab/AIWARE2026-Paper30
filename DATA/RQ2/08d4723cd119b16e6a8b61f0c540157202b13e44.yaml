@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: generate
+  labels:
+    component: generate
+    app: exposure-notifications-server
+spec:
+  selector:
+    component: generate
+    app: exposure-notifications-server
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

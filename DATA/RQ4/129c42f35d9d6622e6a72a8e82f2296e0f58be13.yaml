@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devopsconf-app
+  namespace: devopsconf
+spec:
+  selector:
+    matchLabels:
+      app: devopsconf-app
+  template:
+    metadata:
+      labels:
+        app: devopsconf-app
+    spec:
+      containers:
+      - name: devopsconf-app
+        image: devopsconfacr.azurecr.io/devopsconf:0.1.0-6 # {"$imagepolicy": "flux-system:devopsconf-app"}
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080

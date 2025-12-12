@@ -1,0 +1,10 @@
+# Source: nodeapp3/templates/sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nodeapp3-nodeapp3
+  annotations:
+    meta.helm.sh/release-name: 'nodeapp3'
+  namespace: jx-staging
+  labels:
+    gitops.jenkins-x.io/pipeline: 'namespaces'

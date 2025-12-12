@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quartercog-frontend
+  labels:
+    app: quartercog
+    type: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quartercog
+      type: frontend
+
+  template:
+    metadata:
+      labels:
+        app: quartercog
+        type: frontend
+
+    spec:
+      #sserviceAccountName: containership
+      containers:
+        - name: quartercog-frontend
+          image: quartercog/frontend
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 80

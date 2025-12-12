@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  index.html: |
+        <html>
+        <body>
+        <a href="https://en.wikipedia.org/wiki/White_Coke">White Coke</a>
+        </body>
+        </html>
+kind: ConfigMap
+metadata:
+  name: cokeconfigmap

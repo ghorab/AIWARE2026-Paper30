@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: matomo
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            name: matomo
+    template:
+        metadata:
+            labels:
+                name: matomo
+        spec:
+            containers:
+                - name: matomo
+                  image: matomo:latest
+                  resources:
+                      limits:
+                          memory: '3Gi'
+                          cpu: '500m'
+                  env:
+                      - name: MARIADB_HOST
+                        value: '172.16.2.222'
+                      - name: MARIADB_PORT_NUMBER
+                        value: '3306'
+                      - name: MATOMO_DATABASE_NAME
+                        value: matomo
+                      - name: MATOMO_DATABASE_USER
+                        value: matomo
+                      - name: MATOMO_DATABASE_PASSWORD
+                        value: matomo
+                  ports:
+                      - containerPort: 80
+                  command:
+                      - bash
+                  args:
+                      - -c
+                      - source /home/free/.bashrc && apache2-foreground
+                  volumeMounts:
+                      - name: home
+                        mountPropagation: HostToContainer
+                        mountPath: /home/free/.bashrc
+                      - name: matomo-storage
+                        mountPath: /var/www/html
+                      - name: matomo-logs
+                        mountPath: /var/www/html/logs
+                      - name: matomo-configs
+                        mountPath: /var/www/html/configs
+            volumes:
+                - name: home
+                  hostPath:
+                      path: /home/free/.bashrc
+                      type: FileOrCreate
+                - name: matomo-storage
+                  hostPath:
+                      path: /home/free/storage/matomo
+                - name: matomo-logs
+                  hostPath:
+                      path: /home/free/storage/matomo/logs
+                - name: matomo-configs
+                  hostPath:
+                      path: /home/free/storage/matomo/configs

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: f21ao
+  labels:
+    app.kubernetes.io/name: f21ao-service
+    app.kubernetes.io/component: f21aoservice
+spec:
+  type: NodePort
+  ports:
+    - port: 8095
+      protocol: TCP
+      targetPort: 8095 #target port
+  selector:
+    app.kubernetes.io/name: f21ao-service
+    app.kubernetes.io/component: f21aoservice

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uber-react
+spec:
+  replicas: 1
+  minReadySeconds: 15
+  selector:
+    matchLabels:
+      app: uber-react
+  strategy:
+    type: RollingUpdate 
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1 
+  template:
+    metadata: 
+      labels:
+        app: uber-react
+    spec:
+      containers:
+          - image: gcr.io/csye7220-311404/uber-react:latest
+            imagePullPolicy: Always 
+            name: uber-react 
+            ports:
+              - containerPort: 80

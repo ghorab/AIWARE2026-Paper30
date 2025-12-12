@@ -1,0 +1,20 @@
+# Horizontal Pod AutoScaler (HPA)
+# To produce some load on the service we will use, a tool called wrk. The following will open 600 connections using 600 threads for a period of 15
+# docker run --rm loadimpact/loadgentest-wrk -c 600 -t 600 -d 15m <URL/IP>
+# To get HPA details: kubectl get hpa
+
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+ name: 2048-hpa
+
+spec:
+ scaleTargetRef:
+   apiVersion: apps/v1beta1
+   kind: Deployment
+   name: 2048-app
+ minReplicas: 1
+ maxReplicas: 3
+ targetCPUUtilizationPercentage: 20
+

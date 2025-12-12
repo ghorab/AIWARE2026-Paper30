@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitlab-runner-config
+  namespace: gitlab-runner
+data:
+  config.toml: |-
+    concurrent = 4
+    [[runners]]
+      name = "Kubernetes Runner"
+      url = "https://gitlab.com/ci"
+      token = "_fMcV17iemwbDR8FAuSH"
+      environment = ["DOCKER_TLS_CERTDIR="]
+      executor = "kubernetes"
+      [runners.kubernetes]
+        namespace = "gitlab-runner"
+        privileged = true
+        poll_timeout = 600
+        cpu_request = "1"
+        service_cpu_request = "200m"
+        [[runners.kubernetes.volumes.host_path]]
+            name = "docker"
+            mount_path = "/var/run/docker.sock"
+            host_path = "/var/run/docker.sock"
+
+

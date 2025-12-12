@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-app-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: todo-app
+  ports:
+    - name: fe-todos
+      port: 2222
+      protocol: TCP
+      targetPort: 3000
+    - name: be-todos
+      port: 3333
+      protocol: TCP
+      targetPort: 9999
+

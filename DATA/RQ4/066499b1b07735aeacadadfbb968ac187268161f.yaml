@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: register-microservice
+  labels:
+    app: register-microservice
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: register
+  template:
+    metadata:
+      labels:
+        app: register
+    spec:
+      containers:
+        - name: register-microservice
+          image: sthanguy/cubechain-register-microservice:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3005
+          volumeMounts:
+            - name: firebase-config
+              mountPath: "/usr/register/config/firebase"
+              readOnly: true
+            - name: signing-secret
+              mountPath: "/usr/register/config/jwt"
+              readOnly: true
+      volumes:
+        - name: firebase-config
+          secret:
+            secretName: firebase-config
+        - name: signing-secret
+          secret:
+            secretName: signing-secret

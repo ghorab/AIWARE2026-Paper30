@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim_name-pvc # Update
+spec:
+  volumeName: pv-name # Update: Referenced from metadata.name from PersistentVolume Object
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests: 
+      storage: 1Gi

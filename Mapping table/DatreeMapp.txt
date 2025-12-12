@@ -1,0 +1,68 @@
+runAsNonRoot ==> Missing securityContext at container level
+runAsUser ==> Missing securityContext at container level
+runAsGroup ==> Missing securityContext at container level
+allowPrivilegeEscalation ==> allowPrivilegeEscalation
+privilegedContainer ==> allowPrivilegeEscalation
+readOnlyRootFilesystem ==> Absence of readOnlyRootFilesystem
+capabilitiesDropAll ==> Default capabilities not dropped
+seccompProfile ==> Unrestricted Linux capabilities
+apparmorProfile ==> Unrestricted Linux capabilities
+hostPID ==> Unrestricted Linux capabilities
+hostIPC ==> Unrestricted Linux capabilities
+hostNetwork ==> Overly permissive ingress/egress rules
+hostPathVolume ==> HostPath volume mounting without restrictions
+imageTagNotLatest ==> Use of latest tag
+imagePullPolicy ==> Image pulled from untrusted or public registry
+imageFromTrustedRegistry ==> Image pulled from untrusted or public registry
+digestPinnedImages ==> Unsigned or unverified container images
+imageRegistryWhitelist ==> Image pulled from untrusted or public registry
+disallowedImageRegistries ==> Image pulled from untrusted or public registry
+cpuRequestsDefined ==> Missing resources.requests or resources.limits
+cpuLimitsDefined ==> Missing resources.requests or resources.limits
+memoryRequestsDefined ==> Missing resources.requests or resources.limits
+memoryLimitsDefined ==> Missing resources.requests or resources.limits
+requestsEqualLimits ==> Equal requests and limits causing throttling
+resourceQuotaDefined ==> No namespace-level ResourceQuota
+limitRangeDefined ==> No namespace-level ResourceQuota
+replicasGreaterThanOne ==> Improperly tuned HPA thresholds (too low or high)
+livenessProbeDefined ==> Improperly tuned HPA thresholds (too low or high)
+readinessProbeDefined ==> Improperly tuned HPA thresholds (too low or high)
+startupProbeDefined ==> Improperly tuned HPA thresholds (too low or high)
+probeDelayConfigured ==> Improperly tuned HPA thresholds (too low or high)
+probeTimeoutConfigured ==> Improperly tuned HPA thresholds (too low or high)
+probeFailureThresholdConfigured ==> Improperly tuned HPA thresholds (too low or high)
+networkPolicyDefined ==> Absence of NetworkPolicy objects
+defaultDenyNetworkPolicy ==> Missing NetworkPolicy for namespace isolation
+serviceTypeNotLoadBalancer ==> Public LoadBalancer with unrestricted IP access
+serviceTypeNotNodePort ==> Use of NodePort services in production
+ingressTLSConfigured ==> Missing TLS in Ingress configuration
+ingressHostDefined ==> Missing TLS in Ingress configuration
+noPlaintextSecrets ==> Plaintext secrets
+secretsNotInEnvVars ==> Hardcoded credentials in images or ENV variables
+secretVolumeMounted ==> Cross-namespace volume or secret sharing
+configMapNotUsedForSecrets ==> Plaintext secrets
+rbacEnabled ==> Broad role bindings
+clusterAdminNotUsed ==> Use of cluster-admin role in production workloads
+serviceAccountDefined ==> Unrestricted API access in service accounts
+serviceAccountTokenAutoMount ==> Automatic token mounting not disabled
+avoidDefaultServiceAccount ==> Default namespace used for workloads
+podDisruptionBudgetDefined ==> No PodDisruptionBudget (PDB) for critical workloads
+antiAffinityDefined ==> Absence of affinity or antiAffinity rules
+podAntiAffinityDefined ==> Pods co-located on the same node without anti-affinity
+affinityDefined ==> Absence of affinity or antiAffinity rules
+priorityClassDefined ==> Ignored taints/tolerations causing workload imbalance
+terminationGracePeriodDefined ==> No PodDisruptionBudget (PDB) for critical workloads
+restartPolicyConfigured ==> Improperly tuned HPA thresholds (too low or high)
+persistentVolumeClaimDefined ==> Missing or misconfigured storageClassName
+storageClassDefined ==> Missing or misconfigured storageClassName
+avoidEmptyDir ==> Use of emptyDir for stateful workloads
+avoidHostPath ==> HostPath volume mounting without restrictions
+labelsDefined ==> Absence of namespace scoping
+annotationsDefined ==> Absence of namespace scoping
+nameConvention ==> Default namespace used for workloads
+namespaceNotDefault ==> Default namespace used for workloads
+avoidLatestAPIVersion ==> Use of deprecated API versions
+deprecatedAPIVersion ==> Use of deprecated API versions
+kubernetesVersionCompatible ==> Use of deprecated API versions
+apiVersionSupported ==> Use of deprecated API versions
+avoidDeprecatedResources ==> Use of deprecated API versions

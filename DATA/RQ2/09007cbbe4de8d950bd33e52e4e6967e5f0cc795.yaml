@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fizzbuzz
+  namespace: instana-dev
+  labels:
+    app.kubernetes.io/name: "fizzbuzz"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "fizzbuzz"
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: "fizzbuzz"
+        app.kubernetes.io/version: "1.0.0-85d759de"
+    spec:
+      containers:
+      - name: fizbuzz
+        image: gcr.io/google_containers/pause-amd64:3.0

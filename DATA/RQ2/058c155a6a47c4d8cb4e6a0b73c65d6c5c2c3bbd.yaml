@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-sistema-noticias
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: pod-sistema-noticias
+      labels:
+        app: pod-sistema-noticias
+    spec:
+      containers:
+        - name: sistema-noticias-container
+          image: aluracursos/sistema-noticias:1
+          ports: 
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: configmap-sistema-noticias
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            periodSeconds: 10
+            failureThreshold: 3
+            initialDelaySeconds: 20                
+  selector:
+    matchLabels:
+      app: pod-sistema-noticias

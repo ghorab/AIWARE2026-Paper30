@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: apjung-backend-prod-svc
+  namespace: prod
+  labels:
+    app.kubernetes.io/name: apjung-backend-prod
+    app.kubernetes.io/instance: apjung-backend-prod-svc
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/instance: apjung-backend-prod-pod
+  type: ClusterIP

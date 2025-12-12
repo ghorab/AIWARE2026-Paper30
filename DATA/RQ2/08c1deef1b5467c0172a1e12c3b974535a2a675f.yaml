@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: console-operator
+  namespace: openshift-console-operator
+  annotations:
+    config.openshift.io/inject-proxy: console-operator
+    include.release.openshift.io/ibm-cloud-managed: "true"
+    include.release.openshift.io/self-managed-high-availability: "true"
+    include.release.openshift.io/single-node-developer: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: console-operator
+  template:
+    metadata:
+      labels:
+        name: console-operator
+    spec:
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: "NoSchedule"
+      - key: "node.kubernetes.io/unreachable"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 120
+      - key: "node.kubernetes.io/not-ready"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 120
+      priorityClassName: system-cluster-critical
+      serviceAccountName: console-operator
+      containers:
+      - name: console-operator
+        terminationMessagePolicy: FallbackToLogsOnError
+        image: registry.svc.ci.openshift.org/openshift:console-operator
+        ports:
+        - containerPort: 60000
+          name: metrics
+        command:
+        - console
+        - operator
+        args:
+        - "-v=2"
+        - "--config=/var/run/configmaps/config/controller-config.yaml"
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - mountPath: /var/run/configmaps/config
+          name: config
+        - mountPath: /var/run/secrets/serving-cert
+          name: serving-cert
+        env:
+        - name: IMAGE
+          value: registry.svc.ci.openshift.org/openshift:console
+        - name: RELEASE_VERSION
+          value: "0.0.1-snapshot"
+        - name: OPERATOR_NAME
+          value: "console-operator"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "10m"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8443
+            scheme: HTTPS
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8443
+            scheme: HTTPS
+      volumes:
+      - name: config
+        configMap:
+          name: console-operator-config
+      - name: serving-cert
+        secret:
+          secretName: serving-cert
+          optional: true

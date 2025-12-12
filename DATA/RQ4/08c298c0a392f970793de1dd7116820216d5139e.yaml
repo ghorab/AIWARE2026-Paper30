@@ -1,0 +1,76 @@
+# Source: platform-postcodes-io-db/templates/deployment-database.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-postcodes-io-db-database
+  labels:
+    app.kubernetes.io/name: platform-postcodes-io-db-0.1.3
+    helm.sh/chart: platform-postcodes-io-db-0.1.3
+    app.kubernetes.io/instance: platform-postcodes-io-db
+    app.kubernetes.io/managed-by: Helm
+    gitops.jenkins-x.io/pipeline: 'namespaces'
+  annotations:
+    meta.helm.sh/release-name: 'platform-postcodes-io-db'
+    wave.pusher.com/update-on-config-change: 'true'
+  namespace: jx-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: platform-postcodes-io-db-database
+      app.kubernetes.io/instance: platform-postcodes-io-db
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: platform-postcodes-io-db-database
+        app.kubernetes.io/instance: platform-postcodes-io-db
+    spec:
+      imagePullSecrets:
+        - name: container-registry-credentials
+      containers:
+        - name: platform-postcodes-io-db-database
+          image: "ghcr.io/property-xyz/platform-postcodes-io-db:0.1.3"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "postcodesio" -d "postcodesiodb" -h localhost
+            initialDelaySeconds: 150
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "postcodesio" -d "postcodesiodb" -h localhost
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          resources:
+            limits:
+              cpu: 800m
+              memory: 2Gi
+            requests:
+              cpu: 300m
+              memory: 525Mi
+          env:
+            - name: POSTGRES_USER
+              value: postcodesio
+            - name: POSTGRES_DB
+              value: postcodesiodb
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: platform-postcodes-io-db-database
+                  key: password

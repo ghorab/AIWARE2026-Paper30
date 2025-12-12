@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mutating-webhook-deployment
+  labels:
+    app: mutating-webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mutating-webhook
+  template:
+    metadata:
+      labels:
+        app: mutating-webhook
+    spec:
+      containers:
+      - name: mutating-webhook
+        image: CONTAINER_IMAGE
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: mutating-tls-secret
+          mountPath: "/tls"
+          readOnly: true        
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"           
+      volumes:
+      - name: mutating-tls-secret
+        secret:
+                secretName: mutating-tls-secret

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sleep-limits
+  labels:
+    app: sleep-limits
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sleep-limits
+  template:
+    metadata:
+      labels:
+        app: sleep-limits
+    spec:
+      containers:
+      - name: sleep-limits
+        image: registry.access.redhat.com/ubi8/ubi:latest
+        resources:
+          limits:
+            cpu: '500m'
+            memory: '128Mi'
+        command:
+          - /bin/bash
+          - -c
+          - 'sleep 300'

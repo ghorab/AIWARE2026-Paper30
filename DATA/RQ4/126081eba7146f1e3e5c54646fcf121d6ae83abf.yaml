@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-home
+  labels:
+    app: web-home
+spec:
+  ports:
+  - port: 3000
+    protocol: TCP
+  selector:
+    app: web-home

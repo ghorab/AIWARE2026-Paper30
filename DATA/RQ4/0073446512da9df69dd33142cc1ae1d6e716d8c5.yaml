@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: podcast
+spec:
+  replicas: 1
+  selector:
+    name: podcast
+  template:
+    metadata:
+      annotations:
+        pod.beta.kubernetes.io/hostname: podcast
+      labels:
+        podcastService: podcast
+        name: podcast
+    spec:
+      volumes:
+      - name: secret-env
+        secret:
+          secretName: podcast-secret
+      containers:
+      - command: ["/bin/bash"]
+        args: ["start-server.sh"]
+        name: podcast
+        image: podcast-ml-service:latest
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: secret-env
+          readOnly: true
+          mountPath: "/etc/secret-volume/"
+      restartPolicy: Always

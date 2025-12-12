@@ -1,0 +1,78 @@
+kind: ConfigMap
+apiVersion: v1
+data:
+  system.input.conf: |-
+    # Logs from systemd-journal for interesting services.
+    <source>
+      type tail
+      tag *
+      path /var/log/messages
+      format syslog
+    </source>
+  forward.input.conf: |-
+    # Takes the messages sent over TCP
+    <source>
+      type forward
+    </source>
+  monitoring.conf: |-
+    # Prometheus Exporter Plugin
+    # input plugin that exports metrics
+    <source>
+      @type prometheus
+    </source>
+
+    <source>
+      @type monitor_agent
+    </source>
+
+    # input plugin that collects metrics from MonitorAgent
+    <source>
+      @type prometheus_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
+
+    # input plugin that collects metrics for output plugin
+    <source>
+      @type prometheus_output_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
+
+    # input plugin that collects metrics for in_tail plugin
+    <source>
+      @type prometheus_tail_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
+  output.conf: |-
+    # Enriches records with Kubernetes metadata
+    <filter kubernetes.**>
+      type kubernetes_metadata
+    </filter>
+
+    <match **>
+       type elasticsearch
+       log_level info
+       include_tag_key true
+       host elasticsearch-logging
+       port 9200
+       logstash_format true
+       # Set the chunk limits.
+       buffer_chunk_limit 2M
+       buffer_queue_limit 8
+       flush_interval 5s
+       # Never wait longer than 5 minutes between retries.
+       max_retry_wait 30
+       # Disable the limit on the number of retries (retry forever).
+       disable_retry_limit
+       # Use multiple threads for processing.
+       num_threads 2
+    </match>
+metadata:
+  name: eparis-fluentd-es-config-v0.1.0
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile

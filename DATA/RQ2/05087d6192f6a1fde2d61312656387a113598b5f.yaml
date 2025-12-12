@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: mgtdeploytoaks 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mgtdeploytoaks
+  template:
+    metadata:
+      labels:
+        app: mgtdeploytoaks 
+    spec:
+      containers:
+        - name: mgtdeploytoaks 
+          image: kubercr01.azurecr.io/mgtdeploytoaks
+          ports:
+          - containerPort: 80

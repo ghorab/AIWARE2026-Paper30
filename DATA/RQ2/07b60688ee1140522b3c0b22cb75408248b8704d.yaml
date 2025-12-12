@@ -1,0 +1,49 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: zeppelin-notebook-pv
+  labels:
+    pv-label: zeppelin-notebook
+spec:
+  storageClassName: hostpath # provided by docker desktop, must be the same as PersistentVolumeClaim
+  accessModes:
+    - ReadWriteMany # must be the same as PersistentVolumeClaim
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 1Gi
+  hostPath:
+    path: $(ZEPPELIN_NOTEBOOK_PATH)
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - docker-desktop
+
+# kind: PersistentVolume
+# apiVersion: v1
+# metadata:
+#   name: zeppelin-conf-pv
+#   labels:
+#     pv-label: zeppelin-conf
+# spec:
+#   storageClassName: hostpath # provided by docker desktop, must be the same as PersistentVolumeClaim
+#   accessModes:
+#     - ReadWriteMany # must be the same as PersistentVolumeClaim
+#   persistentVolumeReclaimPolicy: Retain
+#   capacity:
+#     storage: 1Gi
+#   hostPath:
+#     path: $(ZEPPELIN_CONF_PATH)
+#   nodeAffinity:
+#     required:
+#       nodeSelectorTerms:
+#         - matchExpressions:
+#             - key: kubernetes.io/hostname
+#               operator: In
+#               values:
+#                 - docker-desktop
+#
+#---

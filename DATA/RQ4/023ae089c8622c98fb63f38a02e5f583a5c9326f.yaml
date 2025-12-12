@@ -1,0 +1,112 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-proxy
+  labels:
+    app: auth-proxy
+data:
+  config.yaml: |
+    static_resources:
+      listeners:
+        - name: listener_0
+          address:
+            socket_address:
+              address: 0.0.0.0
+              port_value: 80
+          filter_chains:
+            - filters:
+                - name: envoy.filters.network.http_connection_manager
+                  typed_config:
+                    "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                    stat_prefix: ingress_http
+                    http_filters:
+                      - name: envoy.filters.http.router
+                    access_log:
+                      - name: envoy.access_loggers.stdout
+                        typed_config:
+                          "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+                    upgrade_configs:
+                      - upgrade_type: websocket
+                    route_config:
+                      name: local_route
+                      virtual_hosts:
+                        - name: kubeflow
+                          domains:
+                            - kubeflow.k8s.tidu.giize.com
+                          routes:
+                            - match:
+                                prefix: /
+                              route:
+                                cluster: kubeflow
+                        - name: kubeflow-api
+                          domains:
+                            - kubeflow-api.k8s.tidu.giize.com
+                            - kubeflow-api.k8s.tidu.giize.com:443
+                          routes:
+                            - match:
+                                prefix: /
+                              route:
+                                cluster: kubeflow-api
+                                prefix_rewrite: /check/
+                        - name: knative
+                          domains:
+                            - '*.knative.k8s.tidu.giize.com'
+                          routes:
+                            - match:
+                                prefix: /
+                              route:
+                                cluster: kubeflow-api
+                                prefix_rewrite: /check/
+                        - name: catch-all
+                          domains:
+                            -  '*'
+                          routes:
+                            - match:
+                                prefix: /
+                              route:
+                                cluster: dummy-auth
+      clusters:
+        - name: dummy-auth
+          type: LOGICAL_DNS
+          load_assignment:
+            cluster_name: dummy-auth
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address:
+                          address: dummy-auth
+                          port_value: 80
+        - name: kubeflow
+          type: LOGICAL_DNS
+          load_assignment:
+            cluster_name: kubeflow
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address:
+                          address: authservice
+                          port_value: 8080
+        - name: kubeflow-api
+          type: LOGICAL_DNS
+          load_assignment:
+            cluster_name: kubeflow-api
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address:
+                          address: kubeflow-api-auth
+                          port_value: 80
+        - name: knative
+          type: LOGICAL_DNS
+          load_assignment:
+            cluster_name: knative
+            endpoints:
+              - lb_endpoints:
+                  - endpoint:
+                      address:
+                        socket_address:
+                          address: knative-auth
+                          port_value: 80

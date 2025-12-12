@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: poi-deployment
+  namespace: api
+  labels:
+    app: poi-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: poi
+  template:
+    metadata:
+      labels:
+        app: poi
+    spec:
+      containers:
+      - name: poi
+        image: registryiwz4519.azurecr.io/tripinsights/poi:1.0
+        env:
+          # - name: WEB_SERVER_BASE_URI
+          #   value: ""
+          # - name: WEB_PORT
+          #   value: ""
+          - name: SQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: drivingdb-secrets2
+                key: dbname
+          - name: SQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: drivingdb-secrets2
+                key: dbpassword
+          - name: SQL_SERVER
+            value: "sqlserveriwz4519.database.windows.net"
+          - name: SQL_DBNAME
+            value: "mydrivingDB"
+          - name: ASPNETCORE_ENVIRONMENT
+            value: "Test"
+        volumeMounts:
+          - name: secrets-store-inline
+            mountPath: /secrets
+        ports:
+        - containerPort: 80
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: "azure-kvname"
+            nodePublishSecretRef:                       # Only required when using service principal mode
+              name: secrets-store-creds

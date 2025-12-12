@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: "testcluster1-f628"
+    labels:
+        app: "testcluster1-f628"
+spec:
+    type: LoadBalancer
+    ports:
+    - port: 8123
+      targetPort: 8123
+      protocol: TCP
+      name: http
+    selector:
+        app: "testcluster1-f628"

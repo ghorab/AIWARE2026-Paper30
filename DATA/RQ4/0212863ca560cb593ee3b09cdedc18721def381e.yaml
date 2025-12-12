@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gk-database
+  labels:
+    app: gk-database
+spec:
+  containers:
+    - image: nikitagetman/gk-database:0.1
+      name: gk-database
+      ports:
+        - containerPort: 5432

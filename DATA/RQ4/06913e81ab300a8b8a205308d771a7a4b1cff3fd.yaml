@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: the-service-{{.TRAVIS_BRANCH}}
+  labels:
+    app: hello
+    branch: "{{.TRAVIS_BRANCH}}"
+spec:
+  selector:
+    deployment: hello
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

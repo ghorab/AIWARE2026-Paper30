@@ -1,0 +1,13 @@
+kind: ConfigMap 
+apiVersion: v1 
+metadata:
+  name: periodic-minute-timer-configmap
+  namespace: energy-services 
+data:
+  mqtt_broker: "<dns name of MQTT broker>"
+  mqtt_port: "1883"
+  mqtt_user: "<username>"
+  mqtt_password: "<password>"
+  mqtt_topic: "timer/minutes"
+  timer_interval: "00:01"
+  message_label: "minute"

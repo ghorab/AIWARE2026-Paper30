@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: web
+  template:
+    metadata:
+      labels:
+        component: web
+    spec:
+      containers:
+      - name: node-app
+        image: davidbaldie/infrastructure_node-app:v2
+        ports:
+          - containerPort: 8080
+        env:
+          - name: REDIS_URL
+            value: redis-clusterip

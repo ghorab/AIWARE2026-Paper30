@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-internet-http
+spec:
+  podSelector:
+   matchLabels:
+      allow-internet: "true"
+  policyTypes:
+    - Egress
+    - Ingress
+  egress:
+    - ports:
+        - port: 80
+          protocol: TCP
+        - port: 443
+          protocol: TCP
+      to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 192.168.100.0/24  # worker nodes subnet
+              - 10.244.0.0/16 # PODs subnet
+              - 10.96.0.0/12 # SVCs subnet

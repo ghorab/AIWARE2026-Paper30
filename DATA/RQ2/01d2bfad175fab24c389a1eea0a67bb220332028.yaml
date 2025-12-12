@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ansiblevault2k8ssecret
+spec:
+  template:
+    spec:
+      containers:
+      - name: vaulttok8s
+        image: away168/ansibletok8s:latest
+        # First argument is the file to decrypt
+        # Second argument is the password file
+        # Third argument is the name of the secret to create
+        # Fourth argument is the namespace
+        command: ["scripts/saveSecret.sh",  "/tmp/encryptedfile", "/tmp/passwordfile", "myansiblesecret", "dev"]
+        volumeMounts:
+        - name: encryptedfile
+          mountPath: /tmp/encryptedfile
+          subPath: encryptedfile
+          readOnly: true
+        - name: passwordfile
+          mountPath: /tmp/passwordfile
+          subPath: passwordfile
+          readOnly: true
+      serviceAccountName: ansiblehelper
+      restartPolicy: Never
+      volumes:
+      - name: encryptedfile
+        secret:
+          secretName: encryptedfilesecret
+      - name: passwordfile
+        secret: 
+          secretName: passwordfilesecret
+  backoffLimit: 1

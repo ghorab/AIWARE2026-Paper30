@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/port: "9779"
+    prometheus.io/scrape: "true"
+  labels:
+    expose: "true"
+    provider: fabric8
+    project: webappmysura
+    version: 1.0-SNAPSHOT
+    group: com.mysura
+  name: webappmysura
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    project: webappmysura
+    provider: fabric8
+    group: com.mysura

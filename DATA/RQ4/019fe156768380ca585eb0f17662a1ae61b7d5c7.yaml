@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: udagram-api-users
+  name: udagram-api-users
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: udagram-api-users
+  template:
+    metadata:
+      labels:
+        app: udagram-api-users
+        service: udagram-api-users
+    spec:
+      containers:
+      - image: markmavromatis/udagram-api-users
+        name: udagram-api-users
+        imagePullPolicy: Always          
+        env:
+          - name: POSTGRES_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: db-user-pass
+                key: POSTGRES_USERNAME
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-user-pass
+                key: POSTGRES_PASSWORD
+          - name: POSTGRES_DB
+            value: udagram_mavromatis_dev
+          - name: POSTGRES_HOST
+            value: udagram-mavromatis-dev.cguzw4eojx3a.us-east-2.rds.amazonaws.com
+          - name: JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: web-user-authentication
+                key: jwt-secret
+        ports:
+        - containerPort: 8080
+      restartPolicy: Always

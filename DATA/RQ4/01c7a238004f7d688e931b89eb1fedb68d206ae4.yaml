@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-secret
+  namespace: presslab-test
+type: Opaque
+data:
+  # root password is required to be specified
+  ROOT_PASSWORD: bm90LXNvLXNlY3VyZQ==
+  DATABASE: d29yZHByZXNz
+  USER: d29yZHByZXNzLXVzZXI=
+  PASSWORD: bm90LXNvLXNlY3VyZQ==

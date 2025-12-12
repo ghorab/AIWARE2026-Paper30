@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podtato-debug
+  labels:
+    app: podtato-debug
+spec:
+  selector:
+    matchLabels:
+      component: podtato-debug
+  template:
+    metadata:
+      labels:
+        component: podtato-debug
+    spec:
+      serviceAccountName: podtato
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: server
+          image:  alpine
+          command:
+          - bin/sh
+          - -c 
+          - | 
+            sleep 15000
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9000
+          env:
+            - name: PORT
+              value: "9000"
+          envFrom:
+            - secretRef:
+                name: podtato-version

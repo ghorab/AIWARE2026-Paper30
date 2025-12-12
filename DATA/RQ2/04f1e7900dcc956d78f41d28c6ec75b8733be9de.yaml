@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tools
+  labels:
+    k8s-app: tools
+spec:
+  containers:
+  - command:
+    - sh
+    - -c
+    - echo Hello ! && sleep 3600
+    image: centos:centos7
+    imagePullPolicy: IfNotPresent
+    name: centos7

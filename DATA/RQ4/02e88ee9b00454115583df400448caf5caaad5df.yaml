@@ -1,0 +1,38 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    app.kubernetes.io/name: palantir-operator
+    app.kubernetes.io/managed-by: palantir.com
+    app.kubernetes.io/instance: palantir-operator
+  name: palantir-operator
+data:
+  install.yml: |
+    use-console-log: true
+    server:
+      address: 0.0.0.0
+      port: 3756
+      context-path: /palantir-operator
+    cluster-config:
+      entitlement-key: {{ .ibmEntitlementKey }}
+      registration-key: {{ .palantirRegistrationKey }}
+      artifactory-creds-secret: palantir-ext-creds
+      own-namespace-env-var: OPERATOR_NAMESPACE
+      instance-name: {{ .instanceName }}
+      frontdoor-config:
+        cpd-domain: {{ .cp4dFQDN }}
+        base-64-cert: {{ .proxyCertificateBase64 }}
+        base-64-key: {{ .proxyPrivateKeyBase64 }}
+      envoy-service-spec:
+        ports:
+        - port: 6443
+          name: envoy
+          protocol: TCP
+        selector:
+          rubix-app: envoy
+      image-registry-prefix: {{ .imageRegistryPrefix }}
+      storage-class: {{ .storageClass }}
+      application-class: small
+  runtime.yml: |
+    logging:
+      level: debug

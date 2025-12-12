@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-receiver
+  labels:
+    app: kafka-receiver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-receiver
+  template:
+    metadata:
+      labels:
+        app: kafka-receiver
+    spec:
+      containers:
+        - name: kafka-receiver
+          image: kafka-microservice
+          imagePullPolicy: Never
+          env:
+            - name: KAFKA_URL
+              value: "kafka:9092"
+            - name: CONSUMER_GROUP
+              value: "receiver"

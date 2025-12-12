@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: alertmanager-proxy
+  namespace: openshift-metrics
+stringData:
+  session_secret: '*** GENERATED ***'

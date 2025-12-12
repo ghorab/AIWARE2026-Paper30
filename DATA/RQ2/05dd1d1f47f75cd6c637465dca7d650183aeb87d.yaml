@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nomis-delius-emulator-migration
+  labels:
+    app: nomis-delius-emulator-migration
+spec:
+  completions: 1
+  parallelism: 1
+  template:
+    spec:
+      containers:
+        - name: nomis-delius-emulator-migration
+          image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/offender-management/nomis-delius-emulator:latest
+          imagePullPolicy: Always
+          command: ['sh', '-c', 'bundle exec rails db:migrate && bundle exec rails db:seed']
+          envFrom:
+            - configMapRef:
+                name: emulator-environment
+            - secretRef:
+                name: nomis-delius-emulator-secrets
+          env:
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: nomis-delius-emulator-rds-instance
+                  key: postgres_host
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nomis-delius-emulator-rds-instance
+                  key: postgres_password
+            - name: POSTGRES_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: nomis-delius-emulator-rds-instance
+                  key: postgres_name
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: nomis-delius-emulator-rds-instance
+                  key: postgres_user
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "50m"
+            requests:
+              memory: "1Gi"
+              cpu: "30m"
+      restartPolicy: Never
+  backoffLimit: 4

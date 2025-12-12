@@ -1,0 +1,49 @@
+Absence of readOnlyRootFilesystem
+HostPath volume mounting without restrictions
+Missing or misconfigured storageClassName
+Use of emptyDir for stateful workloads
+No backup or snapshot policy for PersistentVolumes
+Unencrypted or shared volumes across namespaces
+allowPrivilegeEscalation
+Missing securityContext at container level
+Unrestricted Linux capabilities 
+Default capabilities not dropped 
+Use of cluster-admin role in production workloads
+Broad role bindings 
+Absence of namespace scoping 
+Automatic token mounting not disabled
+Hardcoded tokens 
+Unrestricted API access in service accounts
+Default namespace used for workloads
+Missing NetworkPolicy for namespace isolation
+Cross-namespace volume or secret sharing
+Missing resources.requests or resources.limits
+Equal requests and limits causing throttling
+No namespace-level ResourceQuota
+Improperly tuned HPA thresholds (too low or high)
+Missing or disabled ClusterAutoscaler
+No PodDisruptionBudget (PDB) for critical workloads
+Absence of affinity or antiAffinity rules
+Pods co-located on the same node without anti-affinity
+Ignored taints/tolerations causing workload imbalance
+Use of latest tag 
+Unsigned or unverified container images
+Image pulled from untrusted or public registry
+Outdated base images with CVEs
+Lack of image vulnerability scanning 
+Hardcoded credentials in images or ENV variables
+Use of deprecated API versions 
+Hardcoded endpoints or insecure API communication 
+Use of NodePort services in production
+Missing TLS in Ingress configuration
+Public LoadBalancer with unrestricted IP access
+Absence of NetworkPolicy objects
+Overly permissive ingress/egress rules 
+No isolation between namespaces
+Plaintext secrets 
+No integration with external secret managers (Vault, AWS)
+TLS not enforced 
+Self-signed or expired certificates
+Persistent volume data not encrypted
+Missing SSL/TLS 
+Outdated cipher suites or protocols

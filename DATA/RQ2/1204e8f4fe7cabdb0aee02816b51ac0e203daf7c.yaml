@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgressecret
+type: Opaque
+data:
+  USERNAME: cG9zdGdyZXNhZG1pbg==
+  PASSWORD: V2VsYzBtZTIh
+  DATABASE: Y3J1ZC1zdGFydGVyLWFwaQ==
+  HOSTNAME: Y3J1ZGFwaS1wb3N0Z3Jlcw==
+  PORT: NTAwMA==

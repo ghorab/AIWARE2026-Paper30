@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ud-feed
+  labels:
+    app: ud-feed
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ud-feed
+  template:
+    metadata:
+      labels:
+        app: ud-feed
+    spec:
+      containers:
+      - name: ud-feed
+        image: botelhorv/ud-feed
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 768Mi
+        env:
+        - name: POSTGRES_USERNAME
+          valueFrom:
+           secretKeyRef:
+            name: databaseuser
+            key: databaseusername
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+           secretKeyRef:
+            name: dbpassword
+            key: databasepassword
+        - name: POSTGRES_HOST
+          valueFrom:
+           secretKeyRef:
+            name: postgreshost
+            key: postgreshosting
+        - name: POSTGRES_DB
+          valueFrom:
+           secretKeyRef:
+            name: postgresdbname
+            key: postgresdbnamekey
+        - name: AWS_BUCKET
+          valueFrom:
+           secretKeyRef:
+            name: awsbucket
+            key: awsbucketkey
+        - name: AWS_REGION
+          valueFrom:
+           secretKeyRef:
+            name: awsregion
+            key: awsregionkey
+        - name: JWT_SECRET
+          valueFrom:
+           secretKeyRef:
+            name: jwtsecret
+            key: jwtsecretkey

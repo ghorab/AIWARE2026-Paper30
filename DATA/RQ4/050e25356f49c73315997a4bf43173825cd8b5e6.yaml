@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: shell-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: shell-jobs
+        image: 192.168.0.66:31831/jobs_shell:alpha
+        imagePullPolicy: Always
+        env:
+        - name: FILEPATH
+          value: "jobs/sample/error.sh"
+        - name: GIT_URL
+          value: https://github.com/srmproject/docker_images.git
+        - name: GIT_BRANCH
+          value: main
+      restartPolicy: Never
+  backoffLimit: 0

@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: openshift-apiserver
+  name: apiserver
+  labels:
+    app: openshift-apiserver
+    apiserver: "true"
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: openshift-apiserver
+      apiserver: "true"
+  template:
+    metadata:
+      name: openshift-apiserver
+      labels:
+        app: openshift-apiserver
+        apiserver: "true"
+    spec:
+      serviceAccountName: openshift-apiserver-sa
+      priorityClassName: system-node-critical
+      initContainers:
+        - name: fix-audit-permissions
+          terminationMessagePolicy: FallbackToLogsOnError
+          image: ${IMAGE}
+          imagePullPolicy: IfNotPresent
+          command: ['sh', '-c', 'chmod 0700 /var/log/openshift-apiserver']
+          volumeMounts:
+            - mountPath: /var/log/openshift-apiserver
+              name: audit-dir
+      containers:
+      - name: openshift-apiserver
+        terminationMessagePolicy: FallbackToLogsOnError
+        image: ${IMAGE}
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash", "-ec"]
+        args:
+          - |
+            if [ -s /var/run/configmaps/trusted-ca-bundle/tls-ca-bundle.pem ]; then
+              echo "Copying system trust bundle"
+              cp -f /var/run/configmaps/trusted-ca-bundle/tls-ca-bundle.pem /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+            fi
+            exec openshift-apiserver start --config=/var/run/configmaps/config/config.yaml
+        resources:
+          requests:
+            memory: 200Mi
+            cpu: 150m
+        # we need to set this to privileged to be able to write audit to /var/log/openshift-apiserver
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 8443
+        volumeMounts:
+        - mountPath: /var/run/configmaps/aggregator-client-ca
+          name: aggregator-client-ca
+        - mountPath: /var/run/configmaps/client-ca
+          name: client-ca
+        - mountPath: /var/run/configmaps/config
+          name: config
+        - mountPath: /var/run/secrets/etcd-client
+          name: etcd-client
+        - mountPath: /var/run/configmaps/etcd-serving-ca
+          name: etcd-serving-ca
+        - mountPath: /var/run/configmaps/image-import-ca
+          name: image-import-ca
+        - mountPath: /var/run/configmaps/trusted-ca-bundle
+          name: trusted-ca-bundle
+        - mountPath: /var/run/secrets/serving-cert
+          name: serving-cert
+        - mountPath: /var/log/openshift-apiserver
+          name: audit-dir
+        livenessProbe:
+          initialDelaySeconds: 30
+          httpGet:
+            scheme: HTTPS
+            port: 8443
+            path: healthz
+        readinessProbe:
+          failureThreshold: 10
+          httpGet:
+            scheme: HTTPS
+            port: 8443
+            path: healthz
+      terminationGracePeriodSeconds: 70 # a bit more than the 60 seconds timeout of non-long-running requests
+      volumes:
+      - name: aggregator-client-ca
+        configMap:
+          name: aggregator-client-ca
+      - name: client-ca
+        configMap:
+          name: client-ca
+      - name: config
+        configMap:
+          name: config
+      - name: etcd-client
+        secret:
+          secretName: etcd-client
+      - name: etcd-serving-ca
+        configMap:
+          name: etcd-serving-ca
+      - name: image-import-ca
+        configMap:
+          name: image-import-ca
+          optional: true
+      - name: serving-cert
+        secret:
+          secretName: serving-cert
+      - name: trusted-ca-bundle
+        configMap:
+          name: trusted-ca-bundle
+          optional: true
+          items:
+          - key: ca-bundle.crt
+            path: tls-ca-bundle.pem
+      - hostPath:
+          path: /var/log/openshift-apiserver
+        name: audit-dir
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      tolerations:
+      - operator: Exists

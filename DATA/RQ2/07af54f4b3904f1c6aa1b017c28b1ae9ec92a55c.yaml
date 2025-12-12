@@ -1,0 +1,22 @@
+apiVersion: v1
+# what this replication controller does is to run two times the pod that is defined in the template part of the file
+# the pods that are created by this controller can run on multiple nodes
+kind: ReplicationController
+metadata:
+    name: nodejs-service-controller
+spec:
+    replicas: 2
+    selector:
+        app: nodejs-service-lbl
+    # the template here will contain the pod definition just like we did in the pod-app.yaml file
+    template:
+        metadata:
+            labels:
+                app: nodejs-service-lbl
+        spec:
+            containers:
+            - name: nodejs-service
+              image: DOCKERHUB_USERNAME/YOUR_APP_NAME
+              ports:
+              - name: nodejs-service-app-port
+                containerPort: 3000

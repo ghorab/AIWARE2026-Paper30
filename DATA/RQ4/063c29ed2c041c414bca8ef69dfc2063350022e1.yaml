@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: lol-spreadsheets
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: lol-spreadsheets
+            image: annekinmeyburgh/lol-spreadsheets
+          restartPolicy: OnFailure

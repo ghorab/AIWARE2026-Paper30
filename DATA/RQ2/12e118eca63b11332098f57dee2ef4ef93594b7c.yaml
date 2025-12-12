@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apipns
+  labels:
+    app: apipns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apipns
+  template:
+    metadata:
+      labels:
+        app: apipns
+    spec:
+      containers:
+      - name: apipns
+        image: apipns
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 30002
+        env:
+        - name: NODE_ENV
+          value: kubernetes
+      restartPolicy: Always

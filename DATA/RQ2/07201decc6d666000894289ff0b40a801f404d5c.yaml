@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: api
+  template:
+    metadata:
+      labels:
+        component: api
+    spec:
+      containers:
+        - name: api
+          image: dstasaski/tunetext-api
+          ports:
+            - containerPort: 5000
+          env:
+            - name: ENV
+              value: prod
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: apikey
+                  key: APIKEY

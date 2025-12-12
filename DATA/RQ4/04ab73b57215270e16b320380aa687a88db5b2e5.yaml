@@ -1,0 +1,18 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: tt-ibm-ace-mqc-soe-ms2-build
+  namespace: da-build-project
+spec:
+  ports:
+    - name: 7600-tcp
+      protocol: TCP
+      port: 7600
+      targetPort: 7600
+    - name: 7800-tcp
+      protocol: TCP
+      port: 7800
+      targetPort: 7800
+  selector:
+    app: ibm-ace-mqc-soe-ms2-build
+    deploymentconfig: ibm-ace-mqc-soe-ms2-build

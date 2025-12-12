@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: streaming-ops-ccloud-environment
+  namespace: confluent
+  labels:
+    destination: ccloud
+data:
+  service-accounts: |
+    [
+      { "name": "events-api-client",
+        "description": "Account for client microservices events api"
+      }, {
+        "name": "streaming-ops-sr-client",
+        "description": "Account for client access to streaming-ops environment schema registry"
+      }
+    ]
+

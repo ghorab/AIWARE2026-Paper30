@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bepasty
+  labels:
+    app: bepasty
+spec:
+  containers:
+    - name: bepasty
+      image: aug0stus/bepasty:latest
+      env:
+        - name: BEPASTY_SETTINGS
+          value: /etc/bepasty/config/bepasty.conf
+      ports:
+        - containerPort: 5000
+          name: web
+      volumeMounts:
+        - name: storage
+          mountPath: /storage
+        - name: settings
+          mountPath: /etc/bepasty/config
+  volumes:
+    - name: storage
+      emptyDir: {}
+    - name: settings
+      secret:
+        secretName: bepasty-settings

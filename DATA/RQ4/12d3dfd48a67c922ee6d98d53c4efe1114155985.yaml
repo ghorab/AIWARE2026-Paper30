@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: bassmuldersczpipelinesjavascriptdocker 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bassmuldersczpipelinesjavascriptdocker
+  template:
+    metadata:
+      labels:
+        app: bassmuldersczpipelinesjavascriptdocker 
+    spec:
+      containers:
+        - name: bassmuldersczpipelinesjavascriptdocker 
+          image: mycontainerregistrybas.azurecr.io/bassmuldersczpipelinesjavascriptdocker
+          ports:
+          - containerPort: 8080

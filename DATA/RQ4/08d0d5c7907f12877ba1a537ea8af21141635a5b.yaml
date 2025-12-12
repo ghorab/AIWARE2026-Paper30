@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: kibana
+  namespace: default
+  labels:
+    component: elk
+    role: kibana
+spec:
+  replicas: 1
+  selector:
+    component: elk
+    role: kibana
+  template:
+    metadata:
+      labels:
+        component: elk
+        role: kibana
+    spec:
+      hostNetwork: true
+      serviceAccount: elk
+      containers:
+      - name: kibana
+        image: teq545/kibana:latest
+        env:
+        - name: KIBANA_ES_URL
+          value:  "http://13.73.20.14:9200"
+        - name: KUBERNETES_TRUST_CERT
+          value: "true"
+        ports:
+        - containerPort: 5601
+          name: http
+          protocol: TCP

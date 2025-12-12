@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: malware-collection-secrets
+type: Opaque
+stringData:
+    MALSHARE_API_KEY: ""
+    # these path variables are used as a base for making year-month-day directories.
+    VXUG_PATH: /RAID
+    URLHAUS_PATH: /RAID
+    ES_HOST: ""
+    ES_USERNAME: ""
+    ES_PASSWORD: ""

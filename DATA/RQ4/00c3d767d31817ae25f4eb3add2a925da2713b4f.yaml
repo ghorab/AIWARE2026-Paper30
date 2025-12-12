@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: softlight
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: softlight
+    app.kubernetes.io/name: softlight
+  name: softlight
+  namespace: softlight
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/instance: softlight
+      app.kubernetes.io/name: softlight
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: softlight
+        app.kubernetes.io/component: controller
+        app.kubernetes.io/instance: softlight
+        app.kubernetes.io/name: softlight
+    spec:
+      containers:
+      - name: softlight-far-edge
+        image: nexus.ne.local:2376/softlight/softlight-far-edge:v1.0.2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+      imagePullSecrets:
+      - name: nexus-ne-local
+      serviceAccount: softlight
+      serviceAccountName: softlight

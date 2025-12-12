@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minecraft
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 25565
+    name: minecraft-svc
+  - port: 25575
+    name: minecraft-rcon
+  selector:
+    app: myMinecraftCluster

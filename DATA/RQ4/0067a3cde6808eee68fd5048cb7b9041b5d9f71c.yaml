@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "functiononkubernate-5c2d"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "functiononkubernate-5c2d"
+  template:
+    metadata:
+      labels:
+        app: "functiononkubernate-5c2d"
+    spec:
+      containers:
+        - name: "functiononkubernate-5c2d"
+          image: "fokacr.azurecr.io/functiononkubernate"
+          ports:
+          - containerPort: 80

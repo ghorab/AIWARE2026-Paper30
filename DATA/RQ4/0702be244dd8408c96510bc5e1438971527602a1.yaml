@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: giuliadinuzzopipelinesjavascriptdocker 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: giuliadinuzzopipelinesjavascriptdocker
+  template:
+    metadata:
+      labels:
+        app: giuliadinuzzopipelinesjavascriptdocker 
+    spec:
+      containers:
+        - name: giuliadinuzzopipelinesjavascriptdocker 
+          image: fdrgdncr.azurecr.io/giuliadinuzzopipelinesjavascriptdocker
+          ports:
+          - containerPort: 8080

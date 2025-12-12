@@ -1,0 +1,11 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-config
+  namespace: nginx-ingress
+data:
+  set-real-ip-from: "192.168.1.4"
+  real-ip-header: "proxy_protocol"
+  location-snippets: "# location-snippet is here;"
+  server-snippets: "# server-snippet is here;"
+  upstream-zone-size: "100k" 

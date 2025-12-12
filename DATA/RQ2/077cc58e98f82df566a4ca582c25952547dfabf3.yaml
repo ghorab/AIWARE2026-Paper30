@@ -1,0 +1,51 @@
+# kubectl create/apply -f dep.yaml --record
+
+# 查看部署状态
+# kubectl rollout status deployment apiserver
+
+# 升级
+# kubectl set image deployment dep container=image:tag
+# 回滚, 取消最后一次部署
+# kubectl rollout undo deployment dep
+
+# 升级历史
+# kubectl rollout history deployment dep
+# 回滚到特定版本
+# kubectl rollout undo deployment dep --to-revision=1
+
+# 暂停滚动升级
+# kubectl rollout pause deployment dep
+# 恢复滚动升级
+# kubectl rollout resume deployment dep
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+  template:
+    metadata:
+      name: user-pod
+      labels:
+        app: user
+    spec:
+      containers:
+        - name: user
+          image: jdxj/user:v0.3.0
+          imagePullPolicy: Always
+          command: ["/sign/user.run"]
+          args: ["-f", "/sign/config/config.yaml"]
+          volumeMounts:
+            - mountPath: /sign/config
+              name: apiserver-config
+          ports:
+            - containerPort: 49154
+              protocol: TCP
+      volumes:
+        - name: apiserver-config
+          configMap:
+            name: apiserver-cm

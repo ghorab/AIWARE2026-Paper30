@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: es-client
+  labels:
+    role: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: client
+  template:
+    metadata:
+      labels:
+        role: client
+    spec:
+      securityContext:
+        fsGroup: 1000
+      initContainers:
+      - name: sysctl-config
+        image: busybox
+        securityContext: 
+          privileged: true
+        command: ["sysctl", "-w", "vm.max_map_count=262144"]
+      containers:
+      - name: es-master
+        image: docker.elastic.co/elasticsearch/elasticsearch:6.5.0
+        securityContext:
+          privileged: true
+          runAsUser: 1000
+          capabilities:
+            add:
+            - IPC_LOCK
+            - SYS_RESOURCE
+        env:
+        - name: ES_JAVA_OPTS
+          valueFrom:
+            configMapKeyRef:
+              name: es-client
+              key: ES_JAVA_OPTS
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /_cluster/health?local=true
+            port: 9200
+        ports:
+        - containerPort: 9200
+          name: es-http
+        - containerPort: 9300
+          name: es-transport
+        volumeMounts:
+        - name: es-client-config
+          mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+          subPath: elasticsearch.yml
+      volumes:
+      - name: es-client-config
+        configMap:
+          name: es-client
+          items:
+            - key: elasticsearch.yml
+              path: elasticsearch.yml
+        
+
+

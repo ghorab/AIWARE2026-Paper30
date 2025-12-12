@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: be-retask-pg-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: be-retask-pg
+  template:
+    metadata:
+      labels:
+        app: be-retask-pg
+    spec:
+      containers:
+      - name: be-retask-pg
+        image: postgres:10-alpine
+        env: 
+        - name: POSTGRES_USER
+          value: retask
+        - name: POSTGRES_PASSWORD
+          value: changeme
+        - name: POSTGRES_DB
+          value: retask

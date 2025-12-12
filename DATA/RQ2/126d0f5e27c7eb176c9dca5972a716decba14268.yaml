@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-nextjs-boilerplate-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react-nextjs-boilerplate
+  template:
+    metadata:
+      labels:
+        app: react-nextjs-boilerplate
+    spec:
+      containers:
+      - name: react-nextjs-boilerplate
+        image: raschmitt/react-nextjs-boilerplate:latest
+        resources:
+          limits:
+            memory: "250Mi"
+            cpu: "150m"
+        ports:
+        - containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          failureThreshold: 3
+          periodSeconds: 10

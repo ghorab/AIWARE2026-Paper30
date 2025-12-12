@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: udanew
+  labels:
+    app: udanew
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: udanew
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: udanew
+    spec:
+      containers:
+        - image: irschad/udanew:latest
+          imagePullPolicy: Always
+          name: udanew
+          command: [ "/bin/bash", "-ce", "tail -f /dev/null" ]
+          ports:
+            - containerPort: 5000
+

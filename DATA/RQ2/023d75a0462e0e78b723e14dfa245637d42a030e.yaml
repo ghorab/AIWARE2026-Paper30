@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: contact-us-service
+  name: contact-us-service
+spec:
+  type: ClusterIP
+  selector:
+    app: contact-us-service
+  ports:
+    - port: 8200
+      targetPort: 8080
+      protocol: TCP

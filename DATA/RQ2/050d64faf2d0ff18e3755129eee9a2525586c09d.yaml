@@ -1,0 +1,214 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: openshift-apiserver
+  name: apiserver
+  labels:
+    app: openshift-apiserver
+    apiserver: "true"
+spec:
+  # The number of replicas will be set in code to the number of master nodes.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # To ensure that only one pod at a time writes to the node's
+      # audit log, require the update strategy to proceed a node at a
+      # time. Only when a master node has its existing
+      # openshift-apiserver pod stopped will a new one be allowed to
+      # start.
+      maxUnavailable: 1
+      maxSurge: 0
+  selector:
+    matchLabels:
+      # Need to vary the app label from that used by the legacy
+      # daemonset ('openshift-apiserver') to avoid the legacy
+      # daemonset and its replacement deployment trying to try to
+      # manage the same pods.
+      #
+      # It's also necessary to use different labeling to ensure, via
+      # anti-affinity, at most one deployment-managed pod on each
+      # master node. Without label differentiation, anti-affinity
+      # would prevent a deployment-managed pod from running on a node
+      # that was already running a daemonset-managed pod.
+      app: openshift-apiserver-a
+      apiserver: "true"
+  template:
+    metadata:
+      name: openshift-apiserver
+      labels:
+        app: openshift-apiserver-a
+        apiserver: "true"
+    spec:
+      serviceAccountName: openshift-apiserver-sa
+      priorityClassName: system-node-critical
+      initContainers:
+        - name: fix-audit-permissions
+          terminationMessagePolicy: FallbackToLogsOnError
+          image: ${IMAGE}
+          imagePullPolicy: IfNotPresent
+          command: ['sh', '-c', 'chmod 0700 /var/log/openshift-apiserver && touch /var/log/openshift-apiserver/audit.log && chmod 0600 /var/log/openshift-apiserver/*']
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              cpu: 15m
+              memory: 50Mi
+          volumeMounts:
+            - mountPath: /var/log/openshift-apiserver
+              name: audit-dir
+      containers:
+      - name: openshift-apiserver
+        terminationMessagePolicy: FallbackToLogsOnError
+        image: ${IMAGE}
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash", "-ec"]
+        args:
+          - |
+            if [ -s /var/run/configmaps/trusted-ca-bundle/tls-ca-bundle.pem ]; then
+              echo "Copying system trust bundle"
+              cp -f /var/run/configmaps/trusted-ca-bundle/tls-ca-bundle.pem /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+            fi
+            exec openshift-apiserver start --config=/var/run/configmaps/config/config.yaml -v=${VERBOSITY}
+        resources:
+          requests:
+            memory: 200Mi
+            cpu: 100m
+        # we need to set this to privileged to be able to write audit to /var/log/openshift-apiserver
+        securityContext:
+          privileged: true
+        ports:
+        - containerPort: 8443
+        volumeMounts:
+        - mountPath: /var/lib/kubelet/config.json
+          name: node-pullsecrets
+          readOnly: true
+        - mountPath: /var/run/configmaps/config
+          name: config
+        - mountPath: /var/run/configmaps/audit
+          name: audit
+        - mountPath: /var/run/secrets/etcd-client
+          name: etcd-client
+        - mountPath: /var/run/configmaps/etcd-serving-ca
+          name: etcd-serving-ca
+        - mountPath: /var/run/configmaps/image-import-ca
+          name: image-import-ca
+        - mountPath: /var/run/configmaps/trusted-ca-bundle
+          name: trusted-ca-bundle
+        - mountPath: /var/run/secrets/serving-cert
+          name: serving-cert
+        - mountPath: /var/run/secrets/encryption-config
+          name: encryption-config
+        - mountPath: /var/log/openshift-apiserver
+          name: audit-dir
+        livenessProbe:
+          initialDelaySeconds: 30
+          httpGet:
+            scheme: HTTPS
+            port: 8443
+            path: healthz
+        readinessProbe:
+          failureThreshold: 10
+          httpGet:
+            scheme: HTTPS
+            port: 8443
+            path: healthz
+      - name: openshift-apiserver-check-endpoints
+        image: ${KUBE_APISERVER_OPERATOR_IMAGE}
+        imagePullPolicy: IfNotPresent
+        terminationMessagePolicy: FallbackToLogsOnError
+        command:
+          - cluster-kube-apiserver-operator
+          - check-endpoints
+        args:
+          - --listen
+          - 0.0.0.0:17698
+          - --namespace
+          - $(POD_NAMESPACE)
+          - --v
+          - '2'
+        env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        ports:
+          - name: check-endpoints
+            containerPort: 17698
+            protocol: TCP
+        resources:
+          requests:
+            memory: 50Mi
+            cpu: 10m
+      terminationGracePeriodSeconds: 70 # a bit more than the 60 seconds timeout of non-long-running requests
+      volumes:
+      - name: node-pullsecrets
+        hostPath:
+          path: /var/lib/kubelet/config.json
+          type: File
+      - name: config
+        configMap:
+          name: config
+      - name: audit
+        configMap:
+          name: audit-${REVISION}
+      - name: etcd-client
+        secret:
+          secretName: etcd-client
+          defaultMode: 0600
+      - name: etcd-serving-ca
+        configMap:
+          name: etcd-serving-ca
+      - name: image-import-ca
+        configMap:
+          name: image-import-ca
+          optional: true
+      - name: serving-cert
+        secret:
+          secretName: serving-cert
+          defaultMode: 0600
+      - name: trusted-ca-bundle
+        configMap:
+          name: trusted-ca-bundle
+          optional: true
+          items:
+          - key: ca-bundle.crt
+            path: tls-ca-bundle.pem
+      - name: encryption-config
+        secret:
+          secretName: encryption-config-${REVISION}
+          optional: true
+          defaultMode: 0600
+      - hostPath:
+          path: /var/log/openshift-apiserver
+        name: audit-dir
+      nodeSelector:
+        node-role.kubernetes.io/master: ""
+      tolerations:
+        # Ensure pod can be scheduled on master nodes
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+        # Ensure pod can be evicted if the node is unreachable
+      - key: "node.kubernetes.io/unreachable"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 120
+        # Ensure scheduling is delayed until node readiness
+        # (i.e. network operator configures CNI on the node)
+      - key: "node.kubernetes.io/not-ready"
+        operator: "Exists"
+        effect: "NoExecute"
+        tolerationSeconds: 120
+      affinity:
+        podAntiAffinity:
+          # Ensure that at most one apiserver pod will be scheduled on a node.
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: "kubernetes.io/hostname"
+            labelSelector:
+              matchLabels:
+                app: "openshift-apiserver-a"
+                apiserver: "true"

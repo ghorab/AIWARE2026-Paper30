@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: __CI_PROJECT_NAME__-__CI_PIPELINE_ID__
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: reveraapi-__CI_PIPELINE_ID__

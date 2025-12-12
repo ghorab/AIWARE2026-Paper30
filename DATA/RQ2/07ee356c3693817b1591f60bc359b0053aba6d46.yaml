@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: be-todos
+          image: lnsth/todo-app-be:exercise_2.02
+          imagePullPolicy: Always
+        - name: fe-todos
+          image: lnsth/todo-app-fe:exercise_2.02
+          imagePullPolicy: Always
+

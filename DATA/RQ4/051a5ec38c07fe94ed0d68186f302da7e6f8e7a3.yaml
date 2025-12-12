@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker-deployment
+  labels:
+    app: defectdojo
+    defectdojo.org/component: celery-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: defectdojo
+      defectdojo.org/component: celery-worker
+  template:
+    metadata:
+      labels:
+        app: defectdojo
+        defectdojo.org/component: celery-worker
+    spec:
+      volumes:
+      - name: defectdojo-media
+        emptyDir: {}
+      containers:
+      - name: celery-worker
+        image: "quay.io/hyperkineticnerd/defectdojo-django:latest"
+        command: ['/entrypoint-celery-worker.sh']
+        envFrom:
+        - secretRef:
+            name: defectdojo
+        volumeMounts:
+        - name: defectdojo-media
+          mountPath: /app/media
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"

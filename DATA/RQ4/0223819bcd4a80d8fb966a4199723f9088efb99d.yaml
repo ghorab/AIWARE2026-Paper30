@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consolidater-autoscaler
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consolidater-autoscaler
+  template:
+    metadata:
+      labels:
+        app: consolidater-autoscaler
+    spec:
+      automountServiceAccountToken : true
+      serviceAccountName : autoscaler-service-account
+      containers:
+        - name: autoscaler
+          image: geocube-autoscaler:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            - -update=30s
+            - -queue=consolidations-worker
+            - -rc=consolidater
+            - -pgq-connection=postgresql://postgres:1234@10.20.0.95:5432/db-geocube?binary_parameters=yes&sslmode=disable
+            - -ns=default
+            - -ratio=1
+            - -minratio=1
+            - -step=16
+            - -max=256
+            - -min=0
+            - -pod.cost.path=/termination_cost
+            - -pod.cost.port=9000
+          resources:
+            requests:
+              cpu: 1m
+              memory: 30Mi
+      terminationGracePeriodSeconds: 120

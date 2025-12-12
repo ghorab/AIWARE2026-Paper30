@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exec-check
+  labels:
+    app: exec-check
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: exec-check
+  template:
+    metadata:
+      labels:
+        app: exec-check
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.21.5@sha256:0d17b565c37bcbd895e9d92315a05c1c3c9a29f762b011a10c54a66cd53c9b31
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          tcpSocket:
+            port: 80
+      - name: network-health-exec
+        image: ghcr.io/damoon/network-health-sidecar:latest
+        args:
+        - --protocol=unix
+        - --addr=/tmp/network-health.socket
+        readinessProbe:
+          exec:
+            command:
+            - network-health-client
+            - --protocol=unix
+            - --addr=/tmp/network-health.socket

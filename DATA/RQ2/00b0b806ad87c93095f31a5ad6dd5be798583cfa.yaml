@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: questionnaire-api-service
+  name: questionnaire-api-service
+spec:
+  ports:
+    - name: grpc
+      port: 5000
+      targetPort: 5000
+      protocol: TCP
+  selector:
+    app: questionnaire-api

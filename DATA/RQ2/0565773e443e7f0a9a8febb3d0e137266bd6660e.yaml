@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: resources-queue-stateful
+  namespace: repoflow-blog-namespace
+  labels:
+    moduleid: microservice-resources-realm
+    version: 1.70.12-master
+spec:
+  serviceName: resources-queue-service
+  selector:
+    matchLabels:
+      app: resources-queue-stateful
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: resources-queue-stateful
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        -
+          name: queue
+          image: 'rabbitmq:3-management'
+          env:
+            -
+              name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: resources-queue-secret
+                  key: user
+            -
+              name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: resources-queue-secret
+                  key: password
+          ports:
+            -
+              name: queue
+              containerPort: 5672
+            -
+              name: management
+              containerPort: 15672
+          volumeMounts:
+            -
+              name: data
+              mountPath: /data
+      volumes:
+        -
+          name: data
+          persistentVolumeClaim:
+            claimName: resources-queue-volume-claim

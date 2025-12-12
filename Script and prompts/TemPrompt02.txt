@@ -1,0 +1,18 @@
+You are a Kubernetes security and configuration expert.
+
+The following Kubernetes configuration contains a known misconfiguration.
+
+Misconfiguration type:
+{{MISCONFIGURATION_TYPE}}
+
+Your task is to correct the configuration accordingly.
+
+Rules:
+- Output ONLY the corrected Kubernetes YAML.
+- Do NOT include explanations, comments, analysis, or reasoning.
+- Do NOT wrap the output in code fences.
+- Modify only the fields related to the specified misconfiguration.
+- Preserve the original structure and semantics.
+
+Kubernetes configuration:
+{{KUBERNETES_YAML}}

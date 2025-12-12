@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-ssl-conf
+  namespace: wardle
+data:
+  "mysql.cnf": |
+    [mysqld]
+    ssl-ca=/tmp/certs/ca/cert-chain
+    ssl-cert=/tmp/certs/mysql-tls/tls-cert
+    ssl-key=/tmp/certs/mysql-tls/tls-key
+    require_secure_transport=ON

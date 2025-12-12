@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  selector:
+    matchLabels:
+      app: pennlabs
+      tier: frontend
+      track: stable
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pennlabs
+        tier: frontend
+        track: stable
+    spec:
+      containers:
+      - name: app
+        image: williamgoeller/pennlabs_devops_challenge:latest
+        ports:
+          - containerPort: 5000
+            name: http

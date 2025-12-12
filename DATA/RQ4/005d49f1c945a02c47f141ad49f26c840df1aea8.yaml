@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: postgres
+    role: single
+    tier: db
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+      role: single
+      tier: db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgres
+        role: single
+        tier: db
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_PASSWORD
+          value: 3x4mpl3
+        image: postgres:9.6.1
+        imagePullPolicy: "IfNotPresent"
+        name: postgres
+        ports:
+        - containerPort: 5432
+        resources: {}
+        volumeMounts:
+        - mountPath: /usr/src/app
+          name: postgres-static
+          readOnly: true
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-data
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: postgres-static
+        persistentVolumeClaim:
+          claimName: static-data
+          readOnly: true
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: postgres-data
+status: {}

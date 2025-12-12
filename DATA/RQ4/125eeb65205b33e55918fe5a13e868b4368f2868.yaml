@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: chkamathpipelinesjavascriptdocker 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chkamathpipelinesjavascriptdocker
+  template:
+    metadata:
+      labels:
+        app: chkamathpipelinesjavascriptdocker 
+    spec:
+      containers:
+        - name: chkamathpipelinesjavascriptdocker 
+          image: chcontain.azurecr.io/chkamathpipelinesjavascriptdocker
+          ports:
+          - containerPort: 8080

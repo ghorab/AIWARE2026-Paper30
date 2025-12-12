@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: hadoop-data
+  labels:
+    app: hadoop-data
+spec:
+  selector:
+    matchLabels:
+      name: hadoop-data
+  template:
+    metadata:
+      labels:
+        name: hadoop-data
+    spec:
+      restartPolicy: Always
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: kubernetes.io/arch
+                  operator: In
+                  values:
+                  - arm64
+      containers:
+        - name: hadoop-data
+          image: diegofpsouza/bigdata_hadoop:0.0.1
+          imagePullPolicy: Always
+          volumeMounts:
+            - mountPath: /hadoop_data
+              name: hadoop-data
+          env:
+            - name: HADOOP_MODE
+              value: data
+          ports:
+            - containerPort: 9864
+      volumes:
+        - name: hadoop-data
+          hostPath:
+            path: /media/storage
+            type: Directory
+

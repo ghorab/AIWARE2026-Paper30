@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  application.instanceLabelKey: argocd.argoproj.io/instance
+  url: https://argocd.dev.cloudnativedays.jp/
+  oidc.config: |
+    name: Auth0
+    issuer: https://dreamkast.us.auth0.com/
+    clientID: 34CNIWysaolYGdA5FK2OVGRgcNaEWNoU
+    clientSecret: $oidc.auth0.clientSecret
+    requestedIDTokenClaims:
+      groups:
+        essential: true
+    requestedScopes:
+    - openid
+    - profile
+    - email
+    - 'https://cloudnativedays.jp/claims/groups'
+  configManagementPlugins: |
+    - name: reviewappctl
+      init:
+        command: ["sh", "-euxc"]
+        args:
+        - ls .mt-stable/* |
+            grep -v kustomization.yaml |
+            grep -v patch-delete.yaml |
+            xargs -I{} reviewappctl manifests-templating --name ${MT_NAME} --namespace reviewapp-operator-system -f manifests_template.yaml --is-stable {};
+          ls .mt-stable/* |
+            egrep '(kustomization.yaml|patch-delete.yaml)' |
+            xargs -I{} reviewappctl manifests-templating --name ${MT_NAME} --namespace reviewapp-operator-system -f manifests_template.yaml --is-stable --validate=false {};
+          ls .mt-candidate/* |
+            grep -v kustomization.yaml |
+            grep -v patch-delete.yaml |
+            xargs -I{} reviewappctl manifests-templating --name ${MT_NAME} --namespace reviewapp-operator-system -f manifests_template.yaml --is-candidate {};
+          ls .mt-candidate/* |
+            egrep '(kustomization.yaml|patch-delete.yaml)' |
+            xargs -I{} reviewappctl manifests-templating --name ${MT_NAME} --namespace reviewapp-operator-system -f manifests_template.yaml --is-candidate --validate=false {};
+      generate:
+        command: ["sh", "-euxc"]
+        args:
+        - ls *.yaml | xargs -I{} sh -c 'cat {}; echo ---';
+          rm -f manifests_template.yaml;
+      lockRepo: true

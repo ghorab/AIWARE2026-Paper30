@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: recommendation-secret
+  namespace: hackathon
+type: Opaque
+data:
+  #app-admin-username: ${SECRET}
+  #app-admin-password: ${SECRET}
+  rabbit-mq-user: ZXF1aXBlNw==
+  rabbit-mq-password: ZXF1aXBlNw==

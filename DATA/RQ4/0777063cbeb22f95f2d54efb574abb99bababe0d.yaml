@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysqld-exporter-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysqld-exporter
+  template:
+    metadata:
+      labels:
+        app: mysqld-exporter
+    spec:
+      containers:
+        - name: app
+          image: prom/mysqld-exporter:v0.13.0
+          ports:
+            - name: http
+              containerPort: 9104
+          env:
+            - name: DATA_SOURCE_NAME
+              value: "root:mypassword@(mariadb-svc:3306)/demo"

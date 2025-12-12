@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ws-client
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: ws-client
+  template:
+    metadata:
+      labels:
+        app: ws-client
+    spec:
+      containers:
+      - name: ws-client
+        image: ffernandesra/ws-client
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        env:
+        - name: SERVER
+          value: "ws-server-service"
+        - name: PORT
+          value: "3000"

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blogpersonal
+  labels:
+    app: blogpersonal
+spec:
+  replicas: 3
+  template:
+    metadata:
+      name: blogpersonal
+      labels:
+        app: blogpersonal
+    spec:
+      containers:
+        - name: blogpersonal
+          image: kevinsantiagorey/blogpersonal:latest
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: blogpersonal

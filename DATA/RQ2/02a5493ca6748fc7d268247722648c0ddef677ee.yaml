@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthpair-front
+  labels:
+    app: healthpair
+    role: front
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:us-east-2:367484709954:certificate/e4e9a175-7c5f-4018-9f6e-87996a4e610e
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: '443'
+
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+  - name: https
+    port: 443
+    targetPort: 80
+  selector:
+    app: healthpair
+    role: front

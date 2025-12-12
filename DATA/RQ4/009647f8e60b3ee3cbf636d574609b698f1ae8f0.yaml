@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: jab
+  labels:
+    name: jab
+spec:
+  containers:
+    - image: gcr.io/leapfromthelionshead-162101/jab/3-23-2017
+      name: jab
+      ports:
+        - containerPort: 80
+          name: jab
+    

@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: leaflet
+  labels:
+    application: leaflet
+    service: leaflet
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      application: leaflet
+      service: leaflet
+  template:
+    metadata:
+      labels:
+        application: leaflet
+        service: leaflet
+      annotations:
+        prometheus.io/scrape: 'true'
+    spec:
+      terminationGracePeriodSeconds: 120
+      containers:
+        - name: leaflet
+          image: ghcr.io/fireacademy/leaflet:1.2.2
+          env:
+            - name: FASTSYNC_CMD
+              valueFrom:
+                secretKeyRef:
+                  name: fastsync
+                  key: cmd
+            - name: FIREBASE_CREDS
+              valueFrom:
+                secretKeyRef:
+                  name: firebase
+                  key: creds
+          ports:
+            - name: http
+              containerPort: 18444
+            - name: metrics
+              containerPort: 4242
+          resources:
+            requests:
+              cpu: "3"
+              memory: "6G"
+          startupProbe:
+            httpGet:
+              path: /ready
+              port: 18444
+              scheme: HTTP
+            initialDelaySeconds: 900
+            failureThreshold: 30 
+            periodSeconds: 10

@@ -1,0 +1,22 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: servicecatalog.k8s.io:leader-locking-controller-manager
+  namespace: default
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+- apiGroups:
+  - ""
+  resourceNames:
+  - service-catalog-controller-manager
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - update

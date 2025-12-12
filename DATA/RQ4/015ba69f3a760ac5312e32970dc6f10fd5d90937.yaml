@@ -1,0 +1,20 @@
+# A Pod is given a QoS class of Burstable if:
+#
+# The Pod does not meet the criteria for QoS class Guaranteed.
+# At least one Container in the Pod has a memory or CPU request.
+# Here is the configuration file for a Pod that has one Container. The Container has a memory limit of 200 MiB and a memory request of 100 MiB.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: qos-burstable
+  namespace: qos-example
+spec:
+  containers:
+  - name: qos-demo-2-ctr
+    image: nginx
+    resources:
+      limits:
+        memory: "200Mi"
+      requests:
+        memory: "100Mi"

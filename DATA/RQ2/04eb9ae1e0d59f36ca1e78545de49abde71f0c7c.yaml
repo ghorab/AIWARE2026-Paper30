@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-java-blocking
+  labels:
+    app: api-java-blocking
+spec:
+  selector:
+    matchLabels:
+      app: api-java-blocking
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: api-java-blocking
+    spec:
+      containers:
+        - name: api-java-blocking
+          image: api_java_blocking
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: API_ACCOUNTS
+              value: http://legacy-backend-rust.legacy-backend-rust/accounts
+            - name: API_CARDS
+              value: http://legacy-backend-rust.legacy-backend-rust/cards
+            - name: API_CUSTOMER
+              value: http://legacy-backend-rust.legacy-backend-rust/customer
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8000
+            initialDelaySeconds: 2
+            periodSeconds: 10
+            timeoutSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8000
+            initialDelaySeconds: 2
+            periodSeconds: 20
+            timeoutSeconds: 10

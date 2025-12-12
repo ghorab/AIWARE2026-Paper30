@@ -1,0 +1,13 @@
+# by deafult
+@datreeio/developers
+
+# specific files
+README.md  @datreeio/product
+LICENSE.md  @eyarz
+CONTRIBUTING.md  @datreeio/product
+DEVELOPER_GUIDE.md  @datreeio/product
+
+# specific directories
+images/  @datreeio/product
+examples/  @datreeio/product
+.github/ISSUE_TEMPLATE/  @datreeio/product

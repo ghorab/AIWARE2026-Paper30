@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: app
+  name: app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      io.kompose.service: app
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: app
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: io.kompose.service
+                  operator: In
+                  values: 
+                  - app
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - image: nvanderhoeven/pokeapi_app
+          name: pokeapi-app
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "140Mi"
+              cpu: "300m"
+            limits:
+              memory: "150Mi"
+              cpu: "700m"
+      restartPolicy: Always

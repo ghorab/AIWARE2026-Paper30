@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: civo-credentials
+stringData:
+  provider: |
+    {
+        "token": "<civo_api_token>"
+    }

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: be-retask-srv
+spec:
+  selector:
+    app: be-retask
+  ports:
+    - name: be-retask
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

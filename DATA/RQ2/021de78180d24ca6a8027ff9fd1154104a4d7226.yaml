@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-echo-deployment
+  labels:
+    app: http-echo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: http-echo
+  template:
+    metadata:
+      labels:
+        app: http-echo
+    spec:
+      containers:
+      - name: http-echo
+        image: hashicorp/http-echo
+        command: ['/http-echo', '-listen=:8080', '-text="hello wonderful world"']
+        ports:
+        - containerPort: 8080

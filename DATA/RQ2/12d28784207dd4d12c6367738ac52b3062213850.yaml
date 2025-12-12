@@ -1,0 +1,64 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-cardinality-exporter
+  labels:
+    app: prometheus-cardinality-exporter
+    project: cardinality-exporter
+    team: cloud
+spec:
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: prometheus-cardinality-exporter
+      project: cardinality-exporter
+      team: cloud
+  template:
+    metadata:
+      labels:
+        app: prometheus-cardinality-exporter
+        project: cardinality-exporter
+        team: cloud
+    spec:
+      serviceAccountName: prometheus-cardinality-exporter
+      containers:
+        - name: prometheus-cardinality-exporter
+          image: //:prometheus-cardinality-exporter_distroless
+          command: ["/home/app/prometheus-cardinality-exporter"]
+          args: ["--auth=/etc/prometheus-cardinality-exporter/auth/prometheus-api-auth-values.yaml", "--service_discovery", "--freq=2", "--selector=app=prometheus", "--regex=prometheus[a-zA-Z0-9_-]*"]
+          volumeMounts:
+          - mountPath: /etc/prometheus-cardinality-exporter/auth
+            name: auth
+          ports:
+            - containerPort: 9090
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 3
+          resources:
+            requests:
+              memory: 100Mi
+              cpu: 100m
+            limits:
+              memory: 700Mi
+      volumes:
+      - name: auth
+        secret:
+          defaultMode: 420
+          secretName: prometheus-cardinality-exporter-secret
+          items:
+          - key: prometheus-api-auth-values.yaml
+            path: prometheus-api-auth-values.yaml
+      securityContext:
+        runAsUser: 1000

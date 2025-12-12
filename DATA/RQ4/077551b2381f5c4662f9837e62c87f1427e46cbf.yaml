@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: "jysinakscluster-dfd5"
+    labels:
+        app: "jysinakscluster-dfd5"
+spec:
+    type: LoadBalancer
+    ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+    selector:
+        app: "jysinakscluster-dfd5"

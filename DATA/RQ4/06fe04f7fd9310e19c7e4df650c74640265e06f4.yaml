@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-zero-spring-petclinic
+  labels:
+    app: product-zero-spring-petclinic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-zero-spring-petclinic
+  template:
+    metadata:
+      labels:
+        app: product-zero-spring-petclinic 
+    spec:
+      containers:
+      - name: product-zero-spring-petclinic
+        image: aisuluu3008/spring-petclinic
+        ports:
+        - containerPort: 80

@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "myadks-7aaa"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "myadks-7aaa"
+  template:
+    metadata:
+      labels:
+        app: "myadks-7aaa"
+    spec:
+      containers:
+        - name: "myadks-7aaa"
+          image: "myacrs2022.azurecr.io/myadks"
+          ports:
+          - containerPort: 80

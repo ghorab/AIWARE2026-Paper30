@@ -1,0 +1,9 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: default-reactbasics-role
+  namespace: myproject
+rules:
+- apiGroups: ["*","apps","extensions"]
+  resources: ["deployments","pods","services","secrets","pods/log"]                         # The pod can be accessed.
+  verbs: ["get", "list","watch","create","update","patch","delete"]

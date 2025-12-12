@@ -1,0 +1,85 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: activemq
+  namespace: default
+  selfLink: /api/v1/namespaces/default/services/activemq
+  uid: ddd679f9-9e93-4562-a46c-772087954bf4
+  creationTimestamp: '2020-12-10T15:57:43Z'
+  labels:
+    io.kompose.service: activemq
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.21.0 (992df58d8)
+  managedFields:
+    - manager: kubectl
+      operation: Update
+      apiVersion: v1
+      time: '2020-12-10T15:57:43Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:kompose.cmd': {}
+            'f:kompose.version': {}
+          'f:labels':
+            .: {}
+            'f:io.kompose.service': {}
+        'f:spec':
+          'f:ports':
+            .: {}
+            'k:{"port":5672,"protocol":"TCP"}':
+              .: {}
+              'f:name': {}
+              'f:port': {}
+              'f:protocol': {}
+              'f:targetPort': {}
+            'k:{"port":8161,"protocol":"TCP"}':
+              .: {}
+              'f:name': {}
+              'f:port': {}
+              'f:protocol': {}
+              'f:targetPort': {}
+            'k:{"port":61613,"protocol":"TCP"}':
+              .: {}
+              'f:name': {}
+              'f:port': {}
+              'f:protocol': {}
+              'f:targetPort': {}
+            'k:{"port":61616,"protocol":"TCP"}':
+              .: {}
+              'f:name': {}
+              'f:port': {}
+              'f:protocol': {}
+              'f:targetPort': {}
+          'f:selector':
+            .: {}
+            'f:io.kompose.service': {}
+          'f:sessionAffinity': {}
+          'f:type': {}
+spec:
+  ports:
+    - name: '8161'
+      protocol: TCP
+      port: 8161
+      targetPort: 8161
+    - name: '5672'
+      protocol: TCP
+      port: 5672
+      targetPort: 5672
+    - name: '61616'
+      protocol: TCP
+      port: 61616
+      targetPort: 61616
+    - name: '61613'
+      protocol: TCP
+      port: 61613
+      targetPort: 61613
+  selector:
+    io.kompose.service: activemq
+  clusterIP: 10.100.38.3
+  type: ClusterIP
+  sessionAffinity: None
+status:
+  loadBalancer: {}

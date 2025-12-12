@@ -1,0 +1,15 @@
+# http://127.0.0.1:8001/api/v1/namespaces/default/services/
+# http://127.0.0.1:8001/api/v1/namespaces/default/services/nginx-service/
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx-test
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 32100

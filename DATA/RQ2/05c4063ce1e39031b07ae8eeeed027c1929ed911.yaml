@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-expose-read
+spec:
+  selector:
+    app.kubernetes.io/instance: postgresql-db
+    app.kubernetes.io/name: postgresql
+    role: read
+  type: LoadBalancer
+  ports:
+  - port: 5432
+    protocol: TCP
+    targetPort: 5432

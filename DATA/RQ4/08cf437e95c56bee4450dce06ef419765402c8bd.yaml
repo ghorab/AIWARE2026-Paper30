@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newbee-mall
+  namespace: newbee-mall
+  labels:
+    project: newbee-mall
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      project: newbee-mall
+  template:
+    metadata:
+      labels:
+        project: newbee-mall
+    spec:
+      containers:
+      - name: newbee-mall
+        image: harbor.jiangxl.com/project/newbee-mall:v1
+        imagePullPolicy: Always
+        ports:
+          - name: java
+            containerPort: 8080
+            protocol: TCP
+        resources:
+          requests:
+            cpu: 500m
+            memory: 256Mi
+          limits:
+            cpu: "1"
+            memory: 1Gi
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 3
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 3
+          timeoutSeconds: 5
+          successThreshold: 1
+        volumeMounts:
+        - name: filebeat-config
+          mountPath: /etc/filebeat/filebeat.yml
+          subPath: filebeat.yml
+      volumes:
+        - name: filebeat-config
+          configMap: 
+            name: newbee-mall-cm

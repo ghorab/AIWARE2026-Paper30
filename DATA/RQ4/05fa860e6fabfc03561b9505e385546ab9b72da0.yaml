@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laravel
+  namespace: development
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: laravel
+  template:
+    metadata:
+      labels:
+        app: laravel
+    spec:
+      containers:
+        - name: laravel
+          image: chofifadea/laravel-8-crud:1.5-dev
+          ports:
+            - containerPort: 80
+          env:
+            - name: APP_KEY
+              value: base64:hehiE+pqEJUmHpgeKPCtV4KFf2Ohg7bgMBAF//XBEfY=
+            - name: DB_CONNECTION
+              value: mysql
+            - name: DB_DATABASE
+              value: laravel
+            - name: DB_HOST
+              value: mysql
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USERNAME
+              value: chofifa
+            - name: DB_PASSWORD
+              value: laravel
+

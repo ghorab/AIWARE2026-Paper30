@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongodb-mongodump
+spec:
+  ttlSecondsAfterFinished: 180
+  template:
+    spec:
+      volumes:
+      - name: mongodb-backups-vol
+        persistentVolumeClaim:
+          claimName: mongodb-backups-claim
+      containers:
+      - name: mongodb-mongodump
+        image: vtrifonovdocker/mongodb:prod-v1
+        command: ["mongodump", "--host", "mongo", "--port", "$(MONGO_PORT)", "--username", "$(MONGO_INITDB_ROOT_USERNAME)", "--password", "$(MONGO_INITDB_ROOT_PASSWORD)", "--out", "/mongodb-backups"]
+        volumeMounts:
+        - name: mongodb-backups-vol
+          mountPath: /mongodb-backups
+        env:        
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom: 
+            secretKeyRef:
+              name: mongodb
+              key:  root-username.txt
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom: 
+            secretKeyRef:
+              name: mongodb
+              key:  root-password.txt
+        - name: MONGO_PORT
+          value: "27017"
+      restartPolicy: Never

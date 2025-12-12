@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: tma-execute
+
+spec:
+  selector:
+    matchLabels:
+      run: tma-execute
+  template:
+    metadata:
+      labels:
+        run: tma-execute
+    spec:
+      containers:
+      - name: tma-execute
+        image: tma-execute:0.1

@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: anjussilpipelinesjavascriptdocker 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anjussilpipelinesjavascriptdocker
+  template:
+    metadata:
+      labels:
+        app: anjussilpipelinesjavascriptdocker 
+    spec:
+      containers:
+        - name: anjussilpipelinesjavascriptdocker 
+          image: wello2dacrwe.azurecr.io/anjussilpipelinesjavascriptdocker
+          ports:
+          - containerPort: 8080

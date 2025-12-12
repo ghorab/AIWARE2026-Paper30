@@ -1,0 +1,19 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tcpingressmap-viewer-role
+rules:
+- apiGroups:
+  - networking.infra.doodle.com
+  resources:
+  - tcpingressmappings
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - networking.infra.doodle.com
+  resources:
+  - tcpingressmappings/status
+  verbs:
+  - get

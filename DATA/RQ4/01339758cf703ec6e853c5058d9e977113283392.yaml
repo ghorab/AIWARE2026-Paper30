@@ -1,0 +1,17 @@
+# Source: lighthouse/templates/webhooks-crb.yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: lighthouse-webhooks
+  annotations:
+    meta.helm.sh/release-name: 'lighthouse'
+  labels:
+    gitops.jenkins-x.io/pipeline: 'cluster'
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: lighthouse-webhooks-cluster-scoped
+subjects:
+  - kind: ServiceAccount
+    name: lighthouse-webhooks
+    namespace: jx

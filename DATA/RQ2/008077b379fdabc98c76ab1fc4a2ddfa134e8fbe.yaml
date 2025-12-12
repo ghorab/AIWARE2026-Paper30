@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: default
+  name: cherrypicker
+  labels:
+    app.kubernetes.io/part-of: prow
+    app: cherrypicker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cherrypicker
+  template:
+    metadata:
+      labels:
+        app: cherrypicker
+    spec:
+      terminationGracePeriodSeconds: 180
+      containers:
+      - name: cherrypicker
+        image: gcr.io/k8s-prow/cherrypicker:v20201109-a36ed74f01
+        args:
+        - --dry-run=false
+        - --use-prow-assignments=false
+        - "--labels=cla: yes"
+        - --labels=release-notes-none
+        - --create-issue-on-conflict
+        - --github-endpoint=http://ghproxy
+        - --github-endpoint=https://api.github.com
+        ports:
+        - name: http
+          containerPort: 8888
+        volumeMounts:
+        - name: hmac
+          mountPath: /etc/webhook
+          readOnly: true
+        - name: oauth
+          mountPath: /etc/github
+          readOnly: true
+      volumes:
+      - name: hmac
+        secret:
+          secretName: hmac-token
+      - name: oauth
+        secret:
+          secretName: oauth-token

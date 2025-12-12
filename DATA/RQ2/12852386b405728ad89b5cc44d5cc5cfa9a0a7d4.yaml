@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evestidor-ui
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: evestidor-ui
+
+  template:
+    metadata:
+      labels:
+        app: evestidor-ui
+    spec:
+      containers:
+        - name: evestidor-ui
+          image: evestidor/ui:master

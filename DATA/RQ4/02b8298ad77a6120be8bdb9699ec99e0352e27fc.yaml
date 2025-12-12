@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: skaffold-flask
+spec:
+  containers:
+  - name: skaffold-flask
+    image: donbowman/skaffold-flask
+    ports:
+    - containerPort: 5000
+    env:
+    - name: FLASK_ENV
+      value: "development"
+    - name: FLASK_DEBUG
+      value: "1"

@@ -1,0 +1,75 @@
+apiVersion: "apps/v1"
+kind: StatefulSet
+metadata:
+  # This is the name used as a prefix for all pods in the set.
+  name: superset
+  namespace: pioneers
+  labels:
+    demo_set: "superset-cratedb"
+spec:
+  serviceName: "superset-set"
+  # Our cluster has three nodes.
+  replicas: 1
+  selector:
+    matchLabels:
+      app: superset
+  template:
+    metadata:
+      labels:
+        app: superset
+    spec:
+      containers:
+      - name: superset
+        image: amancevice/superset
+        command: ["/bin/bash"]
+        args: ["/home/superset/init_superset.sh" ]
+        volumeMounts:
+        - mountPath: /etc/superset/superset_config.py
+          subPath: superset_config.py
+          name: config-volume
+        - mountPath: /home/superset/cratedb_sample_init.py
+          subPath: cratedb_sample_init.py
+          name: config-volume
+        - mountPath: /home/superset/init_superset.sh
+          subPath: init_superset.sh
+          name: config-volume
+        - mountPath: /home/superset/dataset_export.yaml
+          subPath: dataset_export.yaml
+          name: config-volume
+        - mountPath: /home/superset/dashboard_export.json
+          subPath: dashboard_export.json
+          name: config-volume
+        resources:
+          limits:
+            # How much memory each pod gets.
+            memory: 500Mi
+        ports:
+          # Port 4200 for HTTP clients.
+        - containerPort: 8088
+          name: superset-web
+      initContainers:
+      - name: wait-redis-internal-svc
+        image: busybox
+        command: ['sh', '-c', 'until nslookup redis-internal-svc; do echo waiting for redis-internal-svc; sleep 2; done;']
+      - name: wait-postgres
+        image: busybox
+        command: ['sh', '-c', 'until nslookup postgres; do echo waiting for postgres; sleep 2; done;']
+      - name: wait-cratedb
+        image: busybox
+        command: ['sh', '-c', 'until nslookup crate-external-svc; do echo waiting for crate-external-svc; sleep 2; done;']
+      volumes:
+      - name: config-volume
+        configMap:
+          name: superset-config
+  volumeClaimTemplates:
+    # Use persistent storage.
+    - metadata:
+        name: superset-data
+      spec:
+        #probably change storageclassname this before running in bregenz
+        storageClassName: crate-premium
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

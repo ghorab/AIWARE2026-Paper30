@@ -1,0 +1,41 @@
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: label-sync
+  namespace: prow
+spec:
+  schedule: "17 * * * *"  # Every hour at 17 minutes past the hour
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    metadata:
+      labels:
+        app: label-sync
+    spec:
+      template:
+        spec:
+          containers:
+            - name: label-sync
+              image: gcr.io/k8s-prow/label_sync:v20211229-d20cd1c87e
+              args:
+                - --config=/etc/config/labels.yaml
+                - --confirm=true
+                - --only=ppc64le-cloud/test-infra,ppc64le-cloud/kubetest2-plugins,ppc64le-cloud/k8s-ansible,ppc64le-cloud/pvsadm,ocp-power-automation/ocp4-upi-powervs,ocp-power-automation/infra,ocp-power-automation/ocp4-playbooks
+                - --token=/etc/github/token
+                - --endpoint=http://ghproxy
+                - --endpoint=https://api.github.com
+              volumeMounts:
+                - name: oauth
+                  mountPath: /etc/github
+                  readOnly: true
+                - name: config
+                  mountPath: /etc/config
+                  readOnly: true
+          restartPolicy: Never
+          volumes:
+            - name: oauth
+              secret:
+                secretName: github-token
+            - name: config
+              configMap:
+                name: label-config

@@ -1,0 +1,43 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: confluence-vacations
+spec:
+  schedule: "0 7 * * 1-5"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          securityContext:
+            fsGroup: 65534
+            runAsUser: 65534
+            runAsGroup: 65534
+            runAsNonRoot: true
+          containers:
+          - name: confluence-vacations
+            image: jkrnak/ical-slack-vacations
+            imagePullPolicy: Always
+            env:
+            - name: WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cronsecret
+                  key: webhook-url
+            - name: ICAL_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cronsecret
+                  key: ical-url
+            - name: ICAL_CATEGORY_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cronsecret
+                  key: ical-category-key
+            resources:
+              requests:
+                cpu: "100m"
+                memory: "512Mi"
+              limits:
+                cpu: "100m"
+                memory: "512Mi"
+          restartPolicy: Never

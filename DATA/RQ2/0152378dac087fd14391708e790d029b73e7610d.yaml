@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aws-example-octodex
+  annotations:
+    fluxcd.io/automated: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aws-example-octodex
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: aws-example-octodex
+    spec:
+      containers:
+      - name: aws-example-octodex
+        image: 327496248923.dkr.ecr.us-east-1.amazonaws.com/example-eks:2326b1a0b1dbba57a77379e0a0d5c73c96157ca9
+        # image: REGISTRY/IMAGE:TAG
+        # image: 327496248923.dkr.ecr.us-east-1.amazonaws.com/example-eks:2a002d1d3b63188f0e83c2efffd020082b9e5fda
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m

@@ -1,0 +1,39 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: hub-of-hubs-addon-controller
+  labels:
+    app: hub-of-hubs-addon-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hub-of-hubs-addon-controller
+  template:
+    metadata:
+      labels:
+        app: hub-of-hubs-addon-controller
+    spec:
+      serviceAccountName: hub-of-hubs-addon-controller-sa
+      containers:
+      - args:
+          - "/hub-of-hubs-addon-controller"
+          - "controller"
+          - "--v=2"
+        env:
+        - name: HUB_OF_HUBS_VERSION
+          value: "$TAG"
+        - name: ENFORCE_HOH_RBAC
+          value: "$ENFORCE_HOH_RBAC"
+        - name: TRANSPORT_TYPE
+          value: "$TRANSPORT_TYPE"
+        name: hub-of-hubs-addon-controller
+        image: quay.io/open-cluster-management-hub-of-hubs/hub-of-hubs-addon-controller:latest
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          privileged: false
+          runAsNonRoot: true

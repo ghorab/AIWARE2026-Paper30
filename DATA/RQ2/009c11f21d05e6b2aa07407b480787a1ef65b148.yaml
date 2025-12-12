@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: moviecstar
+  name: moviecstar
+spec:
+  ports:
+  - port: 9042
+  selector:
+    app: moviecstar

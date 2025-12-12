@@ -1,0 +1,20 @@
+ apiVersion: apps/v1
+ kind: Deployment
+ metadata:
+   name: project-endpoint
+ spec:
+   replicas: 2
+   selector:
+     matchLabels:
+       app: endpoint-app
+   template:
+     metadata:
+       labels:
+         app: endpoint-app
+     spec:
+       containers:
+       - name: endpoint-app
+         image: us.icr.io/imagenet/endpoint:project
+         imagePullPolicy: Always
+         ports:
+          - containerPort: 8002

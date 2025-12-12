@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    tier: control-plane
+  name: haproxy
+  namespace: kube-system
+spec:
+  containers:
+  - name: haproxy
+    image: lukaszbielinski/k8s-api-loadbalancer-haproxy:latest
+    imagePullPolicy: Always
+    # livenessProbe:
+    #   failureThreshold: 8
+    #   httpGet:
+    #     path: /healthz
+    #     port: 10259
+    #     scheme: HTTPS
+    #   initialDelaySeconds: 15
+    #   timeoutSeconds: 15
+    env:
+    - name: VIP
+      value: '192.168.1.170'
+    - name: MASK
+      value: '32'
+    - name: VROUTERID
+      value: '2'
+    - name: STATE
+      value: BACKUP
+    - name: INTERFACE
+      value: ens3
+    - name: PRIORITY
+      value: '100'
+    - name: ADVERT
+      value: '1'
+    - name: AUTHPASS
+      value: test12
+
+    securityContext:
+      capabilities:
+        add:
+          - NET_ADMIN
+    resources:
+      requests:
+        cpu: 100m
+
+  hostNetwork: true
+  priorityClassName: system-cluster-critical

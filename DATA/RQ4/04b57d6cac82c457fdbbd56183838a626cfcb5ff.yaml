@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-prod
+spec:
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: webapp-prod
+    spec:
+      containers:
+        - name: webapp
+          image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/cica/cica-repo-prod:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: CW_DCS_URL
+              value: http://dcs-service-prod
+            - name: CW_DCS_JWT
+              valueFrom:
+                secretKeyRef:
+                  name: cica-web-secrets
+                  key: cw_dcs_jwt
+            - name: CW_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: cica-web-secrets
+                  key: cw_cookie_secret
+            - name: CW_GA_TRACKING_ID
+              value: UA-136710388-1
+            - name: CW_URL
+              value: https://claim-criminal-injuries-compensation.service.justice.gov.uk
+            - name: CW_SESSION_DURATION
+              value: '1800000'
+            - name: CW_LIVECHAT_CHAT_ID
+              value: ff753a08-883d-453c-bf64-811301587100
+            - name: CW_LIVECHAT_START_TIMES
+              value: 'false,08:30:00.000,08:30:00.000,10:00:00.000,08:30:00.000,08:30:00.000,false'
+            - name: CW_LIVECHAT_END_TIMES
+              value: 'false,17:00:00.000,17:00:00.000,17:00:00.000,17:00:00.000,17:00:00.000,false'
+  selector:
+    matchLabels:
+      app: webapp-prod

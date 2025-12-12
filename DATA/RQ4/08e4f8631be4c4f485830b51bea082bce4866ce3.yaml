@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mozart
+spec:
+  initContainers:
+    - name: init-mozart-rabbitmq
+      image: busybox
+      volumeMounts:
+      - mountPath: /wait-for-it.sh
+        name: global-config
+        subPath: wait-for-it.sh
+      command: ['sh', '/wait-for-it.sh', '-t', '0', 'mozart-rabbitmq:15672']
+    - name: init-mozart-redis
+      image: busybox
+      volumeMounts:
+      - mountPath: /wait-for-it.sh
+        name: global-config
+        subPath: wait-for-it.sh
+      command: ['sh', '/wait-for-it.sh', '-t', '0', 'mozart-redis:6379']
+    - name: init-mozart-elasticsearch
+      image: busybox
+      volumeMounts:
+      - mountPath: /wait-for-it.sh
+        name: global-config
+        subPath: wait-for-it.sh
+      command: ['sh', '/wait-for-it.sh', '-t', '0', 'mozart-elasticsearch:9200']
+  containers:
+  - name: mozart
+    image: hysds/mozart:latest
+    ports:
+    - containerPort: 22
+      name: ssh
+    - containerPort: 80
+      name: http
+    - containerPort: 443
+      name: https
+    - containerPort: 5555
+      name: flower
+    - containerPort: 8888
+      name: mozart
+    - containerPort: 8898
+      name: figaro
+    - containerPort: 9001
+      name: supervisord
+    resources:
+      limits:
+        cpu: "0.5"
+    volumeMounts:
+    - mountPath: /home/ops/.ssh/id_rsa
+      name: global-secrets
+      subPath: id_rsa
+      readOnly: true
+    - mountPath: /home/ops/.ssh/authorized_keys
+      name: global-secrets
+      subPath: id_rsa.pub
+      readOnly: true
+    - mountPath: /home/ops/.aws/config
+      name: global-config
+      subPath: aws_config
+      readOnly: true
+    - mountPath: /home/ops/.aws/credentials
+      name: global-config
+      subPath: aws_credentials
+      readOnly: true
+    - mountPath: /home/ops/mozart/etc/celeryconfig.py
+      name: global-config
+      subPath: celeryconfig.py
+    - mountPath: /home/ops/mozart/etc/datasets.json
+      name: global-config
+      subPath: datasets.json
+    - mountPath: /home/ops/mozart/etc/event_status.template
+      name: config
+      subPath: event_status.template
+    - mountPath: /home/ops/mozart/etc/indexer.conf
+      name: config
+      subPath: indexer.conf
+    - mountPath: /home/ops/mozart/etc/job_status.template
+      name: config
+      subPath: job_status.template
+    - mountPath: /home/ops/mozart/etc/orchestrator_datasets.json
+      name: config
+      subPath: orchestrator_datasets.json
+    - mountPath: /home/ops/mozart/etc/orchestrator_jobs.json
+      name: config
+      subPath: orchestrator_jobs.json
+    - mountPath: /home/ops/mozart/etc/settings.cfg
+      name: config
+      subPath: settings.cfg
+    - mountPath: /home/ops/mozart/etc/task_status.template
+      name: config
+      subPath: task_status.template
+    - mountPath: /home/ops/mozart/etc/worker_status.template
+      name: config
+      subPath: worker_status.template
+    - mountPath: /home/ops/mozart/etc/job_creators/utils.py
+      name: config
+      subPath: utils.py
+    - mountPath: /home/ops/mozart/etc/job_creators/utils_job.py
+      name: config
+      subPath: utils_job.py
+    - mountPath: /home/ops/sds.yaml
+      name: config
+      subPath: sds.yaml
+    - mountPath: /home/ops/.netrc
+      name: config
+      subPath: netrc
+    - mountPath: /home/ops/mozart/log
+      name: log
+  volumes:
+  - name: global-secrets
+    secret:
+      secretName: hysds-global-secrets
+  - name: global-config
+    configMap:
+      name: hysds-global-config
+  - name: config
+    configMap:
+      name: hysds-mozart-config
+  - name: log
+    emptyDir: {}

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: puc
+  namespace: puc
+spec:
+  ports:
+  - name: http
+    port: 1234
+    targetPort: 1234
+    protocol: TCP
+  selector:
+    app: puc

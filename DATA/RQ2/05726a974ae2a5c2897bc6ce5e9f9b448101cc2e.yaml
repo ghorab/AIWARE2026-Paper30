@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubutilization-mountebank
+  labels:
+    app: kubutil-mountebank
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubutil-mountebank
+  template:
+    metadata:
+      labels:
+        app: kubutil-mountebank
+    spec:
+      containers:
+        - name: mountebank
+          image: sgantz/kubutilization-mountebank:0.1
+          ports:
+            - containerPort: 2525
+            - containerPort: 8080
+            - containerPort: 8081

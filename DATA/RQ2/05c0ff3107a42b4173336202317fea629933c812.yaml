@@ -1,0 +1,24 @@
+# permissions for end users to edit federatedclonesets.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: federatedcloneset-editor-role
+rules:
+- apiGroups:
+  - federation.kruise.io
+  resources:
+  - federatedclonesets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - federation.kruise.io
+  resources:
+  - federatedclonesets/status
+  verbs:
+  - get

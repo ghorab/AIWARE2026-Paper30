@@ -1,0 +1,12 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-sfs
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+     #For CSI you need to use Gi unit but storage request in SFS will be the same number specified in GB.
+      storage: 10Gi
+  storageClassName: sfs.csi.huaweicloud.com 

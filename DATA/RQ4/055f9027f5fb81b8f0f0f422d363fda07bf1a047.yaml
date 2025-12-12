@@ -1,0 +1,10 @@
+# Source: sdlc-backend-200/templates/sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jx-sdlc-backend-200-sdlc-backend-200
+  annotations:
+    meta.helm.sh/release-name: 'jx-sdlc-backend-200'
+  namespace: jx-production
+  labels:
+    gitops.jenkins-x.io/pipeline: 'namespaces'

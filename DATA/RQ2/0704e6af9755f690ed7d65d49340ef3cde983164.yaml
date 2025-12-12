@@ -1,0 +1,44 @@
+---
+# Source: reloader/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: reloader-reloader
+    chart: "reloader-v0.0.72"
+    release: "reloader"
+    heritage: "Tiller"
+    group: com.stakater.platform
+    provider: stakater
+    version: v0.0.72
+    
+  name: reloader-reloader
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: reloader-reloader
+      release: "reloader"
+  template:
+    metadata:
+      labels:
+        app: reloader-reloader
+        chart: "reloader-v0.0.72"
+        release: "reloader"
+        heritage: "Tiller"
+        group: com.stakater.platform
+        provider: stakater
+        version: v0.0.72
+        
+    spec:
+      containers:
+      - image: "stakater/reloader:v0.0.72"
+        imagePullPolicy: IfNotPresent
+        name: reloader-reloader
+      securityContext: 
+        runAsNonRoot: true
+        runAsUser: 65534
+        
+      serviceAccountName: reloader-reloader
+

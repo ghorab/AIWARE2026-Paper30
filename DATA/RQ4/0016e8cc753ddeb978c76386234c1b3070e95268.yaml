@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: redis
+  labels:
+    name: redis-service
+    app: demo-voting-app 
+spec:
+  type: ClusterIP
+  selector:
+    name: redis-pod
+    app: demo-voting-app 
+  ports:
+  - targetPort: 6379
+    port: 6379
+    

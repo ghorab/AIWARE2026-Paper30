@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: climate-watch
+  labels:
+    name: climate-watch-indonesia-platform
+  name: climate-watch-indonesia-platform
+spec:
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 3000
+  selector:
+    name: climate-watch-indonesia-platform

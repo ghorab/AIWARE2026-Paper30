@@ -1,0 +1,13 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: accsv-config
+data:
+  someKey1: value1
+  jwt: mysecret
+  dbpath: mongodb+srv://accountservice_user:12345@eafinalproject-zxqvx.gcp.mongodb.net/test?retryWrites=true&w=majority
+  redispath: pouring-whippet-redis-master.default.svc.cluster.local
+
+  #reference: https://cloud.spring.io/spring-cloud-static/spring-cloud-kubernetes/1.1.0.RC1/reference/html/#kubernetes-native-service-discovery
+
+

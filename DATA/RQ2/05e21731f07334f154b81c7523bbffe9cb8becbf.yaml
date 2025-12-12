@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: currency-slackbot
+  name: currency-slackbot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: currency-slackbot
+  template:
+    metadata:
+      labels:
+        app: currency-slackbot
+    spec:
+      containers:
+      - image: ysakashita/currency-slackbot:version-0.1
+        name: currency-slackbot
+        envFrom:
+        - secretRef:
+            name: currency-slackbot
+        command:
+        - sleep
+        - infinity

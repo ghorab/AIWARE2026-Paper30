@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: jackson-nodeapp
+spec:
+  type: LoadBalancer
+  selector:
+    app: jackson-nodeapp
+  ports:
+    - port: 80        # Defines the Service's port within the cluster
+      targetPort: 9000  # Defines the Pod's port

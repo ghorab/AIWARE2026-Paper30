@@ -1,0 +1,32 @@
+apiVersion: v1 # Версия API
+kind: Pod # Объект, который создаем
+metadata:
+  name: web
+  labels: 
+    home: work
+spec: 
+  containers: 
+  - name: homework
+    image: andel7/testing-hw:latest
+    livenessProbe:
+      tcpSocket: { port: 8000 }
+    readinessProbe: 
+      httpGet: 
+        path: /index.html 
+        port: 80
+    volumeMounts:
+    - name: app
+      mountPath: /app
+    volumeMounts:
+    - name: app
+      mountPath: /opt/bitnami/nginx/html
+  initContainers:
+  - name: init-myservice
+    image: busybox:1.31.0
+    command: ['sh', '-c', 'wget -O- https://tinyurl.com/otus-k8s-intro | sh']
+    volumeMounts:
+    - name: app
+      mountPath: /app
+  volumes:
+    - name: app
+      emptyDir: {}

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: drupal-mysql
+spec:
+  containers:
+    - name: drupal
+      image: drupal:8.6
+      volumeMounts:
+        - mountPath: /
+          name: drupal-pv

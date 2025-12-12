@@ -1,0 +1,18 @@
+apiVersion: v1  # Specifies which objects are available for use
+kind: Pod       # Defines the object to be created, i.e. a container.
+metadata:
+  name: client-pod  # General purpose use; a lot of for logging.
+  labels:
+    component: web  # This maps to the selector in client-node-port.yaml.
+spec:
+  containers:   # Contains an array of tightly coupled container objects.
+    - name: client  # In this course, the pod will only contain one container.
+      image: sund0g/multi-worker  # changing this to multi-worker as part of 
+                                  # lesson 166.
+      ports:
+        - containerPort: 3000 # Exposed port for this container.
+                              # 3000 is the port the client nginx server
+                              # is listening on, (in client/nginx/default.conf)
+                              # NOTE: This only sets up the configuration for
+                              # the port. The Service configuration allows the 
+                              # traffic.

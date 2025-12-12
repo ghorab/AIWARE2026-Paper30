@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mlflow
+  name: mlflow
+spec:
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+      - name: nginx
+        image: docker.io/nginx:1.21.1-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 80
+        volumeMounts:
+        - mountPath: /etc/nginx/nginx.conf
+          name: config-volume
+          subPath: "nginx.conf"
+        - mountPath: /etc/nginx/sites-enabled/mlflow.conf
+          name: config-volume
+          subPath: "mlflow.conf"
+        - mountPath: /etc/apache2/.htpasswd
+          name: config-volume
+          subPath: ".htpasswd"
+      - name: mlflow-server
+        command:
+        - mlflow
+        - server
+        args:
+        - --backend-store-uri
+        - mysql+pymysql://$(MYSQL_DB_USER):$(MYSQL_DB_PASSWORD)@$(MYSQL_DB_HOST):3306/$(MYSQL_DB_NAME)
+        - --default-artifact-root
+        - s3://mlflow/mlflow/
+        - --host
+        - "0.0.0.0"
+        env:
+        - name: MLFLOW_S3_ENDPOINT_URL
+          value: "http://minio.platiagro:9000"
+        - name: MLFLOW_S3_IGNORE_TLS
+          value: "true"
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: minio-secrets
+              key: MINIO_ACCESS_KEY
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-secrets
+              key: MINIO_SECRET_KEY
+        - name: MYSQL_DB_HOST
+          value: "mysql.platiagro"
+        - name: MYSQL_DB_NAME
+          value: "mlflow"
+        - name: MYSQL_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: MYSQL_DB_USER
+        - name: MYSQL_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: MYSQL_DB_PASSWORD
+        image: docker.io/platiagro/mlflow:1.20.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 5000
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+      volumes:
+      - configMap:
+          name: nginx-config
+        name: config-volume

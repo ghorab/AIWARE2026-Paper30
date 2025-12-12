@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: do
+
+# kubectl create namespace devops-monitoring (do)

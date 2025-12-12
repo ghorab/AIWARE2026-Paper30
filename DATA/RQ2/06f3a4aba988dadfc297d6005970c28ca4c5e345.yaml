@@ -1,0 +1,31 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: billing-notifier
+spec:
+  schedule: "0 0 10,20,30 * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: billing-notifier
+              image: reireias/billing-notifier:arm-0.0.2
+              env:
+                - name: GOOGLE_APPLICATION_CREDENTIALS
+                  value: /etc/gcp/credential.json
+              envFrom:
+                - configMapRef:
+                    name: billing-notifier
+              volumeMounts:
+                - mountPath: /etc/gcp
+                  readOnly: true
+                  name: gcp-credential
+          volumes:
+            - name: gcp-credential
+              configMap:
+                name: billing-notifier-gcp-credential
+                items:
+                  - key: GCP_CREDENTIAL
+                    path: credential.json
+          restartPolicy: Never

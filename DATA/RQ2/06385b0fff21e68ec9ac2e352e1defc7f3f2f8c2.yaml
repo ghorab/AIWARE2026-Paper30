@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: clubmember-api
+    env: testing
+  name: clubmember-api
+  namespace: eventms
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: clubmember-api
+  type: NodePort

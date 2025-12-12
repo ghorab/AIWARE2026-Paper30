@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    tinkerbell/component: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tinkerbell/component: db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        tinkerbell/component: db
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_DB
+          value: tinkerbell
+        - name: POSTGRES_PASSWORD
+          value: tinkerbell
+        - name: POSTGRES_USER
+          value: tinkerbell
+        - name: PGDATA
+          value: /var/lib/postgresql/data
+        image: postgres:10-alpine
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+              - pg_isready
+              - -U
+              - tinkerbell
+          failureThreshold: 30
+          periodSeconds: 1
+          timeoutSeconds: 1
+        name: db
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-data
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      volumes:
+      - hostPath:
+          path: /tink-db
+          type: ""
+        name: postgres-data

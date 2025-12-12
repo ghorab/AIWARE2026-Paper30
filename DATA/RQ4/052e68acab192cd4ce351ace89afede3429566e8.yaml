@@ -1,0 +1,105 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: benchmark-job-id
+  labels:
+    app: benchmark-ai
+    action-id: ACTION_ID
+    client-id: CLIENT_ID
+    created-by: executor
+    parent-action-id: parentactionid
+spec:
+  template:
+    metadata:
+      labels:
+        app: benchmark-ai
+        action-id: ACTION_ID
+        client-id: CLIENT_ID
+        created-by: executor
+        parent-action-id: parentactionid
+      annotations:
+        iam.amazonaws.com/role: benchmark-host
+    spec:
+      serviceAccountName: benchmark
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - benchmark-ai
+            topologyKey: kubernetes.io/hostname
+      initContainers:
+      - name: data-puller
+        image: benchmarkai/puller:3115770
+        env:
+        - name: S3_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: outputs-infrastructure
+              key: s3_endpoint
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            configMapKeyRef:
+              name: s3
+              key: access-key-id
+              optional: true
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: s3
+              key: secret-access-key
+              optional: true
+        volumeMounts:
+        - name: datasets-volume
+          mountPath: /data
+        args:
+        - puller-data
+        - object-name/dir0,777,p0:object-name/dir1,777,p1
+      containers:
+      - name: benchmark
+        image: jlcont/benchmarking:270219
+        resources:
+          limits:
+            nvidia.com/gpu: 4
+        command:
+        - python
+        - /home/benchmark/image_classification.py
+        - --model=resnet50_v2
+        - --batch-size=32
+        securityContext:
+          privileged: false
+        env:
+        - name: BENCHMARK_AI
+          value: fifo
+        - name: BENCHMARK_AI_FIFO_FILEPATH
+          value: /tmp/benchmark-ai/fifo
+        - name: BENCHMARK_AI_FIFO_MAX_WAIT_TIME
+          value: '60'
+        volumeMounts:
+        - mountPath: /tmp/benchmark-ai
+          name: benchmark-ai
+        - name: datasets-volume
+          mountPath: ~/data/tf-imagenet/train
+          subPath: p0
+        - name: datasets-volume
+          mountPath: ~/data/tf-imagenet/validation
+          subPath: p1
+        - name: dshm
+          mountPath: /dev/shm
+      nodeSelector:
+        beta.kubernetes.io/instance-type: p3.8xlarge
+        node.type: bai-worker
+        failure-domain.beta.kubernetes.io/zone: us-east-1a
+      restartPolicy: OnFailure
+      volumes:
+      - name: benchmark-ai
+        emptyDir: {}
+      - name: datasets-volume
+        emptyDir: {}
+      - name: dshm
+        emptyDir:
+          medium: Memory
+  backoffLimit: 4

@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: hello-service
+spec:
+  selector:
+    app: KubeDemo
+    tier: frontend
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: http

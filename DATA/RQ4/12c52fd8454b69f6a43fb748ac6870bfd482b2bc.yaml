@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: venmo-monster
+  labels:
+    name: venmo-monster
+spec:
+  replicas: 1
+  selector:
+    name: venmo-monster
+  template:
+    metadata:
+      labels:
+        name: venmo-monster
+    spec:
+      imagePullSecrets:
+      - name: myregistrykey
+      containers:
+      - name: venmo-monster
+        image: insightdatascience/venmo-monster:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        env:
+        - name: LOG_DIR
+          value: "/var/log/venmo-monster"
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: fellow-aws-secret
+              key: awsaccesskeyid
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: fellow-aws-secret
+              key: awssecretaccesskey
+        - name: S3_BUCKET
+          valueFrom:
+            secretKeyRef:
+              name: venmo-s3-bucket
+              key: bucketname
+        volumeMounts:
+        - name: logger-storage
+          mountPath: /var/log
+      volumes:
+      - name: logger-storage
+        persistentVolumeClaim:
+          claimName: logger-claim
+
+

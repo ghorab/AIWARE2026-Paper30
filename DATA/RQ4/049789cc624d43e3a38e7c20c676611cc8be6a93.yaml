@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laravel-precios
+  namespace: mineco
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: laravel-precios
+  template:
+    metadata:
+      labels:
+        run: laravel-precios
+    spec:
+      containers:
+      - name: laravel-precios
+        image: jjolon/precios:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 80
+            protocol: TCP
+          - containerPort: 443
+            protocol: TCP
+        volumeMounts:
+            - mountPath: "/var/www/html"
+              name: vol-precios
+      volumes:
+        - name: vol-precios
+          persistentVolumeClaim:
+            claimName: precios-mineco

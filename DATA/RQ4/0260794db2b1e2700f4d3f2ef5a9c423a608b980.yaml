@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-pihole
+  namespace: pihole
+spec:
+  volumeName: pihole-pv
+  accessModes:
+    - ReadWriteMany
+  storageClassName: rasp4-local-storage
+  resources:
+    requests:
+      storage: 300M

@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: config
+  namespace: ${TARGET_NAMESPACE}
+  labels:
+    version: ${TARGET_VERSION}
+spec:
+  selector:
+    app: config
+    version: ${TARGET_VERSION}
+  ports:
+  - port: 8888
+    targetPort: 8888
+  

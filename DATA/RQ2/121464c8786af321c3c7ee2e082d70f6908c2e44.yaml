@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: topological-inventory-ingress-api
+spec:
+  ports:
+  - name: topological-inventory-ingress-api
+    port: 4567
+    targetPort: 4567
+  selector:
+    name: topological-inventory-ingress-api

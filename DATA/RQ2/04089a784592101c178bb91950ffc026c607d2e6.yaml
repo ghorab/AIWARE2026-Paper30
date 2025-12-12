@@ -1,0 +1,45 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hapi-cronjob
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: hapi-cronjob
+              image: ${DOCKER_REGISTRY}/${IMAGE_NAME_HAPI}:${VERSION}
+              args:
+                - /bin/sh
+                - -c
+                - >-
+                  /usr/bin/node /opt/application/src/libs/sync-bps.js;
+                  /usr/bin/node /opt/application/src/libs/sync-proxies.js;
+                  /usr/bin/node /opt/application/src/libs/sync-stats.js;
+                  /usr/bin/node /opt/application/src/libs/sync-ratings.js
+              env:
+                - name: HAPI_POSTGRES_HOST
+                  value: "${HAPI_POSTGRES_HOST}"
+                - name: HAPI_POSTGRES_DB
+                  value: "${HAPI_POSTGRES_DB}"
+                - name: HAPI_POSTGRES_PASSWORD
+                  value: "${HAPI_POSTGRES_PASSWORD}"
+                - name: HAPI_POSTGRES_PORT
+                  value: "${HAPI_POSTGRES_PORT}"
+                - name: HAPI_POSTGRES_SCHEMA
+                  value: "${HAPI_POSTGRES_SCHEMA}"
+                - name: HAPI_POSTGRES_USER
+                  value: "${HAPI_POSTGRES_USER}"
+                - name: HAPI_EOS_API_ENDPOINT
+                  value: https://api.eosio.cr
+                - name: HAPI_SERVER_ADDRESS
+                  value: 0.0.0.0
+                - name: HAPI_SERVER_PORT
+                  value: "9090"
+          dnsConfig:
+            options:
+              - name: ndots
+                value: "1"
+          restartPolicy: Never

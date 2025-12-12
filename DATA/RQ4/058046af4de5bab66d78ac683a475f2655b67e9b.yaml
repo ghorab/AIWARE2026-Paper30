@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: site-service
+  namespace: owlvey
+spec:
+  # ClusterIP NodePort
+  type: LoadBalancer  
+  selector:
+    app: owlvey-site
+  ports:
+    - name: http
+      protocol: TCP      
+      port: 47000
+      targetPort: 80 
+      # nodePort: 30036

@@ -1,0 +1,16 @@
+# @description yaml file to create docker private registry secret
+#   data[.dockerconfigjson] is the base64 encoded docker config file
+# @author Mark Franciose <mark.franciose@gmail.com>
+# @documentation: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#create-a-pod-that-uses-your-secret
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registry-secret-example
+  namespace: examples
+  labels:
+    environment: development
+data:
+  .dockerconfig.json: <base64>
+type: kubernetes.io/dockerconfigjson
+

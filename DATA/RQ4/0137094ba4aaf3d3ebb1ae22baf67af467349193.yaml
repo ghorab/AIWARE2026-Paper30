@@ -1,0 +1,24 @@
+﻿kind: Service
+apiVersion: v1
+metadata:
+  name: zuul
+  namespace: dmandry
+  labels:
+    app: zuul
+    app.kubernetes.io/component: zuul
+    app.kubernetes.io/instance: zuul
+    app.kubernetes.io/name: ''
+    app.kubernetes.io/part-of: zuul
+    app.openshift.io/runtime: ''
+    app.openshift.io/runtime-version: latest
+spec:
+  ports:
+    - name: 9000-tcp
+      protocol: TCP
+      port: 9000
+      targetPort: 9000
+  selector:
+    app: zuul
+    deploymentconfig: zuul
+  type: ClusterIP
+  sessionAffinity: None

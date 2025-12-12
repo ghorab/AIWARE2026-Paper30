@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nemo-redux-detector-suite
+spec:
+  template:
+    spec:
+      nodeSelector:
+        springfield.uit.no/gpu-type: titan-xp
+      containers:
+      - name: nemo-redux-detector-suite
+        image: thomasjo/nemo-redux:detection-20210310
+        imagePullPolicy: Always
+        workingDir: /storage/nemo-redux
+        command: ["bash", "bin/detector_suite"]
+        stdin: true
+        tty: true
+        envFrom:
+        - secretRef:
+            name: wandb
+        volumeMounts:
+        - name: storage
+          mountPath: /storage
+        - name: local-data
+          mountPath: /data
+        # - name: shm
+        #   mountPath: /dev/shm
+        resources:
+          limits:
+            memory: 42Gi
+            cpu: 8000m
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: storage
+      - name: local-data
+        hostPath:
+          path: /home/tjo083/data
+          type: Directory
+      # - name: shm
+      #   emptyDir:
+      #     medium: Memory
+      restartPolicy: OnFailure
+  backoffLimit: 0

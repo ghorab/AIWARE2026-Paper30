@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tradingdb-worker
+  labels:
+    app: tradingdb-worker
+spec:
+  replicas: 1
+  strategy:
+    type: "Recreate"
+  selector:
+    matchLabels:
+      app: tradingdb-worker
+  template:
+    metadata:
+      labels:
+        app: tradingdb-worker
+    spec:
+      terminationGracePeriodSeconds: 300 # Because in mainnet blocks have a lot of transactions
+      containers:
+      - name: worker
+        image: gnosispm/pm-trading-db:v1.6.0
+        imagePullPolicy: Always
+        args: ["docker/web/celery/worker/run.sh"]
+        resources:
+          requests:
+            memory: "2000Mi"
+            cpu: "500m"
+          limits:
+            memory: "3000Mi"
+            cpu: "1000m"
+        livenessProbe:
+          exec:
+            command:
+              - pgrep
+              - "-f"
+              - "(celery).+(worker)"
+          initialDelaySeconds: 45
+          periodSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+              - pgrep
+              - "-f"
+              - "(celery).+(worker)"
+          initialDelaySeconds: 45
+          periodSeconds: 5
+        env:
+          - name: DEBUG
+            value: "0"
+          - name: ETH_PROCESS_BLOCKS
+            value: "1000"
+          - name: ETHEREUM_MAX_WORKERS
+            value: "10"
+          - name: ETHEREUM_MAX_BATCH_REQUESTS
+            value: "500"
+          - name: PYTHONPATH
+            value: "/app/tradingdb"
+          - name: DJANGO_SETTINGS_MODULE
+            value: "config.settings.production"
+          - name: ALLOWED_HOSTS
+            value: '*'
+          - name: C_FORCE_ROOT
+            value: "false"
+          - name: DATABASE_HOST
+            valueFrom:
+              secretKeyRef:
+                name: tradingdb-database
+                key: host
+          - name: DATABASE_NAME
+            valueFrom:
+              secretKeyRef:
+                name: tradingdb-database
+                key: name
+          - name: DATABASE_USER
+            valueFrom:
+              secretKeyRef:
+                name: tradingdb-database
+                key: user
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: tradingdb-database
+                key: password
+          - name: DATABASE_PORT
+            valueFrom:
+              secretKeyRef:
+                name: tradingdb-database
+                key: port
+          - name: ETHEREUM_NODE_URL
+            value: "http://localhost:8545"
+          - name: ETHEREUM_DEFAULT_ACCOUNT
+            value: ""
+          - name: ETHEREUM_DEFAULT_ACCOUNT_PRIVATE_KEY
+            value: ""
+          - name: IPFS_HOST
+            value: "https://ipfs.infura.io"
+          - name: IPFS_PORT
+            value: "5001"
+          - name: REDIS_URL
+            value: "redis://[IP]/0"
+          - name: CELERY_BROKER_URL
+            value: "redis://[IP]/0"
+          - name: SECRET_KEY
+            value: "[DJANGO_SECRET_KEY]" # CUSTOM
+          - name: CENTRALIZED_ORACLE_FACTORY
+            value: "0xb3289eAAc0Fe3eD15Df177F925c6F8ceEB908b8f"
+          - name: EVENT_FACTORY
+            value: "0x0f60faf69F3Ac146e1E557247583BC0c84f9f086"
+          - name: LMSR_MARKET_MAKER
+            value: "0x11B5257396f156027B9232da7220bd7447282DB6"
+          - name: MARKET_FACTORY
+            value: "0xEAA325bACAe405fd5B45E9cF695D391F1C624A2f"
+          - name: TOURNAMENT_TOKEN
+            value: "0xa0c107Db0e9194c18359d3265289239453b56CF2"
+          - name: UPORT_IDENTITY_MANAGER
+            value: "0xABBcD5B340C80B5f1C0545C04C987b87310296aE"
+          - name: GENERIC_IDENTITY_MANAGER_ADDRESS
+            value: "0x79DA1C9eF6bf6bC64E66F8AbFFDDC1A093E50f13"

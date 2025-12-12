@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: theheymanpipelinesjavascriptdocker 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: theheymanpipelinesjavascriptdocker
+  template:
+    metadata:
+      labels:
+        app: theheymanpipelinesjavascriptdocker 
+    spec:
+      containers:
+        - name: theheymanpipelinesjavascriptdocker 
+          image: alhecontainerregistry.azurecr.io/theheymanpipelinesjavascriptdocker
+          ports:
+          - containerPort: 8080

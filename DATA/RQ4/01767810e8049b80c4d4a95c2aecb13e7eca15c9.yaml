@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubeflow-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: kubeflow-operator
+  template:
+    metadata:
+      labels:
+        name: kubeflow-operator
+    spec:
+      serviceAccountName: kubeflow-operator
+      containers:
+      - name: kubeflow-operator
+        
+        image: rajatt/kubeflow-operator:latest
+        command:
+        - kfctl
+        imagePullPolicy: Always
+        env:
+        - name: AWS_CLUSTER_NAME
+          value: cluster11-temp
+        #- name: CONFIG_URI
+        #  value: "https://raw.githubusercontent.com/kubeflow/manifests/v1.2-branch/kfdef/kfctl_aws.v1.2.0.yaml"
+        - name: WATCH_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: OPERATOR_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        volumeMounts:
+        - mountPath: /.kube
+          name: config
+        - mountPath: /.aws
+          name: credentials
+      volumes:
+      - secret:
+          secretName: kubeconfig
+        name: config
+      - secret:
+          secretName: awscredentials
+        name: credentials

@@ -1,0 +1,39 @@
+deployment-strategy ==> No PodDisruptionBudget (PDB) for critical workloads
+deployment-replicas ==> Improperly tuned HPA thresholds (too low or high)
+ingress-targets-service ==> Missing TLS in Ingress configuration
+cronjob-has-deadline ==> Improperly tuned HPA thresholds (too low or high)
+cronjob-restartpolicy ==> Improperly tuned HPA thresholds (too low or high)
+container-resources ==> Missing resources.requests or resources.limits
+container-resource-requests-equal-limits ==> Equal requests and limits causing throttling
+container-cpu-requests-equal-limits ==> Equal requests and limits causing throttling
+container-memory-requests-equal-limits ==> Equal requests and limits causing throttling
+container-image-tag ==> Use of latest tag
+container-image-pull-policy ==> Image pulled from untrusted or public registry
+container-ephemeral-storage-request-and-limit ==> Missing resources.requests or resources.limits
+container-ephemeral-storage-request-equals-limit ==> Equal requests and limits causing throttling
+container-ports-check ==> Hardcoded endpoints or insecure API communication
+environment-variable-key-duplication ==> Hardcoded credentials in images or ENV variables
+statefulset-has-poddisruptionbudget ==> No PodDisruptionBudget (PDB) for critical workloads
+deployment-has-poddisruptionbudget ==> No PodDisruptionBudget (PDB) for critical workloads
+poddisruptionbudget-has-policy ==> No PodDisruptionBudget (PDB) for critical workloads
+pod-networkpolicy ==> Missing NetworkPolicy for namespace isolation
+networkpolicy-targets-pod ==> Overly permissive ingress/egress rules
+pod-probes ==> Improperly tuned HPA thresholds (too low or high)
+pod-probes-identical ==> Improperly tuned HPA thresholds (too low or high)
+container-security-context-user-group-id ==> Missing securityContext at container level
+container-security-context-privileged ==> allowPrivilegeEscalation
+container-security-context-readonlyrootfilesystem ==> Absence of readOnlyRootFilesystem
+container-seccomp-profile ==> Unrestricted Linux capabilities
+service-targets-pod ==> Hardcoded endpoints or insecure API communication
+service-type ==> Use of NodePort services in production
+stable-version ==> Use of deprecated API versions
+deployment-has-host-podantiaffinity ==> Absence of affinity or antiAffinity rules
+statefulset-has-host-podantiaffinity ==> Absence of affinity or antiAffinity rules
+deployment-targeted-by-hpa-does-not-have-replicas-configured ==> Improperly tuned HPA thresholds (too low or high)
+statefulset-has-servicename ==> Hardcoded endpoints or insecure API communication
+deployment-pod-selector-labels-match-template-metadata-labels ==> No isolation between namespaces
+statefulset-pod-selector-labels-match-template-metadata-labels ==> No isolation between namespaces
+label-values ==> Broad role bindings
+horizontalpodautoscaler-has-target ==> Improperly tuned HPA thresholds (too low or high)
+horizontalpodautoscaler-replicas ==> Improperly tuned HPA thresholds (too low or high)
+pod-topology-spread-constraints ==> Pods co-located on the same node without anti-affinity

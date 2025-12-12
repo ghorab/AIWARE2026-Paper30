@@ -1,0 +1,22 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: ${name}
+  namespace: ${namespace}
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      activeDeadlineSeconds: 90
+      template:
+        spec:
+          containers:
+          - name: ${name}
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes cluster
+          restartPolicy: OnFailure

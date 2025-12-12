@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: image-village-migration
+spec:
+  template:
+    spec:
+      containers:
+        - name: flyway
+          image: flyway/flyway:7.4.0
+          args:
+            - info
+            - repair
+            - migrate
+            - info
+          env:
+            - name: FLYWAY_URL
+              value: jdbc:postgresql://database.image-village/imagevillage
+            - name: FLYWAY_USER
+              valueFrom:
+                secretKeyRef:
+                  name: image-village
+                  key: DATABASE_USERNAME
+            - name: FLYWAY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: image-village
+                  key: DATABASE_PASSWORD
+          volumeMounts:
+            - mountPath: /flyway/sql
+              name: sqlfiles
+      volumes:
+        - name: sqlfiles
+          configMap:
+            name: image-village-migration
+      restartPolicy: Never

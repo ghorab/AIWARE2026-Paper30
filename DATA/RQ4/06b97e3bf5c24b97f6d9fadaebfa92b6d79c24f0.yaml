@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bets
+  labels:
+    app: bets
+    version: v1
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: bets
+      labels:
+        app: bets
+        version: v1
+    spec:
+      containers:
+        - name: bets
+          image: kurtis/bets:v1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: bets
+          ports:
+            - containerPort: 9090
+          livenessProbe:
+            httpGet:
+              port: 9090
+              httpHeaders:
+                - name: X-Health-Check
+                  value: '1'
+            initialDelaySeconds: 1
+            periodSeconds: 10
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: bets
+      version: v1

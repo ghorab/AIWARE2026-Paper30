@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: rewpipelinesjavascriptdocker 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rewpipelinesjavascriptdocker
+  template:
+    metadata:
+      labels:
+        app: rewpipelinesjavascriptdocker 
+    spec:
+      containers:
+        - name: rewpipelinesjavascriptdocker 
+          image: rewacr.azurecr.io/rewpipelinesjavascriptdocker
+          ports:
+          - containerPort: 8080

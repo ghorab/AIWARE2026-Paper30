@@ -1,0 +1,43 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: pubmed-parser
+  namespace: $NS
+  labels:
+    app: pubmed-parser
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pubmed-parser
+  template:
+    metadata:
+      labels:
+        app: pubmed-parser
+    spec:
+      imagePullSecrets:             
+      - name: imagepull-secret
+      containers:
+      - name: pubmed-parser
+        image: $HW_IMAGE_PREFIX/pubmed_parser:0.1
+        command: ["python3", "-m", "server.kafka_consumer", "kafka:9092", "gzfiles", "pubmeds"]
+        resources:
+          limits:
+            cpu: 1
+            memory: 4Gi
+          requests:
+            cpu: 1
+            memory: 4Gi
+#        volumeMounts:                 
+#        - mountPath: "/kafka_log"
+#          name: pvc-kafka-log
+#  volumeClaimTemplates:
+#  - metadata:
+#      name: pvc-kafka-log
+#    spec:
+#      accessModes:
+#        - ReadWriteOnce
+#      resources:
+#        requests:
+#          storage: 10Gi
+#      storageClassName: sas

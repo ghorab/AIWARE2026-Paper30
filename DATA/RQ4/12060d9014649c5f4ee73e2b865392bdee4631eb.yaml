@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-deployment
+  labels:
+    app: node
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node
+  template:
+    metadata:
+      labels:
+        app: node
+    spec:
+      containers:
+      - name: node
+        image: docker.io/barkbay/nodejs:latest
+        env:
+          - name: ELASTIC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elasticsearch-sample-es-elastic-user
+                key: elastic
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "2"
+        # Just spin & wait forever, you can start the client in the Pod by running "nodejs es.js"
+        command: [ "/bin/bash", "-c", "--" ]
+        args: [ "while true; do sleep 30; done;" ]
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: esca
+          mountPath: "/etc/ssl/elastic/"
+          readOnly: true
+      volumes:
+      - name: esca
+        secret:
+          secretName: elasticsearch-sample-es-http-certs-public
+      - name: esuser
+        secret:
+          secretName: elasticsearch-sample-es-elastic-user

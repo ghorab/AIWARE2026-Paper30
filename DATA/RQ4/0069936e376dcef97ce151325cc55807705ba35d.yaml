@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: microservice-app-example
+  name: users-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microservice-app-example
+      service: users-api
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: microservice-app-example
+        service: users-api
+    spec:
+      containers:
+      - env:
+        - name: JWT_SECRET
+          value: myfancysecret
+        - name: SERVER_PORT
+          value: "8083"
+        - name: SPRING_ZIPKIN_BASE_URL
+          value: http://zipkin:9411
+        image: users-api
+        imagePullPolicy: Never
+        name: users-api
+        ports:
+        - containerPort: 8083
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status: {}

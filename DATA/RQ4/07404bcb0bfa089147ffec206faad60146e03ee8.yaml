@@ -1,0 +1,13 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: paymentservice-pod
+  labels:
+    myvalue: payment-service                                # Label for applying service later
+spec:
+  containers:
+    - name: payment01
+      image: chetangsanghi/kube-payment-service:0.1
+      ports:
+       - containerPort: 8081                         # Expose port 8081 from container
+

@@ -1,0 +1,24 @@
+# permissions for end users to edit ccruntimes.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ccruntime-editor-role
+rules:
+- apiGroups:
+  - confidentialcontainers.org
+  resources:
+  - ccruntimes
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - confidentialcontainers.org
+  resources:
+  - ccruntimes/status
+  verbs:
+  - get

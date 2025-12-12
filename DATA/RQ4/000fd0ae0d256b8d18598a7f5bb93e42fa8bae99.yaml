@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: streams-enrichmessages
+  namespace: kafka
+spec:
+  containers:
+  - name: kafkaenrichmessages
+    image: 372456142993.dkr.ecr.eu-west-1.amazonaws.com/maxrssisup:latest
+    env:
+    - name: PYTHONUNBUFFERED
+      value: "1"
+    - name: BUFFER_CACHE
+      value: "10485760"
+    - name: COMMIT_INTERVAL
+      value: "100"
+    imagePullPolicy: Always
+  restartPolicy: Never

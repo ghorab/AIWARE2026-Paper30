@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gsi
+spec:
+  selector:
+    matchLabels:
+      app: prestrafe-gsi
+  template:
+    metadata:
+      labels:
+        app: prestrafe-gsi
+    spec:
+      containers:
+        - name: gsi
+          image: prestrafe-gsi
+          env:
+            - name: GSI_ADDR
+              value: 0.0.0.0
+            - name: GSI_PORT
+              value: "8080"
+            - name: GSI_METRICPORT
+              value: "9080"
+            - name: GSI_TTL
+              value: "12"
+          ports:
+            - name: http-gsi
+              containerPort: 8080
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 9080
+              protocol: TCP
+      imagePullSecrets:
+        - name: gsi-imagepull-secret

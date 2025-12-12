@@ -1,0 +1,24 @@
+# permissions for end users to edit machinesetmanageds.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: machinesetmanaged-editor-role
+rules:
+- apiGroups:
+  - infrascheduler.bward.dev
+  resources:
+  - machinesetmanageds
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - infrascheduler.bward.dev
+  resources:
+  - machinesetmanageds/status
+  verbs:
+  - get

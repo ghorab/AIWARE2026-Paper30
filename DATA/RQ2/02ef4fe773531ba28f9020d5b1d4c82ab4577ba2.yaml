@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kwite-config
+data:
+  template: |
+    <html>
+    <head>
+    <style>
+    body {
+      background-color: #112222;
+    }
+    hr {
+      color: white
+    }
+    h1 {
+      color: #BB33BB;
+      margin-left: 40px;
+    }
+    h2 {
+      color: #884488;
+      margin-left: 40px;
+    }
+    p {
+      color: #CCCCCC;
+      margin-left: 40px;
+    }
+    </style>
+    </head>
+    <body>
+    <h1>This Example Kwite Template Shows a Few Functions</h1>
+    
+    <h2>Passed Template Variable Resolutions</h2>
+    <p>Note: this only works if JSON is passed in the message body.</p>
+    <p>When executed x was "{{ .x }}".</p>
+    <p>If there was just empty quotes, that no JSON existed in the HTTP request body to the Kwite, therefore was "null":</p>
+    <p>The JSON data passed in was: {{ $dotAsString := jsonToString . }}{{ $dotAsString }}</p>
+    <code>
+    </code>
+    
+    <p>However, the template can create it's own data. Let's make a variable, reset it and print it's value, like:</p>
+    <p>{{ "{{ $v := valuesNew 2 }}" }}<br/>{{ "{{ $v.Set 3 }}" }}<br/>{{ "After variable manipulations, $v is {{ $v }}" }}</p>
+    <p>This is what happens when that code runs in the template:</p>
+    
+    {{ $v := valuesNew 2 }}
+    {{ $v.Set 3 }}
+    After variable manipulations, $v is {{ $v }}. (Note: internally $v is housed in a Go struct, so it has those braces around it).
+    
+    <p>To get a more palatable print format, use the <a href="https://golang.org/pkg/fmt/">string formats</a>.<br/>
+    We'll use this: After variable manipulations, $v is {{ "{{ $v.Printf" }} "%v" {{ "}}" }}.</p>
+    
+    <p>After variable manipulations, $v is {{ $v.Printf "%v" }}.</p>
+    
+    <hr/><h2>What About String Functions?</h2>
+    <p>What's next is the result of string computations via the strCompare function:
+    
+    <br/>{{ $s1 := "aaa" -}} {{- $s2 := "bbb" -}} {{- $comp := strCompare $s1 $s2 -}}
+    <br/>{{ $s1 }} is {{ if lt $comp 0 -}} less {{ else -}} greater {{ end -}} than {{ $s2 }}.
+    <br/>{{ $s2 }} is {{ if gt $comp 0 -}} greater {{ else -}} less {{ end -}} than {{ $s1 }}.
+    <br/></p>
+    
+    <p>Here is the output from the use of strNewReplacer and subsequent Replace functions:</p>
+    
+    {{ $r := strNewReplacer "<" "&lt;" ">" "&gt;" }}
+    {{- $r.Replace "This is some italicized <i>HTML</i>!" }}
+    
+    <hr/><h2>How Abouth Math?</h2>
+    <p>The arccos of sin(Pi) is {{ Acos (Sin Pi) }} radians.</p>
+    
+    <hr/><h2>How Abouth Some JSON?</h2>
+    {{ $myJSON := "{\"c\": \"This is bold and this is not\"}" }}
+    {{ $isValid := jsonValid $myJSON }}
+    <p>jsonValid says { "c": "This is bold and this is not" } is {{ if not $isValid }} not {{ end -}} valid JSON.</p>
+    
+    <hr/><h2>HTTP Functions also exist:</h2>
+    <p>The rest is supposedly the smallest web site in the world (guimp.com) from the following template scriptlet:</p>
+    <p>{{ "{{ $g := httpGet \"http://www.guimp.com\" \"{\\\"x\\\": 2}\" \"Accept\" \"text/plain\" \"Content-type\" \"application/json\" }}" }}<br/>
+    {{ "{{- $r.Replace $g }}" }}</p>
+    
+    {{ $g := httpGet "http://www.guimp.com" "{\"x\": 2}" "Accept" "text/plain" "Content-type" "application/json" }}
+    <p>{{- $r.Replace $g }}</p>
+    
+    The next content was retrieved via httpGet and kwite url reformation of kwite://kwite-2.kwite/, which is rewritten to http://www.guimp.com/:
+    {{ httpGet "kwite://kwite-2.kwite:80/" "" }}
+    </body>
+    </html>

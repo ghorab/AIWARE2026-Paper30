@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: application-stacks-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: application-stacks-operator
+  template:
+    metadata:
+      labels:
+        name: application-stacks-operator
+    spec:
+      serviceAccountName: application-stacks-operator
+      containers:
+        - name: application-stacks-operator
+          image: application-stacks/operator:daily
+          command:
+          - application-stacks-operator
+          imagePullPolicy: Always
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "application-stacks-operator"

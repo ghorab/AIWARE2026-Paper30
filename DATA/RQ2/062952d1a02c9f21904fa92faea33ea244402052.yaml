@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webpage-qa
+spec:
+  selector:
+    matchLabels:
+      app: webpage-qa
+      tier: frontend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: webpage-qa
+        tier: frontend
+    spec:
+      containers:
+      - name: webpage-qa
+        image: "gcr.io/qmul-lab/webpage-qa:v2"
+        env:
+        - name: ADMIN_TOKEN
+          value: "dSkdLjhSG5NPfXVaZ_6vLE5rGbEG7zlvJSRkzbrBong"
+        - name: API_BASE
+          value: "http://880cf4cf.ngrok.io/api"

@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: etherpad
+  labels:
+    app: etherpad
+spec:
+  containers:
+    - name: etherpad
+      image: etherpad/etherpad
+      ports:
+        - containerPort: 9001
+      envFrom:
+        - configMapRef:
+            name: etherpad-config
+#      volumeMounts:
+#        - name: config-volume
+#          mountPath: /app/config.json
+#          subPath: config.json
+#      livenessProbe:
+#        httpGet:
+#          path: /
+#          port: 80
+    - name: sh
+      image: busybox
+      command:
+        - "/bin/sh"
+        - "-c"
+        - "--"
+      args:
+        - "while true; do sleep 30; done;"
+#  volumes:
+#    - name: config-volume
+#      configMap:
+#        name: riotwebconfig
+  restartPolicy: Always
+

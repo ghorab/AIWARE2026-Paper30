@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stress
+spec:
+  replicas: 0
+  serviceName: stress
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      app: stress
+  template:
+    metadata:
+      labels:
+        app: stress
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: stress
+          image: stress_ng
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: stress
+          command:
+            - sh
+            - -c
+            - >
+              stress-ng $extra
+
+  # required for workaround bug with kustomize https://github.com/kubernetes-sigs/kustomize/issues/504
+  # when using commonLabels
+  # fixed in 2.1.0 https://github.com/kubernetes-sigs/kustomize/commit/c470982ce5b96da82a757f088a842bb05d3bcdb4
+  volumeClaimTemplates: []

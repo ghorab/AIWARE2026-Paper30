@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: social-sa
+  annotations:
+    v8tix.com/created-by: "V8TIX"
+    v8tix.com/mail: "info@v8tix.com"
+    v8tix.com/app: "Katix"
+    v8tix.com/app-tier: "Back-end"
+    v8tix.com/environment: "Development"
+    v8tix.com/release: "Canary"
+    v8tix.com/tenant: "None"
+automountServiceAccountToken: true
+secrets:
+  - name: social-db-conn
+imagePullSecrets:
+  - name: docker-hub-sec

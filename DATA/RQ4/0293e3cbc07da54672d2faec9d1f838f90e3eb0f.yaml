@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deployment-flow
+data:
+  cluster.json: |
+    {
+     "namespace": "{{ $.Values.namespace }}",
+     "use_existing_cluster": "true"
+    }
+  image.json: |
+    [
+      {
+       "image_from": "harbor-core.jarvis.local/library/ubuntu:focal",
+       "build_from_source": true,
+       "image_name": "pcf",
+       "project": "pcf",
+       "repo": "pcf",
+       "image_fullname": "pcf/pcf:1.0",
+       "path": "images/pcf",
+       "namespace": "{{ $.Values.namespace }}",
+       "build": {
+          "git_repo": "{{ $.Values.git_repo }}",
+          "target_loc": "/src/checkout/pcf",
+          "refspec": "{{ $.Values.refspec }}",
+          "version": "refs/changes/*:refs/changes/*",
+          "user": "jarvis",
+          "password": "password"
+       }
+      }
+    ]
+  chart.json: |
+    [{
+      "chart_name": "pcf",
+      "project": "pcf",
+      "repo": "pcf",
+      "version": "0.1.0",
+      "build_from_source": true,
+      "path": "charts",
+      "build": {
+        "git_repo": "{{ $.Values.git_repo }}",
+        "target_loc": "/src/checkout/pcf",
+        "refspec": "{{ $.Values.refspec }}",
+        "version": "refs/changes/*:refs/changes/*",
+        "user": "jarvis",
+        "password": "password"
+      },
+      "namespace": "{{ $.Values.namespace }}",
+      "release_name": "pcf",
+      "sources": {
+        "image_map": {
+          "tag": ["releases", "images", "applications", "pcf", "tag"],
+          "tmp_name": ["releases", "images", "applications", "pcf", "name"],
+          "tmp_repo": ["releases", "images", "applications", "pcf", "repo"]
+        }
+      },
+      "releases": {
+        "images": {
+          "applications": {
+            "pcf": {
+              "tag": "1.0",
+              "name": "pcf",
+              "repo": "pcf"
+            }
+          }
+        }
+      }
+    }]
+  default.json: |
+    {
+      "proxy": {
+        "http": "",
+        "https": "",
+        "noproxy": "",
+        "enabled": false
+      },
+      "docker_content_trust": {
+        "DOCKER_CONTENT_TRUST": 1,
+        "DOCKER_CONTENT_TRUST_SERVER": "https://harbor-notary.jarvis.local",
+        "DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE": "passphrase",
+        "DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE": "passphrase"
+      },
+      "chart_registry_url": "harbor-core.jarvis.local/chartrepo",
+      "chart_repository": "jarvis-harbor",
+      "docker_registry": "harbor-core.jarvis.local",
+      "harbor_secret_mounted_path": "/workspace/helm-creds",
+      "harbor_secret_pull_mounted_path": "/workspace/helm-creds/pull",
+      "harbor_secret_push_mounted_path": "/workspace/helm-creds/push",
+      "clone_async_batch_size": 20,
+      "chart_async_batch_size": 20,
+      "image_async_batch_size": 2
+    }
+  cleanup.json: |
+    {
+      "environment_name": "development",
+      "remove_artifacts": "true"
+    }

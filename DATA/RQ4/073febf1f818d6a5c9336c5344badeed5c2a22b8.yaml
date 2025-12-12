@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret-config
+type: Opaque
+data:
+   secret_key: dGhpcy1yZWFsbHktbmVlZHMtdG8tYmUtY2hhbmdlZAo=
+

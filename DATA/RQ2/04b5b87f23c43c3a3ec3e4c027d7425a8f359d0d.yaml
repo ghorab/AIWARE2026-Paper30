@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: hello-universe
+  name: hello-universe
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    run: hello-universe
+  sessionAffinity: None
+  type: LoadBalancer

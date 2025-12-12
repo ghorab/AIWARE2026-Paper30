@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: enketo-secrets
+  namespace: odk-central
+type: Opaque
+data:
+  enketo-secret: cGFzc3dvcmQxMjM=
+  enketo-less-secret: cGFzc3dvcmQxMjM=
+  enketo-api-key: cGFzc3dvcmQxMjM=
+

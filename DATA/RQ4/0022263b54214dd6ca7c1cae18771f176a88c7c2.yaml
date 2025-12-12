@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: oase
+  name: oase-web
+  labels:
+    name: oase-web
+spec:
+  strategy:
+    type: Recreate
+  replicas: 3
+  selector:
+    matchLabels:
+      name: oase-web
+  template:
+    metadata:
+      labels:
+        name: oase-web
+    spec:
+      hostname: oase-web
+      containers:
+        - name: oase-web
+          image: exastro/oase-web:latest
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          env:
+            - name: DB_HOST
+              value: "mariadb"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: "OASE_DB"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-password
+          ports:
+            - name: service
+              containerPort: 80
+          volumeMounts:
+            - name: logs
+              mountPath: "/exastro/OASE/oase-root/logs/webaplogs"
+              subPath: webaplogs
+              readOnly: false
+          securityContext:
+            capabilities: {}
+            privileged: false
+      volumes:
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs-pvc

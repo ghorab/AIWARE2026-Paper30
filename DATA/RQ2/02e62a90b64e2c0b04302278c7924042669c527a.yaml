@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manager
+  labels:
+    app: manager
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: manager
+  template:
+    metadata:
+      labels:
+        app: manager
+    spec:
+      volumes:
+        - name: manager-creds
+          secret:
+            secretName: dev-manager-secret
+
+        - name: shared-volume
+          emptyDir: {}
+
+      initContainers:
+        - name: busybox
+          image: busybox
+          volumeMounts:
+            - name: shared-volume
+              mountPath: /shared
+          command: ["/bin/sh"]
+          args: ["-c", "echo 'hello kuberenetes' > /shared/abc.txt"]
+
+      containers:
+        - name: manager
+          image: crkushal7/manager:2.1.0
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: manager-creds
+              mountPath: /data
+
+            - name: shared-volume
+              mountPath: /data2
+          resources:
+            limits:
+              cpu: "300m"
+            requests:
+              cpu: "50m"
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: dev-manager-config
+                  key: PORT
+            - name: NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: dev-manager-config
+                  key: NAME
+            - name: HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: dev-manager-config
+                  key: HOST
+            - name: ADMIN_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: dev-manager-config
+                  key: ADMIN_URL
+            - name: MANAGER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: dev-manager-config
+                  key: MANAGER_URL
+            - name: MONGO_DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: dev-mongo-config-f4tf898fkh
+                  key: MONGO_DB_URL
+            - name: DB_USER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: dev-mongo-secret-2h79b4gm99
+                  key: DB_USER_NAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dev-mongo-secret-2h79b4gm99
+                  key: DB_PASSWORD

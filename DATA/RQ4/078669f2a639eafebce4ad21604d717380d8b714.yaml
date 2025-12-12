@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflare-analytics-exporter
+  namespace: cloudflare-exporter
+data:
+  config.ini: |
+    [APP]
+    # Interval in seconds, max allowed = 54000 = 15 hours
+    fetch_interval = 600
+    [INFLUXDB]
+    host = influxdb.influxdb
+    port = 8086
+    username = cloudflare
+    database = cloudflare
+    
+    [CLOUDFLARE]
+    api_url = https://api.cloudflare.com/client/v4/graphql/
+    page_limit = 100
+    #Freeplans doesnt support analytics.
+    # eg: bypass_domains = "a.com", "b.com"
+    bypass_domains = "domain.com"

@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jijisa-win10-rdp
+spec:
+  selector:
+    name: jijisa-win10
+  ports:
+  - name: rdp
+    port: 3389
+    protocol: TCP
+  type: NodePort
+...

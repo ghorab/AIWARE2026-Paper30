@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubert
+  labels:
+    app: kubert
+spec:
+  containers:
+    - name: kubert
+      image: callibrity/kubert:1.0.4
+      ports:
+        - name: web
+          containerPort: 8080
+          protocol: TCP

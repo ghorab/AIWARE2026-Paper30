@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: podmu-svc
+  namespace: podmu
+  labels:
+    app: podmu
+spec:
+  ports:
+  - port: 443
+    targetPort: 8443
+  selector:
+    app: podmu

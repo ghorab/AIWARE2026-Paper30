@@ -1,0 +1,41 @@
+# pod to test the docker_ce_build image with docker and s3 secrets
+apiVersion: v1
+kind: Pod
+metadata:
+  name: docker-all-in-one-test
+spec:
+  automountServiceAccountToken: false
+  containers:
+  - name: test
+    command:
+    - /usr/local/bin/dockerd-entrypoint.sh
+    image: quay.io/powercloud/docker-ce-build
+    resources: {}
+    terminationMessagePolicy: FallbackToLogsOnError
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - name: docker-graph-storage
+      mountPath: /var/lib/docker
+    env:
+      - name: DOCKER_SECRET_AUTH
+        valueFrom:
+          secretKeyRef:
+            name: docker-token
+            key: .dockerconfigjson
+      - name: S3_ID
+        valueFrom:
+          secretKeyRef:
+            name: s3-auth
+            key: access_key_id
+      - name: S3_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: s3-auth
+            key: secret_access_key
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 18
+  volumes:
+  - name: docker-graph-storage
+    emptyDir: {}
+status: {}  

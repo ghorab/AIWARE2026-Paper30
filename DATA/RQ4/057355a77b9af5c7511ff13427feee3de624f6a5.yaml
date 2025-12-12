@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      containers:
+        - name: web-app
+          image: ghcr.io/rwxproject/web-app-angular:main
+          resources:
+            limits:
+              memory: "64Mi"
+              cpu: "25m"
+          env:
+            - name: PORT
+              value: "3000"
+            - name: SRVADDR
+              value: "localhost"
+            - name: SRVPORT
+              value: "3000"
+            - name: APITIME
+              value: "60000"
+          ports:
+            - containerPort: 3000
+          imagePullPolicy: Always

@@ -1,0 +1,209 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: upsource
+data:
+  player_initial_lives: '3'
+  ui_properties_file_name: 'user-interface.properties'
+
+  upsource.properties: |
+    enemy.types=aliens,monsters
+    player.maximum-lives=5
+  upsource-frontend.jvmoptions: |
+    # https://www.jetbrains.com/help/upsource/upsource-frontend-properties.html#upsource-specific-properties
+
+    # Specifies a period between GitHub synchronizations in minutes.
+    # -Dupsource.github.sync.period.minutes = 20
+
+    # A max size of a file where code navigation features will be available (in bytes).
+    # -Dfrontend.psi.filesize.limit = 100000
+
+    # Email notification interval in milliseconds (600000=10min).
+    # -Dupsource.mail.notifications.sending.delay.millis = 300000
+
+    # Maximum file size to display.
+    # -Dfrontend.view.filesize.limit=XXXX = 2000000
+
+    # Maximum number of lines to display in a diff.
+    # -Dfrontend.diff.filesize.limit = 1000
+
+    # Maximum number of revisions to display when viewing/comparing branches.
+    # -Dfrontend.revision.count.limit = 200
+
+    # Maximum number of revisions to display when viewing/comparing revisions.
+    # -Dfrontend.revision.file.count.limit<id> = 200
+
+  upsource.user.properties: |
+    # https://upsource-support.jetbrains.com/hc/en-us/articles/115000003010-How-to-change-advanced-Upsource-properties-
+    #
+    # Specifies a period between GitHub/GitLab synchronizations in minutes.
+    # upsource.external.sync.period.minutes =  20
+
+    # A max size of a file where code navigation features will be available (in bytes).
+    # frontend.psi.filesize.limit  =  100000
+
+    # Values that are equal or less than 0 will turn Achievements system off
+    # upsource.achievements.max.threads.count =  1 or 1/2 of CPU cores
+
+    # false will turn Achievements system off
+    # upsource.achievements.enabled =  true
+
+    # The maximum number of revisions to show in a graph (branch / compare page)
+    # frontend.revision.count.limit =  200
+
+    # The maximum number of files a review may contain
+    # upsource.review.file.limit =  2048
+
+    # The maximum number of text occurences in the search result
+    # upsource.text.search.query.limit =  1000
+
+    # The maximum number of lines for all read queries to RevisionChangeHistory table
+    # upsource.schema.revisionchangehistorytable.fetch.size =  5000
+
+    # A max size of an image to add in a comment
+    # upsource.uploads.limit = 2000000
+
+    # A max size of a file to be displayed in the UI.
+    # frontend.view.filesize.limit = 2000000
+
+    # A max number of revisions to be added to a review.
+    # upsource.review.revision.limit = 512
+
+  log4j.xml: |
+    <?xml version='1.0' encoding='ISO-8859-1' ?>
+    <!DOCTYPE log4j:configuration SYSTEM "./log4j.dtd">
+    <log4j:configuration>
+    <!--
+        Service takes its log4j configuration from file "log4j.xml" if it exists in its conf directory.
+        Otherwise, it uses file "log4j.xml.dist"
+
+        By default there is no "log4j.xml" file.
+        To tune log4j configuration one might edit file "log4j.xml.dist" (all changes made to "log4j.xml.dist"
+        are applied to the service at run-time in this case).
+
+        Please, take into account that on the next service upgrade:
+            - all changes made to "log4j.xml.dist" will be overridden by new version of "log4j.xml.dist" taken from upgraded product.
+            - old version of "log4j.xml.dist" will be backed up in file "log4j.xml.dist.<version>.bak" and might be merged with
+            content of renewed "log4j.xml.dist" manually after upgrade.
+
+        Alternatively "log4j.xml.dist" might be copied to "log4j.xml" file (if it doesn't exist yet) and
+        then file "log4j.xml" might be edited.
+        This is a less desired way of changing logging configuration, because changes introduced by new version of product
+        will be ignored in such case for all further upgrades.
+
+        (To apply the changes you made in the newly created "log4j.xml", please restart Upsource.
+            Restart is not required if "log4j.xml" was created before service was started)
+        -->
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="target" value="System.err"/>
+        <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="[%d] %-5p %20.20t %15.15X{project} %30.30c - %m %n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+        <param name="LevelMin" value="INFO"/>
+        </filter>
+    </appender>
+
+    <appender name="ROLL-ALL" class="org.apache.log4j.RollingFileAppender">
+        <param name="file" value="${logs.dir}/all.log"/>
+        <param name="maxBackupIndex" value="10"/>
+
+        <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="[%d] %-5p %20.20t %15.15X{project} %30.30c - %m %n"/>
+        </layout>
+    </appender>
+
+    <appender name="ROLL-WARN" class="org.apache.log4j.RollingFileAppender">
+        <param name="file" value="${logs.dir}/warn.log"/>
+        <param name="maxBackupIndex" value="5"/>
+
+        <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="[%d] %-5p %20.20t %15.15X{project} %30.30c - %m %n"/>
+        </layout>
+
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+        <param name="LevelMin" value="WARN"/>
+        </filter>
+    </appender>
+
+    <appender name="ROLL-ERROR" class="org.apache.log4j.RollingFileAppender">
+        <param name="file" value="${logs.dir}/error.log"/>
+        <param name="maxBackupIndex" value="3"/>
+
+        <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="[%d] %-5p %20.20t %15.15X{project} %30.30c - %m %n"/>
+        </layout>
+
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+        <param name="LevelMin" value="ERROR"/>
+        </filter>
+    </appender>
+
+    <appender name="AUDIT" class="org.apache.log4j.FileAppender">
+        <param name="file" value="${logs.dir}/audit.log"/>
+
+        <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="[%d] %-5p %20.20t %15.15X{project} %30.30c - %m %n"/>
+        </layout>
+    </appender>
+
+    <appender name="PROFILE" class="org.apache.log4j.FileAppender">
+        <param name="file" value="${logs.dir}/profile.log"/>
+
+        <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="[%d] %-5p %20.20t %15.15X{project} %30.30c - %m %n"/>
+        </layout>
+    </appender>
+
+    <logger name="audit" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="AUDIT" />
+    </logger>
+
+    <logger name="profile" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="PROFILE" />
+    </logger>
+
+    <category name="net.sf.ehcache.config.ConfigurationFactory">
+        <priority value="ERROR"/>
+    </category>
+
+    <category name="org.glassfish.jersey.servlet.WebComponent">
+        <priority value="ERROR"/>
+    </category>
+
+    <category name="org.apache.http.wire">
+        <priority value="WARN"/>
+    </category>
+
+    <category name="org.apache.httpclient.wire">
+        <priority value="WARN"/>
+    </category>
+
+    <category name="org.reflections.Reflections">
+        <priority value="WARN"/>
+    </category>
+
+    <category name="net.sf.ehcache.pool.sizeof.AgentLoader">
+        <priority value="WARN"/>
+    </category>
+
+    <category name="org.springframework.beans.factory.xml.XmlBeanDefinitionReader">
+        <priority value="WARN"/>
+    </category>
+
+    <category name="com.corundumstudio.socketio.transport.PollingTransport">
+        <priority value="FATAL"/>
+    </category>
+
+    <root>
+        <priority value="INFO"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ROLL-ALL"/>
+        <appender-ref ref="ROLL-WARN"/>
+        <appender-ref ref="ROLL-ERROR"/>
+    </root>
+
+    </log4j:configuration>

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tapiriik-secret
+type: Opaque
+stringData:
+  web-root: "WEB_ROOT"
+  allowed-hosts: "ALLOWED_HOSTS"
+  email-host: "EMAIL_HOST"
+  email-port: "EMAIL_PORT"
+  email-use-tls: "EMAIL_USE_TLS"
+  email-host-user: "EMAIL_HOST_USER"
+  email-host-password: "EMAIL_HOST_PASSWORD"
+  redis-host: "REDIS_HOST"
+  rabbitmq-broker-url: "RABBITMQ_BROKER_URL"
+  mongo-host: "MONGO_HOST"
+  pp-webscr: "PP_WEBSCR"
+  pp-receiver-id: "PP_RECEIVER_ID"
+  credential-storage-private-key: "CREDENTIAL_STORAGE_PRIVATE_KEY"
+  credential-storage-public-key: "CREDENTIAL_STORAGE_PUBLIC_KEY"
+  runkeeper-client-id: "RUNKEEPER_CLIENT_ID"
+  runkeeper-client-secret: "RUNKEEPER_CLIENT_SECRET"
+  dropbox-app-key: "DROPBOX_APP_KEY"
+  dropbox-app-secret: "DROPBOX_APP_SECRET"
+  dropbox-full-app-key: "DROPBOX_FULL_APP_KEY"
+  dropbox-full-app-secret: "DROPBOX_FULL_APP_SECRET"
+  strava-client-id: "STRAVA_CLIENT_ID"
+  strava-client-secret: "STRAVA_CLIENT_SECRET"
+  sporttracks-client-id: "SPORTTRACKS_CLIENT_ID"
+  sporttracks-client-secret: "SPORTTRACKS_CLIENT_SECRET"
+  rwgps-api-key: "RWGPS_APIKEY"
+  mapmyfitness-client-key: "MAPMYFITNESS_CLIENT_KEY"
+  mapmyfitness-client-secret: "MAPMYFITNESS_CLIENT_SECRET"

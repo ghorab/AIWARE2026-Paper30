@@ -1,0 +1,178 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pricing-config
+  labels:
+    app: pricing-service
+data:
+  appsettings.json: |-
+    {
+      "app": {
+        "name": "Pacco Pricing Service",
+        "service": "pricing-service",
+        "version": "1"
+      },
+      "consul": {
+        "enabled": false,
+        "url": "http://localhost:8500",
+        "service": "pricing-service",
+        "address": "docker.for.win.localhost",
+        "port": "5005",
+        "pingEnabled": true,
+        "pingEndpoint": "ping",
+        "pingInterval": 3,
+        "removeAfterInterval": 3
+      },
+      "fabio": {
+        "enabled": false,
+        "url": "http://localhost:9999",
+        "service": "pricing-service"
+      },
+      "httpClient": {
+        "type": "k8s",
+        "retries": 3,
+        "services": {
+          "customers": "customers-service"
+        },
+        "requestMasking": {
+          "enabled": true,
+          "maskTemplate": "*****"
+        }
+      },
+      "logger": {
+        "level": "information",
+        "excludePaths": [ "/ping", "/metrics", "/runtime_metrics" ],
+        "excludeProperties": [
+          "api_key",
+          "access_key",
+          "ApiKey",
+          "ApiSecret",
+          "ClientId",
+          "ClientSecret",
+          "ConnectionString",
+          "Password",
+          "Email",
+          "Login",
+          "Secret",
+          "Token"
+        ],
+        "console": {
+          "enabled": true
+        },
+        "file": {
+          "enabled": false,
+          "path": "logs/logs.txt",
+          "interval": "day"
+        },
+        "seq": {
+          "enabled": false,
+          "url": "seq:5341",
+          "apiKey": "secret"
+        }
+      },
+      "jaeger": {
+        "enabled": true,
+        "serviceName": "pricing",
+        "udpHost": "jaeger-tracing-agent",
+        "udpPort": 6831,
+        "maxPacketSize": 0,
+        "sampler": "const",
+        "excludePaths": [ "/ping", "/metrics", "/runtime_metrics" ]
+      },
+      "qoSTracking": {
+        "enabled": true,
+        "enabledTracing": true,
+        "samplingRate": 0.5,
+        "windowComparerSize": 50,
+        "qoSTimeViolationOptions": {
+          "commandExceedingCoefficient": 0.05,
+          "queryExceedingCoefficient": 0.05,
+          "eventExceedingCoefficient": 0.05
+        }
+      },
+      "metrics": {
+        "enabled": true,
+        "influxEnabled": false,
+        "prometheusEnabled": true,
+        "influxUrl": "http://localhost:8086",
+        "database": "pacco",
+        "env": "local",
+        "interval": 2
+      },
+      "mongo": {
+        "connectionString": "mongodb://mongo-mongodb:27017",
+        "database": "operations-service",
+        "seed": false
+      },
+      "rabbitMq": {
+        "connectionName": "pricing-service",
+        "retries": 3,
+        "retryInterval": 2,
+        "conventionsCasing": "snakeCase",
+        "logger": {
+          "enabled": true
+        },
+        "username": "guest",
+        "password": "guest",
+        "virtualHost": "/",
+        "port": 5672,
+        "hostnames": [
+          "rabbitmq-rabbitmq-ha"
+        ],
+        "requestTimeout": "00:00:10",
+        "publishConfirmTimeout": "00:00:01",
+        "recoveryInterval": "00:00:10",
+        "persistentDeliveryMode": true,
+        "autoCloseConnection": true,
+        "automaticRecovery": true,
+        "topologyRecovery": true,
+        "exchange": {
+          "declare": true,
+          "durable": true,
+          "autoDelete": false,
+          "type": "topic",
+          "name": "pricing"
+        },
+        "queue": {
+          "declare": true,
+          "durable": true,
+          "exclusive": false,
+          "autoDelete": false
+        },
+        "context": {
+          "enabled": true,
+          "header": "message_context"
+        },
+        "spanContextHeader": "span_context"
+      },
+      "requests": {
+        "expirySeconds": 30,
+        "checkRequestCronExpression": "0/10 * * * * ?",
+        "maxHandlingOperationSeconds": "4"
+      },
+      "signalR": {
+        "backplane": "redis"
+      },
+      "redis": {
+        "connectionString": "redis-master",
+        "instance": "pricing:"
+      },
+      "swagger": {
+        "enabled": true,
+        "reDocEnabled": false,
+        "name": "v1",
+        "title": "API",
+        "version": "v1",
+        "routePrefix": "docs",
+        "includeSecurity": false
+      },
+      "vault": {
+        "enabled": false,
+        "url": "http://vault:8200",
+        "key": "availability-service/settings",
+        "authType": "token",
+        "token": "secret",
+        "username": "user",
+        "password": "secret"
+      }
+    }

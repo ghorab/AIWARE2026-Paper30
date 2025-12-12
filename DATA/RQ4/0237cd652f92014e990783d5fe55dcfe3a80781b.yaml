@@ -1,0 +1,40 @@
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: longhorn
+    meta.helm.sh/release-namespace: longhorn-system
+  creationTimestamp: "2021-02-22T13:04:33Z"
+  labels:
+    app: longhorn-ui
+    app.kubernetes.io/instance: longhorn
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: longhorn
+    app.kubernetes.io/version: v1.1.0
+    helm.sh/chart: longhorn-1.1.0
+  name: longhorn-frontend
+  namespace: longhorn-system
+  resourceVersion: "21986"
+  selfLink: /api/v1/namespaces/longhorn-system/services/longhorn-frontend
+  uid: f182e58e-2293-42fd-9c5a-eb1b4ee5743f
+spec:
+  clusterIP: 10.233.39.4
+  externalTrafficPolicy: Cluster
+  ports:
+  - name: http
+    nodePort: 32310
+    port: 8000
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    app: longhorn-ui
+  sessionAffinity: None
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - ip: 192.168.22.28

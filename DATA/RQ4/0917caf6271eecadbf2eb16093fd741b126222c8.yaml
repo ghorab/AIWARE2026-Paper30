@@ -1,0 +1,7 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+   name: turbine-plus-aws-adapter-configs
+data:
+   APP_NAME: turbine-plus-aws-adapter
+    

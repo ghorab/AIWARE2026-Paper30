@@ -1,0 +1,68 @@
+# Copyright 2020 The Tekton Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openshift-pipelines-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: openshift-pipelines-operator
+      app: openshift-pipelines-operator
+  template:
+    metadata:
+      labels:
+        name: openshift-pipelines-operator
+        app: openshift-pipelines-operator
+    spec:
+      serviceAccountName: openshift-pipelines-operator
+      containers:
+      - name: openshift-pipelines-operator
+        image: ko://github.com/tektoncd/operator/cmd/openshift/operator
+        imagePullPolicy: Always
+        env:
+        - name: SYSTEM_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: OPERATOR_NAME
+          value: redhat-openshift-pipelines-operator
+        - name: IMAGE_PIPELINES_PROXY
+          value: ko://github.com/tektoncd/operator/cmd/openshift/proxy-webhook
+        - name: IMAGE_JOB_PRUNER_TKN
+          value: gcr.io/tekton-releases/dogfooding/tkn@sha256:025de221fb059ca24a3b2d988889ea34bce48dc76c0cf0d6b4499edb8c21325f
+        - name: METRICS_DOMAIN
+          value: tekton.dev/operator
+        - name: VERSION
+          value: "devel"
+        - name: AUTOINSTALL_COMPONENTS
+          valueFrom:
+            configMapKeyRef:
+              name: tekton-config-defaults
+              key: AUTOINSTALL_COMPONENTS
+        - name: DEFAULT_TARGET_NAMESPACE
+          valueFrom:
+            configMapKeyRef:
+              name: tekton-config-defaults
+              key: DEFAULT_TARGET_NAMESPACE
+        - name: CONFIG_OBSERVABILITY_NAME
+          value: tekton-config-observability
+#          - name: IMAGE_ADDONS_PARAM_TKN_IMAGE
+#            value: gcr.io/tekton-releases/dogfooding/tkn@sha256:f69a02ef099d8915e9e4ea1b74e43b7a9309fc97cf23cb457ebf191e73491677

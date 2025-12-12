@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: weather-api
+  name: weather-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: weather-api
+  template:
+    metadata:
+      labels:
+        app: weather-api
+    spec:
+      containers:
+        - image: dfranciswoolies/ciarecruitment-bestapiever:247904
+          name: weather-api
+          envFrom:
+            - secretRef:
+                name: weather-api
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 500m
+              memory: 500Mi
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP

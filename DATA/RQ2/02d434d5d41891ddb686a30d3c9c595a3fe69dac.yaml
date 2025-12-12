@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: idp-settings
+data:
+  # property-like keys; each key maps to a simple value
+  keycloak_user: "admin"
+  keycloak_password: "admin"
+  # The service inside k8s
+  idp.service.internal.url: "http://idp-service.default.svc.cluster.local:8080/auth"
+  # The service outside k8s, needed for browser (via webapp)
+  idp.service.url: "http://${this.host}:31181/auth"
+  # sample data, not yet used
+  idp_properties_file_name: "idp.properties"
+
+  # file-like keys
+  idp.properties: |
+    userdir.src = ldap
+    userdir.type = openldap

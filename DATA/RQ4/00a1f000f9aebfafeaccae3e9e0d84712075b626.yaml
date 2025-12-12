@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rendertron-deployment
+  labels:
+    app: nginx
+spec:
+#the replicas allow self-healing
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: rendertron-kube
+        image: yomofo2s/rendertron:latest
+        ports:
+          - containerPort: 80
+#kubectl autoscale deployment rendertron-deployment --cpu-percent=50 --min=1 --max=10
+        resources:
+          limits:
+            cpu: 500m
+            memory: 64Mi
+          requests:
+            cpu: 200m
+            memory: 32Mi

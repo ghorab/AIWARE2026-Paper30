@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: goaccess-cronjob
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          volumes:
+            - name: logs-apache-vol
+              persistentVolumeClaim:
+                claimName: apachelogs-pvc
+            - name: goaccess-vol
+              persistentVolumeClaim:
+                claimName: goaccess-pvc
+          containers:
+          - name: goaccess-container
+            image: allinurl/goaccess
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+            - name: logs-apache-vol
+              mountPath: /apachelogs
+            - name: goaccess-vol
+              mountPath: /goaccess
+            command:
+            - goaccess
+            - --no-global-config
+            - --config-file=/goaccess/conf/goaccess.conf
+            - --output=/goaccess/index.html
+            - --log-file=/apachelogs/access.log
+            resources:
+              limits:
+                cpu: 250m
+              requests:
+                cpu: 100m
+          restartPolicy: OnFailure
+

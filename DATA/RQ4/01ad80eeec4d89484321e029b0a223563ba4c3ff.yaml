@@ -1,0 +1,70 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hackernews-migrate
+spec:
+  template:
+    metadata:
+      name: hackernews-migrate
+    spec:
+      containers:
+      - name: hackernews-migrate
+        image: gcr.io/playground-223020/hackernews:latest
+        imagePullPolicy: Always
+        env:
+        - name: ENV
+          valueFrom:
+            configMapKeyRef:
+              name: hackernews-config
+              key: hackernews.env
+        - name: DEBUG
+          valueFrom:
+            configMapKeyRef:
+              name: hackernews-config
+              key: hackernews.debug
+        - name: ALLOWED_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              name: hackernews-config
+              key: hackernews.allowed_hosts
+        - name: STATICFILES_STORAGE
+          valueFrom:
+            configMapKeyRef:
+              name: hackernews-config
+              key: hackernews.staticfiles_storage
+        - name: DEFAULT_FILE_STORAGE
+          valueFrom:
+            configMapKeyRef:
+              name: hackernews-config
+              key: hackernews.default_file_storage
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hackernews-secrets
+              key: hackernews.secret_key
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: hackernews-secrets
+              key: hackernews.database_url
+        - name: GS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: hackernews-secrets
+              key: hackernews.gs_access_key_id
+        - name: GS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hackernews-secrets
+              key: hackernews.gs_secret_access_key
+        - name: GS_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: hackernews-secrets
+              key: hackernews.gs_bucket_name
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          valueFrom:
+            secretKeyRef:
+              name: hackernews-secrets
+              key: hackernews.google_application_credentials
+      restartPolicy: Never

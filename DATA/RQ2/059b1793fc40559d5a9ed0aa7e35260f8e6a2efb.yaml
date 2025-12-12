@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+    visualize: "true"
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels: 
+        app: mysql
+        visualize: "true"
+    spec:
+      containers: 
+      - name: mysql
+        image: mysql:8.0.13
+        resources:
+          limits :
+            cpu: 1.0
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          # change this
+          value: yourpassword
+        - name: MYSQL_DATABASE
+          value: app
+        ports: 
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+          # name must match the volume name below
+        - name: mysql-persistent-storage
+          # mount path within the container
+          mountPath: /var/lib/mysql
+          subPath: mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pvc

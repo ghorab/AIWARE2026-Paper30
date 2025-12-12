@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+    name: db
+spec:
+    selector:
+        matchLabels:
+            tier: db
+    template:
+        metadata:
+            name: db
+            labels:
+                tier: db
+        spec:
+            containers:
+                - name: sqlflask-app
+                  image: diptochakrabarty/api:dbv2
+                  env:
+                    - name: MYSQL_ROOT_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                            name: app-secrets
+                            key: password
+                    - name: MYSQL_DATABASE
+                      valueFrom:
+                        secretKeyRef:
+                            name: app-secrets
+                            key: database
+                        
+                  ports:
+                    - containerPort: 3306
+                      name: sqlflask
+                  imagePullPolicy: Always
+            volumes:
+              - name: mysqlstorage
+                persistentVolumeClaim:
+                  claimName: dbvol
+              
+
+            

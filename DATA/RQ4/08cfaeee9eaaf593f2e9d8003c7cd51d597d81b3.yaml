@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: yusrapythonsamplevscodeflasktutorial 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yusrapythonsamplevscodeflasktutorial
+  template:
+    metadata:
+      labels:
+        app: yusrapythonsamplevscodeflasktutorial 
+    spec:
+      containers:
+        - name: yusrapythonsamplevscodeflasktutorial 
+          image: ynregistry.azurecr.io/yusrapythonsamplevscodeflasktutorial
+          ports:
+          - containerPort: 5000

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-cli-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-cli
+  template:
+    metadata:
+      labels:
+        app: api-cli
+    spec:
+      containers:
+        - image: gcr.io/bedrock-foundation/bedrock-core-services-api-cli
+          imagePullPolicy: Always
+          name: api-cli
+          # resources:
+          #   limits:
+          #     cpu: "1000m"
+          #     memory: "4Gi"
+          env:
+            - name: ENV_NAME
+              value: "staging"
+            - name: NODE_ENV
+              value: "production"
+            - name: MONGO_URI
+              value: "mongodb://mongo:27017/bedrock_staging"
+            - name: APP_URL
+              value: "https://bedrock.foundation"
+            - name: POSTMARK_FROM
+              value: "no-reply@bedrock.foundation"
+            - name: POSTMARK_API_KEY
+              value: "abc"
+            - name: UPLOADS_STORE
+              value: "gcs"
+            - name: UPLOADS_GCS_BUCKET
+              value: "bedrock-staging-uploads"
+          volumeMounts:
+            - name: jobs-cache
+              mountPath: /workdir/data
+      volumes:
+        - name: jobs-cache
+          emptyDir: {}

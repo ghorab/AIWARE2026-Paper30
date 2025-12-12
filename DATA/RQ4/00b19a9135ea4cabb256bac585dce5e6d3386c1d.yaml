@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: hyperactive-clone-deployment
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: hyperactive-clone
+    template:
+        metadata:
+            labels:
+                app: hyperactive-clone
+        spec:
+            containers:
+                - name: myapp
+                  image: almoggutin/hyperactive-clone:latest
+                  env:
+                      - name: PORT
+                        valueFrom:
+                            configMapKeyRef:
+                                name: hyperactive-clone-env
+                                key: PORT

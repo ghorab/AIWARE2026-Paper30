@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: carrental-v2
+  labels:
+    app: carrental-v2
+spec:
+  ports:
+    - name: 9102-tcp
+      protocol: TCP
+      port: 9102
+      targetPort: 9102
+  selector:
+    app: carrental-v2
+    deploymentconfig: carrental-v2

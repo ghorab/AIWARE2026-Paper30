@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubebench-config
+data:
+  kubebenchconfig.yaml: |
+    defaultWorkflowAgent:
+      container:
+        name: kubebench-workflow-agent
+        image: registry.cn-hangzhou.aliyuncs.com/frank_1991/kubeflow_new:workflow-agent-bc682c1
+    defaultManagedVolumes:
+      experimentVolume:
+        name: kubebench-experiment-volume
+        emptyDir: {}
+      workflowVolume:
+        name: kubebench-workflow-volume
+        emptyDir: {}

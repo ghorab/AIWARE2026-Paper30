@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: godbox
+  namespace: tradistonks
+  labels:
+    app: godbox
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: godbox
+  template:
+    metadata:
+      labels:
+        app: godbox
+    spec:
+      containers:
+        - image: quantumsheep/godbox:2
+          imagePullPolicy: Always
+          name: godbox
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: 512Mi
+            requests:
+              cpu: "0.2"
+              memory: 256Mi
+          securityContext:
+            privileged: true
+          env:
+            - name: API_MAX_PAYLOAD_SIZE
+              valueFrom:
+                configMapKeyRef:
+                  key: GODBOX_API_MAX_PAYLOAD_SIZE
+                  name: env
+            - name: MAX_STORAGE_LIMIT
+              valueFrom:
+                configMapKeyRef:
+                  key: GODBOX_MAX_STORAGE_LIMIT
+                  name: env
+            - name: MAX_RUN_TIME_LIMIT
+              valueFrom:
+                configMapKeyRef:
+                  key: GODBOX_MAX_RUN_TIME_LIMIT
+                  name: env
+            - name: MAX_WALL_TIME_LIMIT
+              valueFrom:
+                configMapKeyRef:
+                  key: GODBOX_MAX_WALL_TIME_LIMIT
+                  name: env
+      restartPolicy: Always

@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ruby-para-criativos
+  namespace: diegorubindev
+  labels:
+    app: ruby-para-criativos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ruby-para-criativos
+  template:
+    metadata:
+      labels:
+        app: ruby-para-criativos
+    spec:
+      imagePullSecrets:
+      - name: dockerconfigjson-dockerhub
+      containers:
+      - name: ruby-para-criativos
+        image: diegorubin/ruby-para-testers:latest
+        ports:
+        - containerPort: 9494

@@ -1,0 +1,18 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: analytics-stable
+  labels:
+    app.kubernetes.io/name: analytics-stable
+    app.kubernetes.io/part-of: analytics
+    app.kubernetes.io/component: service
+    app.kubernetes.io/version: 1.0.0
+spec:
+  selector:
+    app.kubernetes.io/name: analytics-stable
+  ports:
+    - name: grpc
+      port: 50051
+      targetPort: 50051
+      protocol: TCP

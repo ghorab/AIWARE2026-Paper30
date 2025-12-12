@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: second-pod
+  namespace: ns-demo
+  labels:
+    app: first-app
+spec:
+  containers:
+  - image: foody.azurecr.io/foody:103
+    name: second-pod
+    env:
+      - name: ENV_VAR
+        valueFrom:
+          configMapKeyRef:
+            name: first-configmap
+            key: key1
+    resources:
+      requests:
+        cpu: 200m
+        memory: 64Mi
+      limits:
+        cpu: 500m
+        memory: 128Mi
+    livenessProbe:
+      httpGet:
+        path: /helthy
+        port: 3000
+      initialDelaySeconds: 5
+      timeoutSeconds: 1
+      periodSeconds: 5
+      failureThreshold: 3      
+    ports:
+    - containerPort: 3000
+      name: http
+      protocol: TCP  
+  imagePullSecrets:
+    - name: sec-first-pod

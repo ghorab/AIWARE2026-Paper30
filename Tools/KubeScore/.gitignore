@@ -1,0 +1,7 @@
+/kube-score
+/.idea
+/cmd/kube-score/dist/
+/cmd/kube-score/kube-score
+vendor
+coverage.txt
+node_modules

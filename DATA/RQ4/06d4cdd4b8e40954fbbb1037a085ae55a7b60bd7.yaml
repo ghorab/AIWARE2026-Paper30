@@ -1,0 +1,20 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: terraform-deployment
+  namespace: terraform
+spec:
+  selector:
+    matchLabels:
+      app: terraform-deployment
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: terraform-deployment
+    spec:
+      containers:
+      - name: terraform-deployment
+        image:  188696658254.dkr.ecr.us-east-2.amazonaws.com/terraform-petclinic:1
+        ports:
+        - containerPort: 8080

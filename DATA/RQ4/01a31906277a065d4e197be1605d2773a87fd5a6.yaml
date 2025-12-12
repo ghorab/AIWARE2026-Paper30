@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: sulochanagaliazurevotingappredis 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sulochanagaliazurevotingappredis
+  template:
+    metadata:
+      labels:
+        app: sulochanagaliazurevotingappredis 
+    spec:
+      containers:
+        - name: sulochanagaliazurevotingappredis 
+          image: petpoccontainerregistry.azurecr.io/sulochanagaliazurevotingappredis
+          ports:
+          - containerPort: 80

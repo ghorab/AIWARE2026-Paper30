@@ -1,0 +1,20 @@
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: chartmuseum-ui
+  namespace: atlas
+  labels:
+    app: chartmuseum-ui
+spec:
+  type: ClusterIP
+  ports:
+  - 
+    name: http
+    port: 3000
+    protocol: TCP
+    targetPort: http
+  selector:
+    app: chartmuseum-ui
+    release: chartmuseum-ui-r1

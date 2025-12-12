@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tripviewer-config
+data:
+  TRIPS_API_ENDPOINT: http://trips.jungho-apis #must include the namespace
+  USERPROFILE_API_ENDPOINT: http://userprofile.jungho-apis #must include the namespace

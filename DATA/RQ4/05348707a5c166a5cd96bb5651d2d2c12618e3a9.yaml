@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: suslmk-pod
+ labels:
+   app: suslmk-pod-lb
+spec:
+ containers:
+ - name: suslmk-container
+   image: busybox
+   command: ['sh', '-c', 'echo Hello suslmk! && sleep 3600']

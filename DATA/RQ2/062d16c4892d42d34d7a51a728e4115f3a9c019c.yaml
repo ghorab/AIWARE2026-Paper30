@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: hmltcpipelinesjavascriptdocker 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hmltcpipelinesjavascriptdocker
+  template:
+    metadata:
+      labels:
+        app: hmltcpipelinesjavascriptdocker 
+    spec:
+      containers:
+        - name: hmltcpipelinesjavascriptdocker 
+          image: mycontainerregistry239847.azurecr.io/hmltcpipelinesjavascriptdocker
+          ports:
+          - containerPort: 8080

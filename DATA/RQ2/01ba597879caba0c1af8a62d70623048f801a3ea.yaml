@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: testing-legends-tournaments
+  labels:
+    app: legends-tournaments
+    environment: testing
+spec:
+  selector:
+    app: legends-tournaments
+    environment: testing
+  ports:
+  - protocol: TCP
+    name: http
+    port: 80
+    targetPort: http-proxy
+

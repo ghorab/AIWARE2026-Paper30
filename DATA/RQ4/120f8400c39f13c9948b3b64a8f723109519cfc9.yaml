@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dfc-docker-agent 
+spec:
+  replicas: 2
+  progressDeadlineSeconds: 1800
+  selector:
+    matchLabels:
+      app: dfc-docker-agent
+  template:
+    metadata:
+      labels:
+        app: dfc-docker-agent 
+    spec:
+      containers:
+        - name: dfc-docker-agent
+          image: __ContainerRegistryAdminUser__.azurecr.io/dfc-docker-hosted-agent:__NCSDockerDevOpsAgentsTag__
+          ports:
+          - containerPort: 80
+          resources:
+            requests:
+              cpu: "80m"
+              memory: "200Mi"
+            limits:
+              cpu: "200m"
+              memory: "900Mi"
+          env:
+          - name: AZP_POOL
+            value: 'NCS - Docker'
+          - name: AZP_TOKEN
+            valueFrom: 
+              secretKeyRef:
+                name: dfc-azuredevops-pat-token
+                key: pattokensecret
+          - name: AZP_URL
+            value: __AzureDevOpsUrl__
+          securityContext:
+            allowPrivilegeEscalation: false
+          volumeMounts:
+          - name: docker-graph-storage
+            mountPath: /var/run/docker.sock
+      volumes:
+      - name: docker-graph-storage
+        hostPath:
+            path: /var/run/docker.sock

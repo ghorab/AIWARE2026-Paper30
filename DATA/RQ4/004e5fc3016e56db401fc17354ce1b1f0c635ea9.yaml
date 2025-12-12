@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: alpine
+spec:
+  replicas: 2
+  selector:
+    app: alpine
+  template:
+    metadata:
+      labels:
+        app: alpine
+    spec:
+      containers:
+      - name: alpine
+        image: alpine
+        volumeMounts:
+          - name: my-data
+            mountPath: /var/nfs
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do date >> /var/nfs/dates.txt; sleep 20; echo $(hostname) >> /var/nfs/dates.txt; done"]
+        ports:
+        - containerPort: 7171
+          protocol: TCP
+      volumes:
+        - name: my-data
+          nfs:
+            server: master.example.local
+            path: /nfsdata/dat1

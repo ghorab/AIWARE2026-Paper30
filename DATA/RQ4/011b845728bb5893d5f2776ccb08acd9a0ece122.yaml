@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eletronics-shop-config-map
+data:
+  ORDERS_PATH: "/www/data/orders.csv"
+  orders.csv: |
+    [3,1];[5,2,8];10
+    [4];[5];5
+    [40,50,60];[5,8,12];60

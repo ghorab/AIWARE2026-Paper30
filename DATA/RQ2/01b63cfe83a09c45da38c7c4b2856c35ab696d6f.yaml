@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+  namespace: fibo
+  labels:
+    component: server
+    tier: web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: server
+  template:
+    metadata:
+      labels:
+        component: server
+        tier: web
+    spec:
+      containers:
+        - name: server
+          image: pataraco/fibo-web-app-server
+          env:
+            - {name: PGDATABASE, value: postgres}
+            - {name: PGHOST, value: postgres}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pg-password
+                  key: password
+            - {name: PGPORT, value: '5432'}
+            - {name: PGUSER, value: postgres}
+            - {name: REDIS_HOST, value: redis}
+            - {name: REDIS_PORT, value: '6379'}
+          ports:
+            - containerPort: 5000

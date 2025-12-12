@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "aksrivk8snew-e8ce"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "aksrivk8snew-e8ce"
+  template:
+    metadata:
+      labels:
+        app: "aksrivk8snew-e8ce"
+    spec:
+      containers:
+        - name: "aksrivk8snew-e8ce"
+          image: "nginx"
+          ports:
+          - containerPort: 80

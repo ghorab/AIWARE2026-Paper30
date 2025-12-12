@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: android-sdk-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: android-sdk-operator
+  template:
+    metadata:
+      labels:
+        name: android-sdk-operator
+    spec:
+      containers:
+        - name: android-sdk-operator
+          image: docker.io/aerogear/android-sdk-operator:dev
+          command:
+          - android-sdk-operator
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace

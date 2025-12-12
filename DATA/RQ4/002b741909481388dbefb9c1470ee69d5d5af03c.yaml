@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: busybox-azuredisk
+  labels:
+    app: busybox
+spec:
+  serviceName: busybox-azuredisk
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: busybox
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": windows
+      containers:
+        - name: busybox-azuredisk
+          image: e2eteam/busybox:1.29
+          command:
+            - "powershell.exe"
+            - "-Command"
+            - "while (1) { Add-Content -Encoding Ascii C:\\mnt\\azuredisk\\data.txt $(Get-Date -Format u); sleep 1 }"
+          volumeMounts:
+            - name: persistent-storage
+              mountPath: /mnt/azuredisk
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: busybox
+  volumeClaimTemplates:
+    - metadata:
+        name: persistent-storage
+        annotations:
+          volume.beta.kubernetes.io/storage-class: managed-csi
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 100Gi

@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.openshift.io/vcs-ref: refs/heads/develop
+    app.openshift.io/vcs-uri: https://github.com/jritter/color-service
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+  labels:
+    app: color-service-blue
+    app.kubernetes.io/component: color-service-blue
+    app.kubernetes.io/instance: color-service-blue
+    app.kubernetes.io/part-of: color-service-blue
+    app.openshift.io/runtime: quarkus
+  name: color-service-blue
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: color-service-blue
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        app.openshift.io/vcs-ref: refs/heads/develop
+        app.openshift.io/vcs-uri: https://github.com/jritter/color-service
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        app: color-service-blue
+        deploymentconfig: color-service-blue
+        app.kubernetes.io/component: color-service-blue
+        app.kubernetes.io/instance: color-service-blue
+        app.kubernetes.io/part-of: color-service-blue
+        app.openshift.io/runtime: quarkus
+    spec:
+      containers:
+      - image: quay.io/jritter/color-service
+        env:
+        - name: COLOR_SERVICE_COLOR
+          value: blue
+        imagePullPolicy: Always
+        name: color-service
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 200m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 3
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

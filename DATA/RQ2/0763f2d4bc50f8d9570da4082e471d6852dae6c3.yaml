@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-music-lb-service
+  labels:
+    name: spring-music-lb-service
+    app: spring-music-app
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30001
+  selector:
+    name: spring-music-pod
+    app: spring-music-app

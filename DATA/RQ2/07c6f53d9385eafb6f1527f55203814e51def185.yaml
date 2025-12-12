@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-traffic-generator
+  namespace: your-namespace
+spec:
+  template:
+    spec:
+      containers:
+        - name: target-minio-traffic-generator
+          image: targetminio
+          env:
+            - name: IN_LOOP
+              value: "false"
+            - name: SOURCE_MINIO_URL
+              value: "http://sourceminio:9000"
+            - name: SOURCE_MINIO_ACCESS_KEY
+              value: minio1
+            - name: SOURCE_MINIO_SECRET_KEY
+              value: minio1@123
+            - name: SOURCE_MINIO_BUCKET
+              value: dummy
+            # Upload to the target Source
+            - name: UPLOAD_TO_TARGET
+              value: "True"
+            # Source Minio Infromation
+            - name: TARGET_MINIO_URL
+              value: "http://targetminio:9000"
+            - name: TARGET_MINIO_ACCESS_KEY
+              value: minio2
+            - name: TARGET_MINIO_SECRET_KEY
+              value: minio2@123
+            - name: TARGET_MINIO_BUCKET
+              value: dummy
+            # Log Level (Default to Info)
+            - name: LOG_LEVEL
+              value: info
+      restartPolicy: OnFailure
+  backoffLimit: 3

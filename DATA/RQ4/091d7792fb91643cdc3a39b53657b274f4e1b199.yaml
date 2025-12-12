@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    k8s-app: ops-main-service
+  name: ops-main-service
+  namespace: kube-devops
+spec:
+  ports:
+    - name: web
+      port: 80
+      targetPort: 80
+  selector:
+    k8s-app: ops-main-page

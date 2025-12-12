@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sshkeys
+spec:
+  selector:
+    matchLabels:
+      app: sshkeys
+  template:
+    metadata:
+      labels:
+        app: sshkeys
+    spec:
+      containers:
+        - name: sshkeys
+          image: registry.gitlab.com/clusterplatform/clusterplatform/sshkeys.prod
+          resources:
+            limits:
+              memory: 100Mi
+              cpu: 100m
+          envFrom:
+            - configMapRef:
+                name: nats
+            - configMapRef:
+                name: postgres

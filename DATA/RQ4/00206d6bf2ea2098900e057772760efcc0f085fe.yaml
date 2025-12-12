@@ -1,0 +1,10 @@
+# Source: origins-cms/templates/sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: origins-cms-origins-cms
+  annotations:
+    meta.helm.sh/release-name: 'origins-cms'
+  namespace: jx-staging
+  labels:
+    gitops.jenkins-x.io/pipeline: 'namespaces'

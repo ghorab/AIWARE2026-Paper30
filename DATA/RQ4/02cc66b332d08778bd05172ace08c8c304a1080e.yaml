@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-nfs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 4Gi
+  storageClassName: slow
+  selector:
+    matchLabels:
+      name: aegis
+#    matchExpressions:
+#      - {key: environment, operator: In, values: [dev]}

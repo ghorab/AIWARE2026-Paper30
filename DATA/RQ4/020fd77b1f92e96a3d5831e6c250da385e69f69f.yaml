@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: wx-rxtx
+  namespace: the-project
+  labels:
+    app: wx-rxtx
+    env: dev
+spec:
+  serviceName: wx-rxtx
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wx-rxtx
+  template:
+    metadata:
+      labels:
+        app: wx-rxtx
+        env: dev
+    spec:
+      containers:
+      - name: wx-rtbeat
+        image: txn2/rxtx:1.1.4
+        imagePullPolicy: Always
+        args: [
+          "--ingest=http://wx-rtbeat:80/in",
+          "--port=80",
+          "--path=/data",
+          "--interval=10",
+          "--batch=4000",
+          "--maxq=500000"]
+        volumeMounts:
+        - name: wx-rtbeat-data-volume
+          mountPath: /data
+        ports:
+        - name: rxtx
+          containerPort: 80
+  volumeClaimTemplates:
+  - metadata:
+      name: wx-rtbeat-data-volume
+    spec:
+      storageClassName: rook-block
+      accessModes: [ ReadWriteOnce ]
+      resources:
+        requests:
+          storage: 1Gi # enough to hold maxq

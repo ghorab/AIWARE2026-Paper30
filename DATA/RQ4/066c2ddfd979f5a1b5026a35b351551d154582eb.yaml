@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx
+  namespace: default
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::589696708747:role/api-token-access
+
+
+

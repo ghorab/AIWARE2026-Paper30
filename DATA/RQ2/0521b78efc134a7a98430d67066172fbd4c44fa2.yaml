@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nse-supplier-k8s
+  labels:
+    app: nse-supplier-k8s
+spec:
+  selector:
+    matchLabels:
+      app: nse-supplier-k8s
+  template:
+    metadata:
+      labels:
+        app: nse-supplier-k8s
+        "spiffe.io/spiffe-id": "true"
+    spec:
+      containers:
+        - name: nse-supplier
+          image: ghcr.io/networkservicemesh/ci/cmd-nse-supplier-k8s:b2033fa
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SPIFFE_ENDPOINT_SOCKET
+              value: unix:///run/spire/sockets/agent.sock
+            - name: NSM_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NSM_LOG_LEVEL
+              value: TRACE
+          volumeMounts:
+            - name: spire-agent-socket
+              mountPath: /run/spire/sockets
+              readOnly: true
+            - name: nsm-socket
+              mountPath: /var/lib/networkservicemesh
+              readOnly: true
+          resources:
+            limits:
+              memory: 40Mi
+              cpu: 100m
+      volumes:
+        - name: spire-agent-socket
+          hostPath:
+            path: /run/spire/sockets
+            type: Directory
+        - name: nsm-socket
+          hostPath:
+            path: /var/lib/networkservicemesh
+            type: DirectoryOrCreate

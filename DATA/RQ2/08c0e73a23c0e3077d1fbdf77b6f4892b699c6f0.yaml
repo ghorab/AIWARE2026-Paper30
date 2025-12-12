@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: storage-pod
+spec:
+  restartPolicy: Always
+  containers:
+    - name: storage-pod
+      image: fedora:30
+      volumeMounts:
+        - mountPath: "/data"
+          name: storage-pod-volume
+      command: ["sleep", "infinity"]
+  volumes:
+    - name: storage-pod-volume
+      persistentVolumeClaim:
+        claimName: storage-pvc

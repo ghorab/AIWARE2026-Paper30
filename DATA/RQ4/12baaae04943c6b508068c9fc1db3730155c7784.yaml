@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: additional-scrape-configs
+  namespace: prow-monitoring
+stringData:
+  prometheus-additional.yaml: |
+    - job_name: blackbox
+      metrics_path: /probe
+      params:
+        module: [http_2xx]
+      static_configs:
+        - targets:
+          - https://api.build02.gcp.ci.openshift.org
+          - https://registry.build02.ci.openshift.org
+          - https://console-openshift-console.apps.build02.gcp.ci.openshift.org
+          - https://steps.ci.openshift.org
+          - https://prow.ci.openshift.org
+          - https://hook.ci.openshift.org
+      relabel_configs:
+        - source_labels: [__address__]
+          target_label: __param_target
+        - source_labels: [__param_target]
+          target_label: instance
+        - target_label: __address__
+          replacement: blackbox-prober
+type: Opaque

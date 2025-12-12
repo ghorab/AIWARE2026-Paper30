@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ping-pong-runsc-job
+spec:
+  template:
+    metadata:
+      name: ping-pong-runsc-client
+      labels:
+        name: ping-pong-runsc
+    spec:
+      runtimeClassName: runsc
+      affinity:
+        podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                    - key: name
+                      operator: In
+                      values:
+                        - ping-pong-runsc
+                topologyKey: kubernetes.io/hostname
+      restartPolicy: OnFailure
+      containers:
+      - name: ping-pong-runsc-client
+        image: docker.io/sdeoras/ping-pong-client:85e47e08-clean
+        imagePullPolicy: IfNotPresent
+        command:
+          - /ping-pong-client
+        args:
+          - run
+          - --host
+          - ping-pong-runsc-server-service
+          - --port
+          - "5001"
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"

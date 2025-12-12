@@ -1,0 +1,61 @@
+# Source: lighthouse/templates/tekton-controller-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lighthouse-tekton-controller
+  labels:
+    chart: "lighthouse-0.0.939"
+    app: lighthouse-tekton-controller
+    gitops.jenkins-x.io/pipeline: 'namespaces'
+  namespace: jx
+  annotations:
+    wave.pusher.com/update-on-config-change: 'true'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lighthouse-tekton-controller
+  template:
+    metadata:
+      labels:
+        app: lighthouse-tekton-controller
+      annotations: {jenkins-x.io/hash: '2081e3c5e1c16df83d7d353560484736f58d419ca0bb5bbae20492996439d71b'}
+    spec:
+      serviceAccountName: lighthouse-tekton-controller
+      containers:
+        - name: lighthouse-tekton-controller
+          image: gcr.io/jenkinsxio/lighthouse-tekton-controller:0.0.0-PR-1254-5-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+          args:
+            - --namespace=jx
+            - --dashboard-url=http://dashboard-jx.haas-478.pez.vmware.com
+            - --dashboard-template=namespaces/{{ .Namespace }}/pipelineruns/{{ .PipelineRun }}
+          ports:
+            - name: metrics
+              containerPort: 8080
+          env:
+            - name: "LOGRUS_FORMAT"
+              value: "json"
+            - name: DEFAULT_PIPELINE_RUN_SERVICE_ACCOUNT
+              value: "tekton-bot"
+            - name: DEFAULT_PIPELINE_RUN_TIMEOUT
+              value: "2h0m0s"
+            - name: FILE_BROWSER
+              value: "git"
+            - name: JX_DEFAULT_IMAGE
+              value: "gcr.io/jenkinsxio/builder-maven:2.1.142-761"
+            - name: LIGHTHOUSE_DASHBOARD_TEMPLATE
+              value: "namespaces/{{ .Namespace }}/pipelineruns/{{ .PipelineRun }}"
+            - name: LIGHTHOUSE_VERSIONSTREAM_JENKINS_X_JX3_PIPELINE_CATALOG
+              value: "03c73af2bfbc3a55581c36b1979088a39cdf12ea"
+          resources:
+            limits:
+              cpu: 100m
+              memory: 256Mi
+            requests:
+              cpu: 80m
+              memory: 128Mi
+      terminationGracePeriodSeconds: 180
+      nodeSelector: {}
+      affinity: {}
+      tolerations: []

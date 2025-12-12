@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  annotations:
+    jenkins.io/credentials-keybinding-password: BASIC_AUTH_PASS
+    jenkins.io/credentials-keybinding-username: BASIC_AUTH_USER
+    jenkins.io/foo: bar
+  labels:
+    jenkins.io/credentials-type: usernamePassword
+    release: jenkins-x
+  name: jenkins-x-bucketrepo
+data:
+  BASIC_AUTH_PASS: "{{ .Values.config.auth.password | default .Values.secrets.adminUser.password | b64enc }}"
+  BASIC_AUTH_USER: "{{ .Values.config.auth.username | default .Values.secrets.adminUser.username | b64enc }}"

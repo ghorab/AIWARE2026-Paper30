@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-app
+  labels:
+    app: go-app
+spec:
+  replicas: 10
+
+  # Here we define the rolling update strategy
+  # - maxSurge define how many pod we can add at a time
+  # - maxUnavailable define how many pod can be unavailable
+  #   during the rolling update
+  #
+  # Setting maxUnavailable to 0 would make sure we have the appropriate
+  # capacity during the rolling update.
+  # You can also use percentage based value instead of integer.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 20%
+  # The selector field tell the deployment which pod to update with
+  # the new version. 
+  selector:
+    matchLabels:
+      app: go-app
+  template:
+    metadata:
+      labels:
+        app: go-app
+        version: v3.0.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9101"
+    spec:
+      containers:
+      - name: go-app
+        image: aplimasolutions/k8s-deployment-strategies
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: probe
+          containerPort: 8086
+        env:
+        - name: VERSION
+          value: v3.0.0
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: probe
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: probe
+          # Intial delay is set to a high value to have a better
+          # visibility of the rolling update deployment strategy
+          initialDelaySeconds: 15
+          periodSeconds: 5

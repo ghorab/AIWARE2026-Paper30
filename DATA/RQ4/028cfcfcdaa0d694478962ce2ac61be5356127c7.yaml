@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-debian
+spec:
+  containers:
+  - name: c1
+    image: debian
+    command:
+      - "bin/bash"
+      - "-c"
+      - "sleep 10000"

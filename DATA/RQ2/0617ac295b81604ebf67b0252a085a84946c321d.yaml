@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-app2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-app2
+  template:
+    metadata:
+      labels:
+        app: http-app2
+    spec:
+      containers:
+        - name: http-app2
+          image: ghcr.io/rwxproject/web-app-node:master
+          resources:
+            limits:
+              memory: "64Mi"
+              cpu: "25m"
+          env:
+            - name: PORT
+              value: "3000"
+            - name: SRVADDR
+              value: "http-app1-service"
+            - name: SRVPORT
+              value: "3000"
+            - name: APITIME
+              value: "60000"
+          ports:
+            - containerPort: 3000
+          imagePullPolicy: Always

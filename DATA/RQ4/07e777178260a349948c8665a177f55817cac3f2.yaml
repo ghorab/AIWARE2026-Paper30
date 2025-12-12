@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: catcord-api
+    labels:
+        app: catcord-api
+spec:
+    selector:
+        matchLabels:
+            app: catcord-api
+    template:
+        metadata:
+            labels:
+                app: catcord-api
+        spec:
+            containers:
+                - name: api
+                  image: ghcr.io/cat-dev-group/catcord:main
+                  ports:
+                      - containerPort: 8000
+                  env:
+                      - name: POSTGRES_USER
+                        valueFrom:
+                            secretKeyRef:
+                                name: secret-postgresql-db
+                                key: postgres-user
+                      - name: POSTGRES_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: secret-postgresql-db
+                                key: postgres-password
+                      - name: POSTGRES_PORT
+                        value: "5432"
+                      - name: POSTGRES_SERVER
+                        value: postgresql-db.default.svc.cluster.local
+                      - name: POSTGRES_DB
+                        value: database

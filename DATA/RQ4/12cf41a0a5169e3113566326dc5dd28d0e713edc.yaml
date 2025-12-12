@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: helloworld
+  labels:
+    name: helloworld
+spec:
+  containers:
+  - name: helloworld
+    image: gcr.io/springboothelloapp/helloworld:v1
+    ports:
+    - containerPort: 80

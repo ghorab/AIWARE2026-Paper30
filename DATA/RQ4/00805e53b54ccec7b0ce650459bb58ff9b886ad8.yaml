@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    meta.helm.sh/release-name: socials
+    meta.helm.sh/release-namespace: base
+  creationTimestamp: "2022-01-20T16:00:23Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    service: user-timeline-mongodb
+  name: user-timeline-mongodb
+  namespace: base
+  resourceVersion: "179980"
+  uid: 6d801020-b5d8-4be6-bdb2-3ba0cbdbb64d
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      service: user-timeline-mongodb
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: user-timeline-mongodb
+        service: user-timeline-mongodb
+    spec:
+      containers:
+      - args:
+        - --config
+        - /social-network-microservices/config/mongod.conf
+        image: docker.io/library/mongo:4.4.6
+        imagePullPolicy: IfNotPresent
+        name: user-timeline-mongodb
+        ports:
+        - containerPort: 27017
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /social-network-microservices/config/mongod.conf
+          name: user-timeline-mongodb-config
+          subPath: mongod.conf
+      dnsPolicy: ClusterFirst
+      hostname: user-timeline-mongodb
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: user-timeline-mongodb
+        name: user-timeline-mongodb-config
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2022-01-20T16:00:44Z"
+    lastUpdateTime: "2022-01-20T16:00:44Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2022-01-20T16:00:25Z"
+    lastUpdateTime: "2022-01-20T16:00:44Z"
+    message: ReplicaSet "user-timeline-mongodb-d448bcb57" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: socials
+    meta.helm.sh/release-namespace: base
+  creationTimestamp: "2022-01-20T16:00:23Z"
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: user-timeline-mongodb
+  namespace: base
+  resourceVersion: "179367"
+  uid: d90e7fb1-af51-44ea-b957-c01dee96eda4
+spec:
+  clusterIP: 10.96.179.6
+  clusterIPs:
+  - 10.96.179.6
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: "27017"
+    port: 27017
+    protocol: TCP
+    targetPort: 27017
+  selector:
+    service: user-timeline-mongodb
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

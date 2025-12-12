@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docs-bug
+  namespace: docs-bug
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: docs-bug
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: docs-bug
+    spec:
+      containers:
+      - image: swr.cn-north-4.myhuaweicloud.com/opensourceway/common/docs-bug-web-ui:5854ce41703dd00c299bbad07d29ffb62ff409041648627148
+        name: docs-bug
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 1000Mi
+          limits:
+            cpu: 1000m
+            memory: 1000Mi

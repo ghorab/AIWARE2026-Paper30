@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dept-spring1
+  labels:
+    app: dept-spring1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dept-spring1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: dept-spring1
+    spec:
+      containers:
+      - name: dept-spring1
+        image: htdp1/dept-spring:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: tomcat
+        volumeMounts: 
+        - name: application-properties
+          mountPath: "/config"
+          readOnly: true
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 512Mi
+          requests:
+            cpu: 500m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /dept-spring1/actuator/info
+            port: tomcat
+          initialDelaySeconds: 5
+          periodSeconds: 60
+        readinessProbe:
+          httpGet:
+            path: /dept-spring1/actuator/info
+            port: tomcat
+          initialDelaySeconds: 30
+          periodSeconds: 5
+      volumes:
+      - name: application-properties
+        configMap:
+          name: dept-spring1
+          items:
+          - key: application.yml
+            path: application.yml
+          - key: application-redis.yml
+            path: application-redis.yml
+          - key: application-apis.yml
+            path: application-apis.yml
+          - key: application-mariadb.yml
+            path: application-mariadb.yml            

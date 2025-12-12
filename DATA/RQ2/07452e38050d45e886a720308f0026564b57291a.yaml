@@ -1,0 +1,86 @@
+# Copyright 2019 The Tekton Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: image-build-cron-trigger
+spec:
+  schedule: "0 2 * * *"  # Daily at 2am
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          volumes:
+          - name: workspace
+            emptyDir: {}
+          initContainers:
+          - name: uuid
+            image: python:3.6-alpine3.9
+            command:
+            - /bin/sh
+            args:
+              - -ce
+              - |
+                TRIGGER_UUID=$(python -c 'import uuid; print(uuid.uuid4())')
+                cat <<EOF > /workspace/uuid
+                export TRIGGER_UUID=$TRIGGER_UUID
+                EOF
+            volumeMounts:
+            - mountPath: /workspace
+              name: workspace
+          containers:
+          - name: trigger
+            image: curlimages/curl
+            command:
+            - /bin/sh
+            args:
+              - -ce
+              - |
+                set -ex
+
+                . /workspace/uuid
+                TAG=$(echo $TARGET_IMAGE | cut -d':' -f2)
+                NO_TAG=$(echo $TARGET_IMAGE | cut -d':' -f1)
+                IMAGE=$(echo $NO_TAG | rev | cut -d'/' -f1 | rev)
+                REGISTRY=$(echo $NO_TAG | cut -d'/' -f1)
+                NAMESPACE=$(echo $NO_TAG | cut -d'/' -f2- | rev | cut -d'/' -f2- | rev)
+                cat <<EOF > /workspace/post-body.json
+                {
+                  "buildUUID": "$TRIGGER_UUID",
+                  "gitRepository": "$GIT_REPOSITORY",
+                  "gitRevision": "$GIT_REVISION",
+                  "contextPath": "$CONTEXT_PATH",
+                  "registry": "$REGISTRY",
+                  "namespace": "$NAMESPACE",
+                  "imageName": "$IMAGE",
+                  "imageTag": "$TAG",
+                  "platforms": "$PLATFORMS"
+                }
+                EOF
+                curl -d @/workspace/post-body.json $SINK_URL
+            volumeMounts:
+            - mountPath: /workspace
+              name: workspace
+            env:
+              - name: SINK_URL
+                value: "sink-url"
+              - name: GIT_REPOSITORY
+                value: "github.com/tektoncd/plumbing"
+              - name: GIT_REVISION
+                value: "main"
+              - name: TARGET_IMAGE
+                value: "gcr.io/tekton-releases/dogfooding/myimage:latest"
+              - name: PLATFORMS
+                value: ""
+          restartPolicy: Never

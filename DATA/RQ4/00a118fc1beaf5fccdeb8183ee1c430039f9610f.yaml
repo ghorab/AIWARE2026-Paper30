@@ -1,0 +1,49 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: invite-check
+  namespace: litmus
+spec:
+  template:
+    metadata:
+      name: litmus
+      labels:
+        app: invite-check-litmus
+    spec:
+      serviceAccountName: litmus
+      restartPolicy: Never
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: director-user-pass
+      containers:
+      - name: ansibletest
+        image: mayadataio/dop-validator:ci
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: secret-volume
+          readOnly: true
+          mountPath: "/etc/secret-volume"
+        env:
+          - name: DIRECTOR_IP
+            valueFrom:
+              configMapKeyRef:
+                name: config
+                key: url
+          - name: ANSIBLE_STDOUT_CALLBACK
+            value: default  
+          - name: FIRSTNAME
+            value: MEMBER
+          - name: SURNAME
+            value: USER
+          - name: USERNAME
+            value: oep.member@mayadata.io
+          - name: PASSWORD
+            value: OEPuser@123
+          - name: ACTION
+            value: accept
+        command: ["/bin/bash"]
+        args: ["-c", "ansible-playbook ./litmus/director/invite/test.yaml -i /etc/ansible/hosts -v; exit 0"]
+      imagePullSecrets:
+      - name: oep-secret

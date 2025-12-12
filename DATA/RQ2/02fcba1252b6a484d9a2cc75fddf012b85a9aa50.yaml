@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: influxdb
+  name: influxdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      hostname: influxdb
+      containers:
+      - image: influxdb:1.8
+        name: influxdb
+        envFrom:
+        - secretRef:
+            name: influxdb-creds
+        ports:
+        - containerPort: 8086
+          name: influxdb
+        volumeMounts:
+          - name: influxdb-var-lib
+            mountPath: /var/lib/grafana
+      volumes:
+        - name: influxdb-var-lib
+          persistentVolumeClaim:
+            claimName: influxdb-nfs-var-lib-pvc
+      securityContext:
+        runAsUser: 0
+        fsGroup: 0

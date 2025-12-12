@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ceep-laravel-deployment
+  namespace: production
+  labels:
+    app: ceep-laravel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ceep-laravel
+  template:
+    metadata:
+      labels:
+        app: ceep-laravel
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: ceep-laravel
+          image: westsoft/ceep-laravel:<VERSION>
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: ceep-configmap

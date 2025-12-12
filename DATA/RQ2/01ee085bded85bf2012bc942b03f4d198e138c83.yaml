@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: helloworld
+  # namespace: kube-system
+  namespace: default
+  labels:
+    app: helloworld
+    # version: v1
+    # kubernetes.io/cluster-service: "true"
+spec:
+  # minReadySeconds: 30
+  # updateStrategy:
+  #   type: RollingUpdate
+  #   rollingUpdate:
+  #     maxUnavailable: 2
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helloworld
+      # version: v1
+      # kubernetes.io/cluster-service: "true"
+  template:
+    metadata:
+      labels:
+        app: helloworld
+        # version: v1
+        # kubernetes.io/cluster-service: "true"
+    spec:
+      # serviceAccountName: helloworld
+      # priorityClassName: system-node-critical
+      containers:
+        - name: helloworld
+          image: alpine:latest
+          imagePullPolicy: Always # Always | Never | IfNotPresent
+          # command: ['/bin/bash']
+          # args: ['-c', 'trap : TERM INT; sleep infinity & wait']
+          # command: ['/bin/sh']
+          # args: ['-c', 'i=0; while true; do echo "$HOSTNAME - $i: $(date): Hello, World!"; i=$((i+1)); sleep .01; done']
+          # args: ['-c', 'i=0; while true; do echo "$HOSTNAME - $i: Hello, World!"; i=$((i+1)); sleep .01; done']
+          # args: ['-c', 'echo "hello, stdout!"; echo "hello, stderr!" >&2']
+          command: [ "echo" ]
+          args: [ "Hello, Alpine!" ]
+          # securityContext:
+          #   allowPrivilegeEscalation: true
+          resources:
+            limits:
+              cpu: 100m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 128Mi
+          # ports:
+          # - name: helloworld-svc
+          #   containerPort: 3000
+          #   protocol: TCP
+          # volumeMounts:
+          # - name: var-log
+          #   mountPath: /var/log
+# volumes:
+# - name: var-log
+#   emptyDir: {}

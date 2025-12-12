@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: hdfs-datanode
+spec:
+  selector:
+    matchLabels: {}
+  serviceName: hdfs-datanode
+  podManagementPolicy: Parallel
+  replicas: 3
+  template:
+    spec:
+      initContainers:
+      - name: wait-for-namenode
+        image: zookage-util
+        args:
+        - wait-for-rollout
+        - statefulset/hdfs-namenode
+      containers:
+      - name: datanode
+        image: zookage-hadoop
+        command:
+        - $(HADOOP_HOME)/bin/hdfs
+        args:
+        - datanode
+        envFrom:
+        - configMapRef:
+            name: hadoop-env
+        readinessProbe:
+          tcpSocket:
+            port: 9866
+        securityContext:
+          runAsUser: 1011
+          runAsGroup: 1010
+        volumeMounts:
+        - name: hadoop-conf
+          mountPath: /etc/hadoop/conf
+        - name: mnt
+          mountPath: /mnt
+      terminationGracePeriodSeconds: 5
+      volumes:
+      - name: hadoop-conf
+        configMap:
+          name: hadoop-conf
+      - name: mnt
+        emptyDir: {}
+  volumeClaimTemplates: []

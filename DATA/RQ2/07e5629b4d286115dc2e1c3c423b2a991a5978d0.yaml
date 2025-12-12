@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dockerone-deployment
+  labels:
+    app: dockerone
+    tier: frontend
+    env: production
+    component: aspnet
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dockerone
+  template:
+    metadata:
+      labels:
+        app: dockerone
+    spec:
+      containers:
+      - name: dockerone
+        image: vijayshinva/dockerone
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: 32Mi
+            cpu: 250m
+            ephemeral-storage: 100Mi
+          limits:
+            memory: 128Mi
+            cpu: 500m
+        livenessProbe:
+          httpGet:
+              path: /liveness/probe
+              port: 80
+          initialDelaySeconds: 15
+          timeoutSeconds: 2
+          periodSeconds: 5
+          failureThreshold: 1

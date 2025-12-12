@@ -1,0 +1,29 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cloudflare-ddns
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - args:
+            - -once
+            envFrom:
+            - secretRef:
+                name: cloudflare-ddns
+            image: chrischdi/cloudflare-ddns:v0.4.0
+            imagePullPolicy: IfNotPresent
+            name: cloudflare-ddns
+          dnsConfig:
+            options:
+            - name: ndots
+              value: "1"
+          restartPolicy: OnFailure
+          terminationGracePeriodSeconds: 30
+  schedule: '*/15 * * * *'
+  startingDeadlineSeconds: 30
+  successfulJobsHistoryLimit: 3

@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pchclient-ui
+  namespace: pchclient-dev
+  labels:
+    project: pchclient
+    app: pchclient-ui
+    env: dev
+spec:
+  selector:
+    matchLabels:
+      project: pchclient
+      app: pchclient-ui
+      env: dev
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        project: pchclient
+        app: pchclient-ui
+        env: dev
+    spec:
+      containers:
+      # - image: k3d-codebgp-registry:44257/pchclientui:local
+      - image: nlyberakis/pchclient-ui:2
+        name: pchclient-ui
+        resources:
+          limits:
+            cpu: 500m
+            memory: 768Mi
+          requests:
+            cpu: 50m
+            memory: 256Mi
+        ports:
+        - name: "http"
+          containerPort: 80
+          protocol: "TCP"

@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: chenlonglabacrtask 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chenlonglabacrtask
+  template:
+    metadata:
+      labels:
+        app: chenlonglabacrtask 
+    spec:
+      containers:
+        - name: chenlonglabacrtask 
+          image: acrlong.azurecr.io/chenlonglabacrtask
+          ports:
+          - containerPort: 80

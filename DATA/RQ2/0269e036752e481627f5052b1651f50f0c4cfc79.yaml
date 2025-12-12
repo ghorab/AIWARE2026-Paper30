@@ -1,0 +1,20 @@
+apiVersion: v1
+data:
+  nginx.conf: |
+    events {}
+    http {
+      server {
+        location /overwrite {
+          # Set Content-Type
+          proxy_set_header Content-Type application/json;
+          proxy_pass http://node-clusterip/overwrite;
+        }
+
+        location / {
+          proxy_pass http://node-clusterip;
+        }
+      }
+    }
+kind: ConfigMap
+metadata:
+  name: nginx-config

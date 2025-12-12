@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    openshift.io/generatedby: hurtle.it
+  labels:
+    app: hurtle-cc-api
+  name: hurtle-cc-api-admin
+  namespace: demo
+spec:
+  ports:
+  - name: admin-api
+    nodePort: 0
+    port: 8081
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    deploymentconfig: hurtle-cc-api
+  sessionAffinity: None
+  type: ClusterIP

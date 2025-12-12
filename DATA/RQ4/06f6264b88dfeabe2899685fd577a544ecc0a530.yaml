@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kube-ops
+  annotations:
+      scheduler.alpha.kubernetes.io/node-selector: kubernetes.io/arch=amd64
+spec: {}
+status: {}

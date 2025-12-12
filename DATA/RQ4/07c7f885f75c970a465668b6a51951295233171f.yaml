@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: formbuilder-submit-product
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: formbuilder-submit-product
+  template:
+    metadata:
+      labels:
+        app: formbuilder-submit-product
+    spec:
+      securityContext:
+        runAsUser: 999
+      containers:
+      - name: submit-product
+        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/formbuilder/fb-submit-product:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000

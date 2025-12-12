@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  RDS_HOST: "127.0.0.1" #FOR GCP SIDE CAR PROXY
+  RDS_DB_NAME: postgres #NEED CREATE OTHER VARS FOR OTHERS DBS
+  RDS_PORT: "5432"
+  RDS_USERNAME: postgres
+  RABBIT_HOST: rabbitmq
+kind: ConfigMap
+metadata:
+  name: my-project-config
+  namespace: default

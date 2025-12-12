@@ -1,0 +1,17 @@
+---
+kind: "Service"
+apiVersion: "v1"
+metadata:
+  name: "smtp"
+  labels:
+    application: "exim4"
+    role: "smtp"
+spec:
+  selector:
+    application: "exim4"
+    role: "smtp"
+  ports:
+    - protocol: "TCP"
+      name: "smtp"
+      port: 25
+  type: "ClusterIP"

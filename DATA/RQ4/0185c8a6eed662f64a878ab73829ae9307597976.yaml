@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaswanth-nodeport-svc-springbootcrud
+  labels:
+    stackroute.k8: jaswanth-nodeport-svc-springbootcrud
+spec:
+  type: NodePort
+  selector:
+    stackroute.k8: jaswanth-deployment-springbootcrud
+  ports:
+   - nodePort: 31200
+     port: 80
+     targetPort: 8080
+    
+  

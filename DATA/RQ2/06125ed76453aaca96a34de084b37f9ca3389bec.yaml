@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: aws-account-creds
+  labels:
+    app: aws-ecr-creds
+    cloud: ecr
+data:
+  AWS_ACCESS_KEY_ID: BASE64-ENCODED-VALUE-HERE
+  AWS_SECRET_ACCESS_KEY: BASE64-ENCODED-VALUE-HERE
+  aws-account: BASE64-ENCODED-VALUE-HERE
+  aws-region: BASE64-ENCODED-VALUE-HERE
+  oc-api-url: BASE64-ENCODED-VALUE-HER
+  oc-user: BASE64-ENCODED-VALUE-HERE
+  oc-password: BASE64-ENCODED-VALUE-HERE
+type: Opaque

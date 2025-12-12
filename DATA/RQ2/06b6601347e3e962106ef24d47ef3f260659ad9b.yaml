@@ -1,0 +1,37 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: acm-controller
+  namespace: open-cluster-management
+  labels:
+    app: acm-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: acm-controller
+  template:
+    metadata:
+      labels:
+        app: acm-controller
+    spec:
+      serviceAccountName: acm-foundation-sa
+      containers:
+      - name: acm-controller
+        image: ko://github.com/open-cluster-management/multicloud-operators-foundation/cmd/acm-controller
+        imagePullPolicy: IfNotPresent
+        args:
+          - "/acm-controller"
+          - "--enable-rbac=true"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8000
+          failureThreshold: 3
+          periodSeconds: 10

@@ -1,0 +1,20 @@
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-po
+  namespace: test 
+  # Labels are important in k8s, they work well with annotaitions.
+  labels:
+    app: nginx
+    group: scuadron
+    type: frontend
+spec:
+  containers:
+    - name: nginx
+      image: nginx:latest
+      ports:
+        - name: 80-tcp
+          protocol: TCP # or UDP or SDCP.
+          containerPort: 80
+  # nodeName: <node ip> will use to define a specified node for this pod.

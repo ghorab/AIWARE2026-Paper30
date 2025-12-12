@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gql-source-controller
+  namespace: knative-sources
+  labels:
+    sources.muru.dev/release: devel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gql-source-controller
+  template:
+    metadata:
+      labels:
+        app: gql-source-controller
+    spec:
+      serviceAccountName: gql-source-controller
+      containers:
+      - name: controller
+        terminationMessagePolicy: FallbackToLogsOnError
+        image: ko://github.com/itsmurugappan/gql-source/cmd/controller
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+          - name: SYSTEM_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: CONFIG_LOGGING_NAME
+            value: gql-source-config-logging
+          - name: CONFIG_OBSERVABILITY_NAME
+            value: gql-source-config-observability
+          - name: CONFIG_LEADERELECTION_NAME
+            value: gql-source-config-leader-election
+          - name: METRICS_DOMAIN
+            value: muru.dev/sources
+          - name: GQL_RA_IMAGE
+            value: ko://github.com/itsmurugappan/gql-source/cmd/receive_adapter
+        securityContext:
+          allowPrivilegeEscalation: false
+        ports:
+          - name: metrics
+            containerPort: 9090

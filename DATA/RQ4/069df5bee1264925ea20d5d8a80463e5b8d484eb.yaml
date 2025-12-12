@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mon-docker-agent
+  labels:
+    app: mon-docker-agent
+spec:
+  replicas: 2
+  progressDeadlineSeconds: 1800
+  selector:
+    matchLabels:
+      app: mon-docker-agent
+  template:
+    metadata:
+      labels:
+        app: mon-docker-agent 
+    spec:
+      containers:
+        - name: mon-docker-agent
+          image: __ContainerRegistryAdminUser__.azurecr.io/mon-docker-hosted-agent:__NCSDockerDevOpsAgentsTag__
+          ports:
+          - containerPort: 80
+          resources:
+            requests:
+              cpu: "130m"
+              memory: "300Mi"
+            limits:
+              cpu: "130m"
+              memory: "300Mi"
+          env:
+          - name: AZP_URL
+            valueFrom:
+              secretKeyRef:
+                name: azdevops
+                key: AZP_URL
+          - name: AZP_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: azdevops
+                key: AZP_TOKEN
+          - name: AZP_POOL
+            valueFrom:
+              secretKeyRef:
+                name: azdevops
+                key: AZP_POOL
+          securityContext:
+            allowPrivilegeEscalation: false
+          volumeMounts:
+          - name: docker-graph-storage
+            mountPath: /var/run/docker.sock
+      volumes:
+      - name: docker-graph-storage
+        hostPath:
+            path: /var/run/docker.sock

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: data-producer
+    application: amm-techlab
+  name: data-producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      deployment: data-producer
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        application: amm-techlab
+        deployment: data-producer
+        app: data-producer
+    spec:
+      containers:
+        - image: quay.io/puzzle/quarkus-techlab-data-producer:jaegerkafka
+          imagePullPolicy: Always
+          env:
+            - name: PRODUCER_JAEGER_ENABLED
+              value: 'true'
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /health/live
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 20
+            timeoutSeconds: 15
+          readinessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /health/ready
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 3
+            periodSeconds: 20
+            timeoutSeconds: 15
+          name: data-producer
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          resources:
+            limits:
+              cpu: '1'
+              memory: 500Mi
+            requests:
+              cpu: 50m
+              memory: 100Mi

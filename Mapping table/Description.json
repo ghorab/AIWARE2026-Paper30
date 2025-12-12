@@ -1,0 +1,198 @@
+[
+  {
+    "misconfiguration": "Absence of readOnlyRootFilesystem",
+    "description": "A writable root filesystem lets attackers modify binaries/configs and persist malware. Fix by setting container securityContext.readOnlyRootFilesystem=true, writing logs/tmp to emptyDir or dedicated volumes, and ensuring the app doesn’t need rootfs writes."
+  },
+  {
+    "misconfiguration": "HostPath volume mounting without restrictions",
+    "description": "hostPath mounts give pods direct access to node files (e.g., /etc, /var/lib/kubelet), enabling host takeover or data theft. Fix by avoiding hostPath when possible; otherwise whitelist specific paths, mount readOnly, and enforce Pod Security/OPA policies."
+  },
+  {
+    "misconfiguration": "Missing or misconfigured storageClassName",
+    "description": "Wrong or missing storageClassName can provision unexpected storage (wrong performance, zone, encryption) or fail to bind PVCs. Fix by explicitly setting spec.storageClassName to an approved class, validating with cluster StorageClasses, and using admission policies."
+  },
+  {
+    "misconfiguration": "Use of emptyDir for stateful workloads",
+    "description": "emptyDir is ephemeral: data disappears on pod restart/eviction and may be stored on node disk. Fix by using PersistentVolumeClaim-backed storage (StatefulSet volumeClaimTemplates), selecting appropriate StorageClass, and ensuring backup/snapshot support."
+  },
+  {
+    "misconfiguration": "No backup or snapshot policy for PersistentVolumes",
+    "description": "Without backups/snapshots, PV corruption or deletion leads to irreversible data loss. Fix by enabling CSI VolumeSnapshot, scheduling backups (Velero or storage-native tools), defining retention policies, and testing restore procedures regularly."
+  },
+  {
+    "misconfiguration": "Unencrypted or shared volumes across namespaces",
+    "description": "Unencrypted or shared storage can expose sensitive data across tenants/namespaces. Fix by enabling encryption at rest in the storage layer, using per-namespace PVCs, restricting access via RBAC and NetworkPolicies, and avoiding cross-namespace sharing patterns."
+  },
+  {
+    "misconfiguration": "allowPrivilegeEscalation",
+    "description": "allowPrivilegeEscalation permits processes to gain more privileges (e.g., via setuid binaries), increasing breakout risk. Fix by setting securityContext.allowPrivilegeEscalation=false, dropping capabilities, using non-root users, and preventing setuid where possible."
+  },
+  {
+    "misconfiguration": "Missing securityContext at container level",
+    "description": "Without container securityContext, pods inherit unsafe defaults (root user, default capabilities, writable rootfs). Fix by defining runAsNonRoot, runAsUser/group, allowPrivilegeEscalation=false, readOnlyRootFilesystem=true, seccompProfile, and capabilities drops."
+  },
+  {
+    "misconfiguration": "Unrestricted Linux capabilities",
+    "description": "Extra Linux capabilities (e.g., NET_ADMIN, SYS_ADMIN) expand kernel-level privileges and enable node compromise. Fix by setting capabilities.drop: [\"ALL\"] and adding back only the minimal required capabilities, reviewed and justified per workload."
+  },
+  {
+    "misconfiguration": "Default capabilities not dropped",
+    "description": "Default container capabilities may be unnecessary and exploitable. Fix by explicitly dropping ALL capabilities, running as non-root, and only adding specific capabilities after verifying the application truly needs them (principle of least privilege)."
+  },
+  {
+    "misconfiguration": "Use of cluster-admin role in production workloads",
+    "description": "cluster-admin grants full control of the cluster; compromise of that workload becomes cluster compromise. Fix by replacing with least-privilege Roles/ClusterRoles scoped to required resources/verbs, and using separate service accounts per workload."
+  },
+  {
+    "misconfiguration": "Broad role bindings",
+    "description": "RoleBindings/ClusterRoleBindings that use wildcards or broad verbs allow unintended access. Fix by tightening verbs (get/list/watch vs create/delete), limiting resources and API groups, scoping to namespaces when possible, and reviewing bindings periodically."
+  },
+  {
+    "misconfiguration": "Absence of namespace scoping",
+    "description": "Permissions not scoped to namespaces allow cross-namespace access and tenant isolation failure. Fix by preferring Role + RoleBinding over ClusterRoleBinding, separating workloads into namespaces, and enforcing policies that block cluster-wide permissions by default."
+  },
+  {
+    "misconfiguration": "Automatic token mounting not disabled",
+    "description": "automountServiceAccountToken=true exposes a token in every pod, enabling API abuse if the pod is compromised. Fix by setting automountServiceAccountToken=false at Pod/ServiceAccount, and mounting projected tokens only where needed with short TTL."
+  },
+  {
+    "misconfiguration": "Hardcoded tokens",
+    "description": "Hardcoded tokens in YAML/images/code are easily leaked via git, logs, or image layers. Fix by removing from manifests, using external secret managers or short-lived projected service account tokens, and rotating any exposed credentials immediately."
+  },
+  {
+    "misconfiguration": "Unrestricted API access in service accounts",
+    "description": "Service accounts with broad RBAC let compromised pods read secrets, modify workloads, or escalate privileges. Fix by auditing RBAC, removing wildcard rules, separating duties across service accounts, and continuously monitoring permission drift."
+  },
+  {
+    "misconfiguration": "Default namespace used for workloads",
+    "description": "Deploying in default namespace reduces isolation and makes policy enforcement harder. Fix by creating dedicated namespaces per app/team/environment, applying baseline policies (RBAC, quotas, NetworkPolicy) per namespace, and blocking default namespace deployments."
+  },
+  {
+    "misconfiguration": "Missing NetworkPolicy for namespace isolation",
+    "description": "Without NetworkPolicy, pods can communicate freely, enabling lateral movement. Fix by enabling a CNI that supports NetworkPolicy and applying default-deny ingress/egress policies, then allow only required flows (DNS, app dependencies)."
+  },
+  {
+    "misconfiguration": "Cross-namespace volume or secret sharing",
+    "description": "Sharing secrets/volumes across namespaces breaks isolation and increases blast radius. Fix by duplicating secrets per namespace via controllers, using scoped service accounts, avoiding shared PVs, and enforcing admission rules blocking cross-namespace references."
+  },
+  {
+    "misconfiguration": "Missing resources.requests or resources.limits",
+    "description": "Without requests/limits, scheduling is unreliable and noisy neighbors can starve critical pods or crash nodes. Fix by setting CPU/memory requests for scheduling and appropriate limits for containment, using LimitRange defaults and monitoring actual usage."
+  },
+  {
+    "misconfiguration": "Equal requests and limits causing throttling",
+    "description": "Setting CPU requests=limits removes burst capacity and can cause throttling under load, degrading latency. Fix by setting requests to typical usage and limits above it, or using VPA recommendations and performance testing to pick safe headroom."
+  },
+  {
+    "misconfiguration": "No namespace-level ResourceQuota",
+    "description": "Without ResourceQuota, a namespace can consume all cluster resources, causing outages for others. Fix by defining ResourceQuota for CPU/memory/pods/services and pairing with LimitRange; monitor quota pressure and adjust based on observed demand."
+  },
+  {
+    "misconfiguration": "Improperly tuned HPA thresholds (too low or high)",
+    "description": "Bad HPA targets cause oscillation (thrashing) or slow scaling, impacting cost and reliability. Fix by choosing meaningful metrics (CPU, custom latency), setting realistic target utilization, stabilization windows, min/max replicas, and validating with load tests."
+  },
+  {
+    "misconfiguration": "Missing or disabled ClusterAutoscaler",
+    "description": "Without ClusterAutoscaler, pending pods may never schedule when capacity is exhausted. Fix by enabling ClusterAutoscaler for your cloud/provider, configuring node groups and limits, and ensuring pods have correct requests so autoscaling decisions are accurate."
+  },
+  {
+    "misconfiguration": "No PodDisruptionBudget (PDB) for critical workloads",
+    "description": "Without PDB, voluntary disruptions (drains, upgrades) can evict too many replicas, causing downtime. Fix by defining PDB with minAvailable/maxUnavailable aligned to replica count and SLOs, and ensuring enough replicas exist to satisfy the PDB."
+  },
+  {
+    "misconfiguration": "Absence of affinity or antiAffinity rules",
+    "description": "Lack of affinity controls can place pods in risky topologies (same zone/node), reducing resilience or performance. Fix by adding node affinity (e.g., zones), pod anti-affinity for replicas, and topologySpreadConstraints for balanced distribution."
+  },
+  {
+    "misconfiguration": "Pods co-located on the same node without anti-affinity",
+    "description": "Replica co-location means one node failure can drop all replicas. Fix by configuring requiredDuringScheduling podAntiAffinity or topologySpreadConstraints across hostname/zone, and ensuring enough nodes exist to honor the constraints."
+  },
+  {
+    "misconfiguration": "Ignored taints/tolerations causing workload imbalance",
+    "description": "Missing/incorrect tolerations can block scheduling or concentrate workloads on a subset of nodes. Fix by defining taints for special nodes (GPU, system) and adding precise tolerations only for workloads that need them; validate with scheduler events."
+  },
+  {
+    "misconfiguration": "Use of latest tag",
+    "description": "latest makes deployments non-reproducible and can pull unexpected vulnerable builds. Fix by pinning to immutable tags or image digests (sha256), using CI to promote versioned images, and enabling admission rules that reject latest."
+  },
+  {
+    "misconfiguration": "Unsigned or unverified container images",
+    "description": "Unverified images enable supply-chain attacks (tampered registry content). Fix by signing images (e.g., Sigstore/cosign) and enforcing verification in admission (Kyverno/Gatekeeper), restricting who can push, and auditing provenance (SBOM/attestations)."
+  },
+  {
+    "misconfiguration": "Image pulled from untrusted or public registry",
+    "description": "Public/untrusted registries increase risk of typosquatting and malicious images. Fix by allowing only approved registries via admission policies, mirroring dependencies into a private registry, and enforcing authentication and vulnerability scanning on pull."
+  },
+  {
+    "misconfiguration": "Outdated base images with CVEs",
+    "description": "Old bases contain known vulnerabilities exploitable in runtime. Fix by regularly rebuilding images, using minimal hardened bases, tracking CVEs via scanners, and setting automation (Dependabot/renovate) to update base images and libraries."
+  },
+  {
+    "misconfiguration": "Lack of image vulnerability scanning",
+    "description": "Without scanning, vulnerable images reach production unnoticed. Fix by adding scanning in CI/CD (Snyk/Trivy/Grype), failing builds on critical CVEs, scanning registries continuously, and defining remediation SLAs for patching and redeploying."
+  },
+  {
+    "misconfiguration": "Hardcoded credentials in images or ENV variables",
+    "description": "Credentials in image layers or ENV leak via logs, process listings, and registry access. Fix by storing secrets in Kubernetes Secrets or external managers, mounting as files, using IAM/workload identity, and rotating any leaked credentials."
+  },
+  {
+    "misconfiguration": "Use of deprecated API versions",
+    "description": "Deprecated APIs may be removed, breaking upgrades and tools. Fix by migrating manifests to supported API versions, running `kubectl convert`/schema checks, tracking deprecations per Kubernetes release, and validating in CI against target versions."
+  },
+  {
+    "misconfiguration": "Hardcoded endpoints or insecure API communication",
+    "description": "Hardcoded endpoints reduce portability and may bypass secure channels; insecure HTTP enables MITM and token theft. Fix by using service discovery (DNS), ConfigMaps for endpoints, enforcing HTTPS/TLS, and validating server identities (CA bundles)."
+  },
+  {
+    "misconfiguration": "Use of NodePort services in production",
+    "description": "NodePort exposes services on every node IP/port, increasing attack surface and bypassing ingress controls. Fix by using Ingress with TLS, internal LoadBalancer, or service mesh; restrict exposure with firewall rules and NetworkPolicies."
+  },
+  {
+    "misconfiguration": "Missing TLS in Ingress configuration",
+    "description": "Ingress without TLS sends credentials and sessions in plaintext. Fix by configuring tls.secretName with valid certificates, redirecting HTTP to HTTPS, using cert-manager for automation, and enforcing modern TLS settings at the ingress controller."
+  },
+  {
+    "misconfiguration": "Public LoadBalancer with unrestricted IP access",
+    "description": "An open public LoadBalancer allows internet-wide scanning and exploitation. Fix by limiting source ranges (loadBalancerSourceRanges), placing behind WAF/API gateway, using private/internal LBs when possible, and applying NetworkPolicies and auth."
+  },
+  {
+    "misconfiguration": "Absence of NetworkPolicy objects",
+    "description": "Without any NetworkPolicy, the default is allow-all traffic, enabling lateral movement and data exfiltration. Fix by deploying a policy-capable CNI, applying default-deny ingress/egress, then explicitly allowing only required destinations."
+  },
+  {
+    "misconfiguration": "Overly permissive ingress/egress rules",
+    "description": "Wide allow rules (0.0.0.0/0, all ports) undermine segmentation and enable exfiltration. Fix by restricting CIDRs, ports, and selectors, separating namespaces by trust level, and reviewing policies with tests and network flow monitoring."
+  },
+  {
+    "misconfiguration": "No isolation between namespaces",
+    "description": "Without RBAC + NetworkPolicy + quotas, namespaces are administrative only and isolation is weak. Fix by enforcing least-privilege RBAC, default-deny NetworkPolicies per namespace, ResourceQuota/LimitRange, and admission controls for baseline security."
+  },
+  {
+    "misconfiguration": "Plaintext secrets",
+    "description": "Secrets stored or transmitted in plaintext can leak via git, logs, etcd access, or backups. Fix by using Kubernetes Secrets with encryption at rest (KMS), restricting RBAC, avoiding printing secrets, and preferring external secret managers."
+  },
+  {
+    "misconfiguration": "No integration with external secret managers (Vault, AWS)",
+    "description": "Relying only on cluster secrets can limit rotation, auditing, and dynamic credentials. Fix by integrating Vault/AWS/GCP/Azure secret managers via CSI/External Secrets Operator, using short-lived credentials, and enforcing rotation and access logging."
+  },
+  {
+    "misconfiguration": "TLS not enforced",
+    "description": "If TLS isn’t required, services may accept insecure traffic, enabling interception and downgrade attacks. Fix by enforcing HTTPS-only at ingress and services, using mTLS where appropriate, rejecting plaintext ports, and setting strict transport policies."
+  },
+  {
+    "misconfiguration": "Self-signed or expired certificates",
+    "description": "Self-signed certs break trust and are often ignored; expired certs cause outages and insecure workarounds. Fix by using trusted internal/ACME CAs, automating issuance/renewal (cert-manager), monitoring expiry, and rotating certificates safely."
+  },
+  {
+    "misconfiguration": "Persistent volume data not encrypted",
+    "description": "PV data at rest can be read if disks/snapshots are accessed outside Kubernetes. Fix by enabling storage-provider encryption (KMS), using encrypted StorageClasses, restricting snapshot access, and ensuring backups/snapshots are also encrypted."
+  },
+  {
+    "misconfiguration": "Missing SSL/TLS",
+    "description": "Services without SSL/TLS expose credentials, tokens, and sensitive payloads to sniffing and MITM. Fix by enabling TLS on endpoints, configuring certificates and trusted CAs, and terminating TLS at ingress or end-to-end with service mesh."
+  },
+  {
+    "misconfiguration": "Outdated cipher suites or protocols",
+    "description": "Legacy protocols (TLS 1.0/1.1) and weak ciphers enable downgrade/cryptographic attacks. Fix by disabling old protocols, enforcing TLS 1.2/1.3, selecting strong cipher suites, and aligning ingress/controller settings with modern security baselines."
+  }
+]

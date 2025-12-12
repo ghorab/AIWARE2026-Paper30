@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+spec:
+ containers:
+  - name: jnlp
+    image: eph6666/jnlp-slave-alpine:v1
+    tty: true
+  - name: maven
+    image: chiphwang/jenkins-maven-root:latest
+    tty: true
+    

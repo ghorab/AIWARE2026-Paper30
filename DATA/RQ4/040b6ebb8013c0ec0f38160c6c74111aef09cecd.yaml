@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: juice-shop
+  labels:
+    helm.sh/chart: juice-shop-2.7.0
+    app.kubernetes.io/name: juice-shop
+    app.kubernetes.io/instance: juice-shop
+    app.kubernetes.io/version: "v12.7.0"
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: juice-shop
+      app.kubernetes.io/instance: juice-shop
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: juice-shop
+        app.kubernetes.io/instance: juice-shop
+    spec:
+      securityContext:
+        {}
+      containers:
+        - name: juice-shop
+          securityContext:
+            {}
+          image: "docker.io/bkimminich/juice-shop:v12.7.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {}

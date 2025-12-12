@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-proxy
+spec:
+  selector:
+    matchLabels:
+      app: web-proxy
+  template:
+    metadata:
+      labels:
+        app: web-proxy
+    spec:
+      containers:
+        - name: web-proxy
+          image: ghcr.io/project-mtee/web-proxy:latest  # TODO
+          env:
+            - name: AppConfiguration__Configuration__PublicUrl
+              valueFrom:
+                configMapKeyRef:
+                  key: website
+                  name: hosts
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 80
+            initialDelaySeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 80
+            initialDelaySeconds: 10
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "1.0"
+            limits:
+              memory: "512Mi"

@@ -1,0 +1,20 @@
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: cicd
+  name: jenkins
+  labels:
+    demo: cicd
+spec:
+  selector:
+    app: jenkins
+  type: NodePort
+  ports:
+  - protocol: TCP
+    name: slave-port
+    port: 50000
+    targetPort: 50000
+  - protocol: TCP
+    name: default-port
+    port: 8080
+    targetPort: 8080

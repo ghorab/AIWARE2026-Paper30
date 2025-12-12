@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: mukundlabpipelinesjavascriptdocker 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mukundlabpipelinesjavascriptdocker
+  template:
+    metadata:
+      labels:
+        app: mukundlabpipelinesjavascriptdocker 
+    spec:
+      containers:
+        - name: mukundlabpipelinesjavascriptdocker 
+          image: mukunddemo.azurecr.io/mukundlabpipelinesjavascriptdocker
+          ports:
+          - containerPort: 8080

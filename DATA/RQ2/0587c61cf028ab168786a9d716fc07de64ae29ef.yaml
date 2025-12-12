@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: barnacle-back
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: barnacle-back
+  template:
+    metadata:
+      labels:
+        app: barnacle-back
+    spec:
+      containers:
+        - name: barnacle-back
+          image: dkanunik/barnacle-back:latest
+          ports:
+            - containerPort: 3000
+              protocol: TCP

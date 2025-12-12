@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tunnel-test
+spec:
+  selector:
+    matchLabels:
+      app: tunnel-test
+  template:
+    metadata:
+      labels:
+        app: tunnel-test
+    spec:
+      containers:
+      - name: tunnel-test
+        image: quay.io/skeeey/curl:v0.1.0
+        imagePullPolicy: IfNotPresent
+        command:
+        - "sleep"
+        - "36000"
+        volumeMounts:
+        - name: sa-secrets
+          mountPath: "/sa/secrets"
+          readOnly: true
+      volumes:
+      - name: sa-secrets
+        secret:
+          secretName: sa-secrets

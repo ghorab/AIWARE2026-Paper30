@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dreamhome-admin
+spec:
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: dreamhome-admin
+    spec:
+      volumes:
+        - name: dreamhome-scripts-volume
+          configMap:
+            name: dreamhome-config
+      containers:
+        - name: dreamhome-job
+          image: byrnedo/alpine-curl:latest
+          volumeMounts:
+            - mountPath: /dreamhome-scripts
+              name: dreamhome-scripts-volume
+          env:
+            - name: HOME
+              value: /tmp
+            - name: MY_JOB_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          command:
+            - /bin/sh
+            - -c
+            - |
+              cp /dreamhome-scripts/*.sh /tmp
+              chmod +x /tmp/*.sh
+              echo "execute script-two.sh now"
+              /tmp/script-two.sh
+      restartPolicy: Never

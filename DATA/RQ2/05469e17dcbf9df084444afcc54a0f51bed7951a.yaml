@@ -1,0 +1,15 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: pod-using-nfs
+spec:
+  # Add the server as an NFS volume for the pod
+
+  # In this container, we'll mount the NFS volume
+  # and write the date to a file inside it.
+  containers:
+    - name: app
+      image: ubuntu
+      securityContext:
+        privileged: true
+

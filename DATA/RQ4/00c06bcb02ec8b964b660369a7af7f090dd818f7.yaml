@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: render
+spec:
+  completions: 8
+  template:
+    metadata:
+      name: render
+    spec:
+      containers:
+      - name: render
+        image: soltysh/render
+        command:
+        - /run.sh
+        - BROKER_URL
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      restartPolicy: Never
+      volumes:
+      - name: data
+        hostPath:
+          path: /tmp/data

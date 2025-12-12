@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: liberator
+  namespace: tkr-system    # 시스템 전용 네임스페이스
+spec:
+  selector:
+    matchLabels:
+      name: liberator
+  template:
+    metadata:
+      labels:
+        name: liberator
+    spec:
+      serviceAccountName: high-availability # 권한을 가진 서비스 어카운트
+      containers:
+      - name: liberator
+        image: gblee87/liberator:0.1
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+

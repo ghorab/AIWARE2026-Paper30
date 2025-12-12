@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+spec:
+  nodeSelector:
+    accelerator: nvidia-tesla-p100
+
+  containers:
+    - name: myapp
+      image: nginx
+      resources: {}

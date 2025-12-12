@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blizzcms
+spec:
+  selector:
+    matchLabels:
+      run: blizzcms
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: blizzcms
+    spec:
+      containers:
+      - name: blizzcms
+        image: gcr.io/PROJECT_ID/IMAGE:TAG
+        ports:
+        - containerPort: 80

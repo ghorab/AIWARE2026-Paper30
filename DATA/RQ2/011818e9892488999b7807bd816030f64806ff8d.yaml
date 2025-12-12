@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ${podName}
+  labels:
+    app: ${podName}
+spec:
+  containers:
+    - name: ${podName}-container
+      image: p2w2/dht
+      volumeMounts:
+        - name: tz-config
+          mountPath: /etc/localtime
+      env:
+        - name: SERVER_HOST
+          value: "${brokerIP}"
+        - name: "DEVICE_NAME"
+          value: "${nodeName}"
+      securityContext:
+        privileged: true
+  nodeName: ${nodeName}
+  volumes:
+    - name: tz-config
+      hostPath:
+        path: /usr/share/zoneinfo/Europe/Berlin

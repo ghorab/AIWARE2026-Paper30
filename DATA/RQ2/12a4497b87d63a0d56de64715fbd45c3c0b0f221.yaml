@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-uat-rvsprxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: nginx-proxy
+  template:
+    metadata:
+      name: nginx-proxy
+    spec:
+      containers:
+        - image: nginx
+          name: nginx-proxy
+      

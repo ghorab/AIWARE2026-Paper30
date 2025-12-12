@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: jimmybchoppspipelinesjavascriptdocker
+spec:
+    type: LoadBalancer
+    ports:
+    - port: 8080 
+    selector:
+        app: jimmybchoppspipelinesjavascriptdocker

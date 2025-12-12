@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nicks
+  labels:
+    app.kubernetes.io/part-of: ephemerator.tilt.dev
+    app.kubernetes.io/name: ephrunner
+data:
+  repo: https://github.com/tilt-dev/tilt-example-html
+  path: 0-base/Tiltfile
+  branch: master

@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+   name: rs1
+   labels: 
+    app: frontend
+spec:
+   template:
+      metadata:
+         name: pod1
+         labels:
+             app: frontend
+      spec:
+         containers:
+         - name: p1 
+           image: nginx
+   replicas: 3
+   selector:
+    matchLabels:
+       app: frontend

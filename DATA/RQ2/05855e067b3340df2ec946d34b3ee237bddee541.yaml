@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traefik-dynamic-configmap
+  namespace: ingress-traefik
+data:
+  dynamic.toml: |
+    [tls.options]
+
+      [tls.options.default]
+        sniStrict = true
+        minVersion = "VersionTLS12"
+        cipherSuites = [
+          "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+        ]
+
+    [[tls.certificates]]
+      certFile = "certs/server.crt"
+      keyFile  = "certs/server.key"
+      stores = ["default"]       
+
+    [tls.stores]
+      [tls.stores.default]
+        [tls.stores.default.defaultCertificate]
+          certFile = "certs/server.crt"
+          keyFile  = "certs/server.key"

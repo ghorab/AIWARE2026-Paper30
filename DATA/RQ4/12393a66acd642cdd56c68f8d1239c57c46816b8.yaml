@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2021-05-07T03:27:44Z"
+  labels:
+    app: hasher
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:labels:
+          .: {}
+          f:app: {}
+      f:spec:
+        f:ports:
+          .: {}
+          k:{"port":80,"protocol":"TCP"}:
+            .: {}
+            f:port: {}
+            f:protocol: {}
+            f:targetPort: {}
+        f:selector:
+          .: {}
+          f:app: {}
+        f:sessionAffinity: {}
+        f:type: {}
+    manager: kubectl-expose
+    operation: Update
+    time: "2021-05-07T03:27:44Z"
+  name: hasher
+  namespace: default
+  resourceVersion: "19760"
+  selfLink: /api/v1/namespaces/default/services/hasher
+  uid: be8c9334-8876-4ed3-8af6-193b7fa57716
+spec:
+  clusterIP: 10.102.194.174
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: hasher
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

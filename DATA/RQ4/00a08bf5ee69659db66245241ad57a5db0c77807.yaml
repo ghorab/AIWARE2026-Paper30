@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: chainlink-ocr
+  labels:
+    app: chainlink-ocr
+spec:
+  type: LoadBalancer
+  selector:
+    app: chainlink
+  ports:
+    - name: listen
+      port: 11972
+      targetPort: 11972
+      protocol: TCP
+    - name: announce
+      port: 11973
+      targetPort: 11973
+      protocol: TCP
+

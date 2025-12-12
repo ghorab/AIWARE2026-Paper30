@@ -1,0 +1,23 @@
+# Source: mongodb-atlas-operator/templates/cluster-roles.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: "atlas-operator-mongodb-atlas-operator-proxy-role"
+  labels:
+    helm.sh/chart: mongodb-atlas-operator-0.2.2
+    app.kubernetes.io/name: mongodb-atlas-operator
+    app.kubernetes.io/instance: mongodb-atlas-operator
+    app.kubernetes.io/version: "0.5.0"
+    app.kubernetes.io/managed-by: Helm
+    gitops.jenkins-x.io/pipeline: 'cluster'
+  annotations:
+    meta.helm.sh/release-name: 'mongodb-atlas-operator'
+rules:
+  - apiGroups: ["authentication.k8s.io"]
+    resources:
+      - tokenreviews
+    verbs: ["create"]
+  - apiGroups: ["authorization.k8s.io"]
+    resources:
+      - subjectaccessreviews
+    verbs: ["create"]

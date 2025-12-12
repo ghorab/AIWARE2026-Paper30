@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: container-five
+  namespace: container-challenges
+  labels:
+    app: ContainerFive
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ContainerFive
+  template:
+    metadata:
+      labels:
+        app: ContainerFive
+    spec:
+      containers:
+        - name: container-five
+          image: "localhost:5000/container_five:five"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: "128Mi"
+            requests:
+              cpu: "250m"
+              memory: "50Mi"

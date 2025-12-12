@@ -1,0 +1,53 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: dyndns-update
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: domain-name-update
+              image: ghcr.io/linuxserver/ddclient
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - |-
+                  echo "use=${USE}" > ${DDCONFPATH}
+                  echo "protocol=${PROTOCOL}" >> ${DDCONFPATH}
+                  echo "login=${LOGIN}" >> ${DDCONFPATH}
+                  echo "password=${PASSWORD}" >> ${DDCONFPATH}
+                  echo "${DOMAIN}" >> ${DDCONFPATH}
+                  ddclient -daemon=0 -debug -verbose -noquiet
+              env:
+                - name: DDCONFPATH
+                  value: /etc/ddclient/ddclient.conf
+                - name: LOGIN
+                  valueFrom:
+                    secretKeyRef:
+                      name: ddclient-tokens
+                      key: login
+                - name: PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ddclient-tokens
+                      key: password
+                - name: USE
+                  valueFrom:
+                    secretKeyRef:
+                      name: ddclient-tokens
+                      key: use
+                - name: PROTOCOL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ddclient-tokens
+                      key: protocol
+                - name: DOMAIN
+                  valueFrom:
+                    secretKeyRef:
+                      name: ddclient-tokens
+                      key: domain
+          restartPolicy: Never

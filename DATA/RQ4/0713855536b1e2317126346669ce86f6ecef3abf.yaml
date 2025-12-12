@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $SERVICE_NAME-fe
+  namespace: default
+  labels:
+    app: $SERVICE_NAME-fe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: $SERVICE_NAME-fe
+  template:
+    metadata:
+      labels:
+        app: $SERVICE_NAME-fe
+    spec:
+
+      containers:
+        - name: $SERVICE_NAME-fe
+          image: pasit/$CIRCLE_PROJECT_REPONAME:$COMMIT_SHA1
+          ports:
+            - containerPort: 3000
+              name: http
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 200m
+          env:
+            - name: APP_URL
+              value: https://$SERVICE_NAME.joymify.com
+              

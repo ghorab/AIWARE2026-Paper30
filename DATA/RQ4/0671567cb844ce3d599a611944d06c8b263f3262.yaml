@@ -1,0 +1,23 @@
+---
+# Source: artifactory/templates/artifactory-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: artifactory-artifactory
+  labels:
+    app: artifactory
+    chart: artifactory-7.12.4
+    component: artifactory
+    heritage: Tiller
+    release: artifactory
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8081
+    targetPort: 8081
+    protocol: TCP
+    name: artifactory
+  selector:
+    app: artifactory
+    component: "artifactory"
+    release: artifactory

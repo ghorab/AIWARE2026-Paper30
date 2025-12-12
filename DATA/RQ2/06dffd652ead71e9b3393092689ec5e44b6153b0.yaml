@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-app
+  namespace: vault
+  labels:
+    app: vault-app
+spec:
+  selector:
+    matchLabels:
+      app: vault-app
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-secret-appsettings.secrets.json: "secret/test1/config"
+        vault.hashicorp.com/role: "vault-role"
+        vault.hashicorp.com/agent-inject-template-appsettings.secrets.json: |
+          {{- with secret "secret/test1/config" -}}
+          {{ .Data.data.config }}
+          {{- end -}}
+      labels:
+        app: vault-app
+    spec:
+      serviceAccountName: vault-sa
+      containers:
+      - name: vault-app
+        image: jweissig/app:0.0.1

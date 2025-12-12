@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myappdeploymentv2
+  namespace: default
+  labels:
+    app: myapppodcontainername
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+        app: myapppodcontainername
+#  this is pod
+  template:
+    metadata:
+      labels:
+        app: myapppodcontainername
+    spec:
+      containers:
+      - name: myapppodcontainername
+        image: containerregistryelib.azurecr.io/myimg
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        env:
+        - name: OKTA_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: octa_client_id
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: pgpassword
+        - name: PGUSERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: pguser
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: dotenvconfigmap
+              key: port
+        - name: HOST
+          valueFrom:
+            configMapKeyRef:
+              name: dotenvconfigmap
+              key: host
+        - name: HOST_URL
+          valueFrom:
+            configMapKeyRef:
+              name: dotenvconfigmap
+              key: host_url
+        - name: COOKIE_ENCRYPT_PWD
+          valueFrom:
+            configMapKeyRef:
+              name: dotenvconfigmap
+              key: cookie_encrypt_pdw
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: dotenvconfigmap
+              key: node_env
+        - name: PGHOST
+          valueFrom:
+            configMapKeyRef:
+              name: dotenvconfigmap
+              key: pghost
+        # - name: PGUSER
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: dotenvconfigmap
+        #       key: pguser
+        - name: PGDATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: dotenvconfigmap
+              key: pgdatabase
+        # - name: PGPASSWORD
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: dotenvconfigmap
+        #       key: pgpassword
+        - name: PGPORT
+          valueFrom:
+            configMapKeyRef:
+              name: dotenvconfigmap
+              key: pgport
+        - name: OKTA_ORG_URL
+          valueFrom:
+            configMapKeyRef:
+              name: dotenvconfigmap
+              key: okta_org_url
+        # - name: OKTA_CLIENT_ID
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: dotenvconfigmap
+        #       key: octa_client_id
+        - name: OKTA_CLIENT_SECRET
+          valueFrom:
+            configMapKeyRef:
+              name: dotenvconfigmap
+              key: okta_client_secret
+        # - name: POSTGRES_PASSWORD
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: dotenvconfigmap
+        #       key: pgpassword
+        # - name: POSTGRES_USER
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: dotenvconfigmap
+        #       key: pguser
+        # - name: POSTGRES_DB
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: dotenvconfigmap
+        #       key: pgdatabase

@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rabbit
+spec:
+  template:
+    metadata:
+      labels:
+        name: rabbit
+    spec:
+      restartPolicy: 'Never'
+      containers:
+      - name: rabbit
+        image: rabbitmq:3-management
+        ports:
+        - containerPort: 5672
+          name: service
+        - containerPort: 15672
+          name: admin

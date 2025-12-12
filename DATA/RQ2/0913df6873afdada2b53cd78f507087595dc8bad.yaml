@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iotdataprovider-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: iotdataprovider
+  template:
+    metadata:
+      labels:
+        component: iotdataprovider
+    spec:
+      containers:
+        - name: iotdataprovider
+          image: davidetestoni/iotdataprovider:latest
+          ports:
+            - containerPort: 3000
+            - containerPort: 6390
+          env:
+            - name: ConnectionStrings__Chain
+              value: "https://kovan.infura.io/v3/2c64819f193e4fdca3ca3520ab1a2b1b"
+            - name: ConnectionStrings__MySql
+              value: "server=mysql-ip;user=root;password=admin;database=iot"
+            - name: ConnectionStrings__Redis
+              value: "redis-ip:6379"
+            - name: ConnectionStrings__RabbitMQ
+              value: "amqp://guest:guest@rabbitmq-ip:5672"
+            - name: MySql__Version
+              value: "8.0.23"
+            - name: Realtime__Port
+              value: '6390'
+            - name: Realtime__DeliveryMethod
+              value: "ReliableOrdered"
+            - name: Security__AuthorizedOwner
+              value: "0x3eFC9BACf7e88b4d1538158e42C4cf7123eC263f"
+            - name: Security__TokenValidity
+              value: "360000000"
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Release

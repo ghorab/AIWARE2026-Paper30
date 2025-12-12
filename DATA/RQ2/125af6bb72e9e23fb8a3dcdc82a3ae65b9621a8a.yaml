@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-news-clipper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-news-clipper
+  template:
+    metadata:
+      labels:
+        app: python-news-clipper
+    spec:
+      containers:
+      - env:
+        - name: MAIL_INTERVAL_MIN
+          valueFrom:
+            configMapKeyRef:
+              key: mailIntervalMin
+              name: python-news-clipper
+        - name: MAIL_RECEIVER_EMAILS
+          valueFrom:
+            configMapKeyRef:
+              key: mailReceiverEmails
+              name: python-news-clipper
+        - name: MAIL_SENDER_EMAIL
+          valueFrom:
+            secretKeyRef:
+              key: mailSenderEmail
+              name: python-news-clipper
+        - name: MAIL_SENDER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: mailSenderPassword
+              name: python-news-clipper
+        image: 127.0.0.1:30500/python_news_clipper:21
+        name: python-news-clipper

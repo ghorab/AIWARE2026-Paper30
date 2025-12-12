@@ -1,0 +1,20 @@
+# permissions for end users to view vanillaservers.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: vanillaserver-viewer-role
+rules:
+- apiGroups:
+  - minecraft.robertsmieja.com
+  resources:
+  - vanillaservers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - minecraft.robertsmieja.com
+  resources:
+  - vanillaservers/status
+  verbs:
+  - get

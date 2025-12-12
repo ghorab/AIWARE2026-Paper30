@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:  
+  name: error-pages
+spec:
+  replicas: 1  
+  selector:
+    matchLabels:
+      pod: error-pages
+  template:
+    metadata:
+      labels: 
+        pod: error-pages
+    spec:
+      containers:
+      - image: milung/error-page-webc
+        name: error-page-webc       
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+          limits:
+            cpu: '0.1'
+            memory: '128M'
+          requests:
+            cpu: '0.01'
+            memory: '16M'

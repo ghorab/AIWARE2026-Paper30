@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kaniko
+spec:
+  completions: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: kaniko
+        image: gcr.io/kaniko-project/executor:latest
+        args: 
+        - --context=git://github.com/acim/kaniko.git
+        - --destination=acim/kaniko:latest
+        volumeMounts:
+          - name: kaniko-secret
+            mountPath: /kaniko/.docker
+            readOnly: true
+      restartPolicy: Never
+      volumes:
+        - name: kaniko-secret
+          secret:
+            secretName: dockerhub-registry
+            items:
+            - key: .dockerconfigjson
+              path: config.json

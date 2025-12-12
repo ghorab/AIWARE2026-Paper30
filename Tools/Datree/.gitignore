@@ -1,0 +1,22 @@
+dist
+vendor
+datree
+.DS_STORE
+.vscode
+.idea/*
+
+# macos code signing
+DatreeCli.cer
+DatreeCli.p12
+
+# brew
+homebrew*
+
+# travis
+travis_wait*
+
+# 
+changelog.txt
+
+# don't ignore json schema config files
+!.idea/jsonSchemas.xml

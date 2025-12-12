@@ -1,0 +1,33 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  # name of the resource to create on the BIG-IP
+  name: http.pool_only
+  labels:
+    f5type: virtual-server
+data:
+  # schema v0.1.7 required as of k8s-bigip-ctlr v1.4.0
+  schema: "f5schemadb://bigip-virtual-server_v0.1.7.json"
+  data: |
+    {
+      "virtualServer": {
+        "backend": {
+          "servicePort": 3000,
+          "serviceName": "myService",
+          "healthMonitors": [{
+            "interval": 30,
+            "protocol": "http",
+            "send": "GET",
+            "timeout": 86400
+          }]
+        },
+        "frontend": {
+          "virtualAddress": {
+            "port": 80
+          },
+          "partition": "k8s",
+          "balance": "ratio-member",
+          "mode": "http"
+        }
+      }
+    }

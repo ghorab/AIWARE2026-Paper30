@@ -1,0 +1,20 @@
+# Source: spjgh/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: spjgh
+  labels:
+    chart: "spjgh-0.0.1"
+    gitops.jenkins-x.io/pipeline: 'namespaces'
+  annotations:
+    meta.helm.sh/release-name: 'spjgh'
+  namespace: jx-staging
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: spjgh-spjgh

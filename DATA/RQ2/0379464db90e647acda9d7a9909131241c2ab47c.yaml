@@ -1,0 +1,33 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: iiscorebox
+spec:
+  containers:
+    - name: myfrontend
+      image: mcr.microsoft.com/windows/servercore/iis:latest
+      volumeMounts:
+      - mountPath: "e:"
+        name: dynamic-disk-volume
+      - mountPath: "f:"
+        name: dynamic-az-file-vol
+      - mountPath: "g:"
+        name: static-az-file-vol
+      - mountPath: "h:"
+        name: static-disk-volume
+  volumes:
+    - name: dynamic-disk-volume           #mount managed disk created dymanically
+      persistentVolumeClaim:
+        claimName: azure-managed-disk
+    
+    - name: dynamic-az-file-vol           #mount azure file share created dymanically
+      persistentVolumeClaim:
+        claimName: azure-files    
+    
+    - name: static-az-file-vol            #mount azure file share created statically
+      persistentVolumeClaim:
+        claimName: azurefilestatic
+    
+    - name: static-disk-volume            #mount managed disk created statically
+      persistentVolumeClaim:
+        claimName: azure-disk-pvc

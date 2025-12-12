@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: two-application-properties
+data:
+  application.properties: |
+    URL_BING_HOST=${URL_GOOG_HOST}

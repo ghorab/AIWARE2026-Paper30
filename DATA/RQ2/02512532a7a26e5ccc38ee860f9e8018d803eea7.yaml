@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app-dep
+  namespace: todo-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      volumes:
+        - name: shared-dir
+          persistentVolumeClaim:
+            claimName: todo-claim
+      containers:
+        - name: todo-backend
+          image: IMAGE_BACKEND
+          volumeMounts:
+          - name: shared-dir
+            mountPath: /tmp/pictures
+          resources:
+            limits:
+              cpu: "10m"
+              memory: "80Mi"
+          env:
+            - name: POSTGRE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-configmap
+                  key: postgre_host
+            - name: POSTGRE_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-configmap
+                  key: postgre_db
+            - name: POSTGRE_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-configmap
+                  key: postgre_user
+            - name: POSTGRE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-configmap
+                  key: postgre_password
+            - name: POSTGRE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-configmap
+                  key: postgre_port
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-configmap
+                  key: port
+        - name: todo-frontend
+          image: IMAGE_FRONTEND
+          resources:
+            limits:
+              cpu: "10m"
+              memory: "80Mi"
+      initContainers:
+        - name: change-ownership-container
+          image: busybox
+          command: ["/bin/chown","-R","1000:1000", "/tmp/pictures"]
+          securityContext:
+            runAsUser: 0
+            privileged: true
+          volumeMounts:
+          - name: shared-dir
+            mountPath: /tmp/pictures

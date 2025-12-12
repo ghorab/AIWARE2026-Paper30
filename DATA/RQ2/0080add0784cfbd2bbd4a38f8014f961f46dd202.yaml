@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: startup
+  labels:
+    app: probe-example
+spec:
+  selector:
+    matchLabels:
+      app: probe-example
+  template:
+    metadata:
+      labels:
+        app: probe-example
+    spec:
+      containers:
+      - name: app
+        image: $REGISTRY/k8s-probe-example:0.1.0
+        imagePullPolicy: Always
+        ports:
+        - name: rest
+          containerPort: 3000
+        env:
+        - name: STARTUP_DURATION
+          value: "120"
+
+        startupProbe:
+          httpGet:
+            path: /livez
+            port: rest
+          failureThreshold: 3
+          periodSeconds: 10
+
+        livenessProbe:
+          httpGet:
+            path: /livez
+            port: rest
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          failureThreshold: 3

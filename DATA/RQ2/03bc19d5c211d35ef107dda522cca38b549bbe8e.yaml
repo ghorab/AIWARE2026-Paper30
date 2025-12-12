@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sonarr-litestream-config
+  namespace: media-server
+data:
+  litestream.yml: |
+    dbs:
+      - path: /config/sonarr.db
+        replicas:
+          - path: /backup/sonarr.db
+      - path: /config/logs.db
+        replicas:
+          - path: /backup/logs.db

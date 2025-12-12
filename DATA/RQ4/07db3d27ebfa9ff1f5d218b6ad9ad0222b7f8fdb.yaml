@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  nginx.conf: |
+    user  nginx;
+    worker_processes  auto;
+
+    error_log stderr warn;
+    pid        /var/run/nginx.pid;
+
+    events {
+        worker_connections  1024;
+    }
+
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+
+        map $upstream_response_time $temprt {
+          default $upstream_response_time;
+          ""      0;
+        }
+
+        log_format json escape=json '{ "@timestamp": "$time_iso8601", '
+                      '"remote_addr": "$remote_addr", '
+                      '"http_x_forwarded_for": "$http_x_forwarded_for", '
+                      '"body_bytes_sent": "$body_bytes_sent", '
+                      '"status": $status, '
+                      '"request": "$request", '
+                      '"url": "$uri", '
+                      '"request_method": "$request_method", '
+                      '"response_time": $temprt, '
+                      '"http_referrer": "$http_referer", '
+                      '"http_user_agent": "$http_user_agent" }';
+
+        access_log /dev/stdout json;
+        error_log /dev/stderr notice;
+
+        server {
+            server_name _;
+            listen 80;
+
+            location /basic_status {
+                stub_status;
+            }
+            }
+        }

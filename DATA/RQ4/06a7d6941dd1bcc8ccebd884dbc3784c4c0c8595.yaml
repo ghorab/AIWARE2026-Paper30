@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "testcluster1-950b"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "testcluster1-950b"
+  template:
+    metadata:
+      labels:
+        app: "testcluster1-950b"
+    spec:
+      containers:
+        - name: "testcluster1-950b"
+          image: "test888888.azurecr.io/testcluster1"
+          ports:
+          - containerPort: 80

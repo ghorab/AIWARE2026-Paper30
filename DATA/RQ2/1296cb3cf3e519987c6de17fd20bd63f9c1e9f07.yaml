@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeapi-tst-oasiss-oasiss  #SERVICE_NAME-${env}-${repoName}-${groupName}
+  labels:
+    k8s-app: oasiss-api-tst
+  annotations:
+    d-engine.ip6n.net/backupBlock: "{{ blockId }}"
+    d-engine.ip6n.net/ipv4: "auto"
+    d-engine.ip6n.net/vs-http-desc: "HTTPS traffic to oasiss-api"
+    d-engine.ip6n.net/vs-http-vsPort: "8080"
+    d-engine.ip6n.net/vs-http-template: "vs-tcp"
+    d-engine.ip6n.net/vs-http-fwPermit: "0.0.0.0/0"
+spec:
+  selector:
+    k8s-app: oasiss-api-tst
+  ports:
+  - name: "8080"
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  type: NodePort

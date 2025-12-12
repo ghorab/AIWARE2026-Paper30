@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: bulk-inserts
+  name: bulk-inserts
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bulk-inserts
+  template:
+    metadata:
+      labels:
+        app: bulk-inserts
+    spec:
+      containers:
+        - name: bulk-inserts
+          envFrom:
+            - secretRef:
+                name: db-creds
+          env:
+            - name: DBHOST
+              value: "db.cuzis87cjlbq.us-west-2.rds.amazonaws.com"
+          image: 498254202105.dkr.ecr.us-west-2.amazonaws.com/simu-app-load:arm0.5
+          imagePullPolicy: Always
+          command: ["/bulk-inserts.sh"]
+          resources:
+            requests:
+              cpu: 512m
+              memory: 512Mi
+      hostNetwork: true

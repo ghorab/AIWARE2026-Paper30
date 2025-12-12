@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: rudawazrpipelinesjavascriptdocker 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rudawazrpipelinesjavascriptdocker
+  template:
+    metadata:
+      labels:
+        app: rudawazrpipelinesjavascriptdocker 
+    spec:
+      containers:
+        - name: rudawazrpipelinesjavascriptdocker 
+          image: mycontainerregistryrw123.azurecr.io/rudawazrpipelinesjavascriptdocker
+          ports:
+          - containerPort: 8080

@@ -1,0 +1,142 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deck-private
+  namespace: default
+  labels:
+    app.kubernetes.io/part-of: prow
+    app: deck-private
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deck-private
+  template:
+    metadata:
+      labels:
+        app: deck-private
+    spec:
+      serviceAccountName: deck-private
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: deck-private
+        image: gcr.io/k8s-prow/deck:v20220201-89645ff353
+        ports:
+        - name: http
+          containerPort: 8080
+        args:
+        - --config-path=/etc/config/config.yaml
+        - --hook-url=http://hook:8888/plugin-help
+        - --job-config-path=/etc/job-config
+        - --redirect-http-to=prow-private.istio.io
+        - --kubeconfig=/etc/kubeconfig/istio-config
+        - --gcs-credentials-file=/etc/service-account/service-account.json
+        - --spyglass
+        - --hidden-only
+        - --rerun-creates-job
+        - --oauth-url=/github-login
+        - --github-token-path=/etc/github/oauth
+        - --github-endpoint=http://ghproxy
+        - --github-endpoint=https://api.github.com
+        - --github-oauth-config-file=/etc/githuboauth/secret
+        - --cookie-secret=/etc/cookie/secret
+        volumeMounts:
+        - name: oauth-config
+          mountPath: /etc/githuboauth
+          readOnly: true
+        - name: cookie-secret
+          mountPath: /etc/cookie
+          readOnly: true
+        - name: oauth-token
+          mountPath: /etc/github
+          readOnly: true
+        - name: config
+          mountPath: /etc/config
+          readOnly: true
+        - name: job-config
+          mountPath: /etc/job-config
+          readOnly: true
+        - mountPath: /etc/kubeconfig
+          name: kubeconfig
+          readOnly: true
+        - name: service-account
+          mountPath: /etc/service-account
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /healthz/ready
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 3
+          timeoutSeconds: 600
+      - name: oauth2-proxy
+        image: quay.io/pusher/oauth2_proxy:v5.0.0
+        ports:
+        - containerPort: 4180
+          protocol: TCP
+        args:
+        - --provider=github
+        - --github-org=istio-private
+        - --http-address=0.0.0.0:4180
+        - --upstream=http://localhost:8080
+        - --cookie-domain=prow-private.istio.io
+        - --cookie-name=prow-private-istio-io-oauth2-proxy
+        - --cookie-samesite=none
+        - --email-domain=*
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 4180
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 4180
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        env:
+        - name: OAUTH2_PROXY_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: deck-oauth-proxy
+              key: clientID
+        - name: OAUTH2_PROXY_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: deck-oauth-proxy
+              key: clientSecret
+        - name: OAUTH2_PROXY_COOKIE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: deck-oauth-proxy
+              key: cookieSecret
+      volumes:
+      - name: oauth-config
+        secret:
+          secretName: github-oauth-config-private
+      - name: oauth-token
+        secret:
+          secretName: oauth-token
+      - name: cookie-secret
+        secret:
+          secretName: cookie
+      - name: config
+        configMap:
+          name: config
+      - name: job-config
+        configMap:
+          name: job-config
+      - name: kubeconfig
+        secret:
+          defaultMode: 420
+          secretName: kubeconfig
+      - name: service-account
+        secret:
+          secretName: prow-internal-storage-service-account

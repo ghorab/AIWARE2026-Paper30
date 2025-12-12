@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cluster-toolbox-diskbench
+spec:
+  template:
+    spec:    
+      containers:
+      - name: cluster-toolbox-diskbench
+        image: idstudios/cluster-toolbox:latest
+        args: ["disk-bench"]
+        volumeMounts:
+          - name: iscsi-test-volume
+            mountPath: "/target"        
+      restartPolicy: Never
+  backoffLimit: 4

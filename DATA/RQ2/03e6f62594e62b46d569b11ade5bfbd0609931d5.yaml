@@ -1,0 +1,25 @@
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: vote
+  namespace: vote
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: vote 
+  minReplicas: 1 # this defines minimum replica of pods running
+  maxReplicas: 4 # this defines maximum replica of pods running
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization   
+        averageUtilization: 75 # K8s will make sure each pod is running max at request CPU's 75% capacity utilization rate, if exceeds, K8s will auto-scale a pod
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization   
+        averageUtilization: 75  # K8s will make sure each pod is running max at request memory's 75% capacity utilization rate, if exceeds, K8s will auto-scale a pod

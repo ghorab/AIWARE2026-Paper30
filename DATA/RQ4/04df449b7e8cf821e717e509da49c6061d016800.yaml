@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: benthos-config
+data:
+  benthos.yaml: |-
+    input:
+      label: "eventhub"
+      kafka:
+        addresses:
+          - ${BENTHOS_KAFKA_ADDRESS}
+        topics:
+          - ${BENTHOS_EVENTHUB_NAME}
+        consumer_group: benthos_consumer_group
+        client_id: benthos_kafka_input
+        checkpoint_limit: 1
+        tls:
+          enabled: true     # enable tls for eventhub connection
+        sasl:
+          enabled: true
+          mechanism: "PLAIN"
+          user: '$ConnectionString'
+          password: ${BENTHOS_KAFKA_PASSWORD}
+
+    pipeline:
+      processors:
+
+        - label: avro
+          avro:
+            operator: to_json
+            encoding: binary
+            schema_path: file:///schema/ads_data.avsc
+
+        - label: bloblang
+          # Remove the ADS_DATA envelope, expose payload for following processors
+          bloblang: |
+            meta originApp = this.origin.app
+            meta originModule = this.origin.module
+            meta originRuntime = this.origin.runtime
+            meta payloadFormat = this.payload.format
+            meta payloadSchema = this.payload.schema
+            meta sequenceNumber = this.origin.sequenceNumber
+
+            root = this.payload.data
+
+        # Decode payload according to schema
+        - switch:
+            - check: meta("payloadSchema") == "accelerator_data.avsc"
+              #
+              # Accelerator Data. Just strip meta data
+              #
+              processors:
+                - avro:
+                    operator: to_json
+                    encoding: binary
+                    schema_path: file:///schema/accelerator_data.avsc
+
+                - bloblang: |
+                    root = this.data
+
+                - unarchive:
+                    format: json_array
+
+        - catch:
+          - log:
+              message: "Validation failed due to: ${!error}"
+
+    output:
+      switch:
+        cases:
+          - check: meta("payloadSchema") == "accelerator_data.avsc"
+
+            output:
+              processors:
+                - bloblang: |
+                    root = this
+                    meta time = this.time
+                    root.time = deleted()
+
+              sql:
+                driver: postgres
+                data_source_name: ${BENTHOS_TENANT_DB}
+                query: |
+                  INSERT INTO "demo" (time, app, module, payload) VALUES ($1, $2, $3, $4);
+                args:
+                  - ${! meta("time") }
+                  - ${! meta("originApp") }
+                  - ${! meta("originModule") }
+                  - ${! json() }
+
+          # Unknown messages go to stdout
+          - check: ""
+            output:
+              label: ""
+              stdout:
+                codec: lines
+                delimiter: ""
+
+    logger:
+      prefix: benthos
+      level: ERROR
+      format: json
+      add_timestamp: true
+      static_fields:
+        '@service': benthos

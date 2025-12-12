@@ -1,0 +1,27 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: openlookeng-summary
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      component: openlookeng-frontend
+  template:
+    metadata:
+      labels:
+        component: openlookeng-frontend
+    spec:
+      containers:
+        - name: openlookeng-summary-pod
+          image: swr.cn-north-4.myhuaweicloud.com/opensourceway/summary/openlookeng-summary-en:e80e6ac14463077d2187693ec0d3728496df9df7
+          imagePullPolicy: "Always"
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 2000Mi
+          ports:
+          - name: http 
+            containerPort: 80
+            protocol: TCP

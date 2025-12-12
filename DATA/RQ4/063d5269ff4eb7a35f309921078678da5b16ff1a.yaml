@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: server
+  template:
+    metadata:
+      labels:
+        component: server
+    spec:
+      containers:
+        - name: server
+          image: baxhen/gde-server
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MONGO_URI
+              value: mongodb+srv://vtrGuerra:flamengo81@cluster0.gi3tf.mongodb.net/Warriors?retryWrites=true&w=majority
+            - name: EMAIL
+              value: suporte.abclivros@gmail.com
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwtsecret
+                  key: JWT_SECRET
+            - name: SEND_GRID_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sendgridapikey
+                  key: SEND_GRID_API_KEY
+            - name: DB_NAME
+              value: gerenciamento-estoque
+            - name: COMPANY_NAME
+              value: ABC Livros e Brinquedos
+            - name: FACEBOOK_URL
+              value: https://pt-br.facebook.com/www.abclivrosebrinquedos.com.br/
+            - name: CENTRAL_AJUDA_URL
+              value: https://pt-br.facebook.com/www.abclivrosebrinquedos.com.br/
+            - name: WEB_URL
+              value: http://191.234.192.49

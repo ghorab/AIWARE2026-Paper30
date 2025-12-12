@@ -1,0 +1,46 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: nfs-backup
+spec:
+  # At 02:00 in UTC => at 04:00.
+  schedule: "0 2 * * *"
+  # Setting a limit to 0 corresponds to keeping none of the corresponding kind of jobs after they finish.
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 7
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: nfs-backup
+        spec:
+          restartPolicy: OnFailure
+          serviceAccount: nfs-backup
+          nodeSelector:
+            # because of hostPath PVs
+            production: worker
+          containers:
+          - name: nfs-backup
+            image: gesiscss/nfs-backup-orc:6275fb8b
+            env:
+              - name: SSHPASS
+                valueFrom:
+                  secretKeyRef:
+                    name: worker-node-pass
+                    key: password
+              - name: BACKUP_FOLDER
+                value: "/backup"
+              - name: PV_FOLDER
+                value: "/export"
+            volumeMounts:
+              - name: export-volume
+                mountPath: /export
+              - name: backup-volume
+                mountPath: /backup
+          volumes:
+            - name: export-volume
+              hostPath:
+                path: /srv/nfs-provisioner
+            - name: backup-volume
+              hostPath:
+                path: /srv/nfs-backup

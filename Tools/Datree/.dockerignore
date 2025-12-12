@@ -1,0 +1,6 @@
+dist
+.vscode
+.github
+internal
+*install.sh
+scripts

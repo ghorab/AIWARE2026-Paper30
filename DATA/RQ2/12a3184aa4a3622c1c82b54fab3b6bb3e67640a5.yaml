@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ampa-32-svc
+  namespace: kube-system
+spec:
+  selector:
+    app: ampa-3.2
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000

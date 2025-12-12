@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sshauth
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sshauth
+  template:
+    metadata:
+      labels:
+        app: sshauth
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: phpmyadmin
+        image: phpmyadmin/phpmyadmin:4.9
+        env:
+        - name: PMA_ABSOLUTE_URI
+          value: https://sshauth.open-web.fr/pma/
+        - name: PMA_HOST
+          value: sshauth-mariadb-mariadb-galera.default
+      - name: sshauth
+        image: docker.io/anatomicjc/sshauth
+        env:
+        - name: MYSQL_HOST
+          value: sshauth-mariadb-mariadb-galera.default
+        - name: MYSQL_USER
+          value: sshauth
+        - name: MYSQL_DATABASE
+          value: sshauth
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: env-sshauth
+              key: db-password
+        volumeMounts:
+        - name: sshauth
+          mountPath: /usr/share/nginx/html/index.php
+          subPath: index.php
+      - name: nginx
+        image: nginx:alpine
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        - name: sshauth
+          mountPath: /usr/share/nginx/html/index.php
+          subPath: index.php
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+          items:
+          - key: nginx.conf
+            path: nginx.conf
+      - name: sshauth
+        configMap:
+          name: sshauth
+          items:
+          - key: index.php
+            path: index.php

@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql
+spec:
+  initContainers:
+  - name: copy-files
+    image: ubuntu
+    command:
+    - cp
+    - "-r"
+    - "/tmp/initfiles"
+    - "/wordir"
+    volumeMounts:
+    - mountPath: "/wordir"
+      name: workdir
+    - mountPath: "/tmp/initfiles"
+      name: config-data
+
+  containers:
+  - image: mysql:5.7
+    name: mysqlclient
+    volumeMounts:
+    - mountPath: "/data"
+      name: config-data
+    - mountPath: "/workdir"
+      name: workdir
+    command:
+      - mysql
+      - -u
+      - 'dba'
+      - '-ppassword'
+      - -h
+      - 'mysqlservice.default'
+      - -D
+      - 'crud_in_ci'
+      - -e
+      - 'CREATE TABLE users(user_id INT AUTO_INCREMENT, name VARCHAR(50), email VARCHAR(50), created_at DATE, PRIMARY KEY(user_id));'
+    env:
+    - name:  MYSQL_ROOT_PASSWORD
+      value: "password"
+    ports:
+    - containerPort: 3306
+  restartPolicy: Never
+  volumes:
+  - name: config-data
+    configMap:
+      name: sqldata
+      items:
+      - key: "sqldata.yaml"
+        path: "sqldata.sql"
+  - name: workdir
+    emptyDir: {}
+        
+

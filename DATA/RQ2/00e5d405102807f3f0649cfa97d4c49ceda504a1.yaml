@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: "jsfakstest-bf05"
+    labels:
+        app: "jsfakstest-bf05"
+spec:
+    type: LoadBalancer
+    ports:
+    - port: 25565
+      targetPort: 25565
+      protocol: TCP
+      name: http
+    selector:
+        app: "jsfakstest-bf05"

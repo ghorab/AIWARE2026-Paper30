@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: mysql
+  template:
+    metadata:
+      labels:
+        component: mysql
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: mysql
+      containers:
+        - name: mysql
+          image: mysql/mysql-server:8.0.23
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+          envFrom:
+          - secretRef:
+              name: mysql
+          env:
+          - name: MYSQL_ROOT_HOST
+            value: "%"

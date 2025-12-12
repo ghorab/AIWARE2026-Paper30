@@ -1,0 +1,23 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: endtoend
+  namespace: flyte
+spec:
+  containers:
+  - args:
+    - make end2end_test
+    command:
+    - bash
+    - -c
+    image: docker.io/lyft/flytetester:268fe35dc2dc3b9899dd934e6a4e6ce8639a58fa
+    imagePullPolicy: IfNotPresent
+    name: flytetester
+    resources:
+      requests:
+        cpu: "0.2"
+        memory: 500Mi
+  dnsPolicy: ClusterFirst
+  priority: 0
+  restartPolicy: Never

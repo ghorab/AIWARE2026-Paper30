@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: preparation-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: preparation-service
+  template:
+    metadata:
+      labels:
+        app: preparation-service
+    spec:
+      containers:
+      - name: myapp2
+        image: lpmezuraro/spring-reserve-service-application:v4
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 6104
+        env:
+          - name: SPRING_DATASOURCE_URL
+            valueFrom: 
+              secretKeyRef:
+                name: preparation-service-secret
+                key: SPRING_DATASOURCE_URL
+          - name: SPRING_RABBITMQ_HOST
+            valueFrom: 
+              secretKeyRef:
+                name: services-secrets
+                key: SPRING_RABBITMQ_HOST
+          - name: EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE
+            valueFrom: 
+              secretKeyRef:
+                name: services-secrets
+                key: EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE
+          - name: SPRING_ZIPKIN_BASE-URL
+            valueFrom: 
+              secretKeyRef:
+                name: services-secrets
+                key: SPRING_ZIPKIN_BASE-URL
+          

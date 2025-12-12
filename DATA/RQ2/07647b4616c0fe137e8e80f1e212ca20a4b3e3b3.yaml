@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: stolon-keeper-rc
+spec:
+  replicas: 1
+  selector:
+    name: stolon-keeper
+  template:
+    metadata:
+      labels:
+        name: stolon-keeper
+        stolon-cluster: "kube-stolon"
+        stolon-keeper: "true"
+    spec:
+      containers:
+      - name: stolon-keeper
+        image: sorintlab/stolon:v0.2.0
+        env:
+          - name: KEEPER
+            value: "true"
+          - name: STKEEPER_CLUSTER_NAME
+            value: "kube-stolon"
+          - name: STKEEPER_ETCD_ENDPOINTS
+            value: "http://172.16.32.10:2379"
+            # Enable debugging
+          - name: STKEEPER_DEBUG
+            value: "true"
+        ports:
+          - containerPort: 5431
+          - containerPort: 5432
+        volumeMounts:
+        - mountPath: /stolon-data
+          name: data
+      volumes:
+        - name: data
+          emptyDir: {}

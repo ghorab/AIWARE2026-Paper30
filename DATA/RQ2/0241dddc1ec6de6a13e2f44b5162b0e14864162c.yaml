@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  creationTimestamp: "2022-04-06T17:29:04Z"
+  name: bob
+  namespace: default
+  resourceVersion: "2500491"
+  uid: ca79c1ea-dc80-4edf-90a6-5145582898bb
+# kubectl create sa bob -o yaml > 01-sa-bob.yaml

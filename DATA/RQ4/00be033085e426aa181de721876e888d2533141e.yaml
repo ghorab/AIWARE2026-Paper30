@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: health-deployment
+  labels:
+    app: health
+spec:
+  selector:
+    matchLabels:
+      app: health
+  template:
+    metadata:
+      labels:
+        app: health
+    spec:
+      containers:
+      - name: health
+        image: localhost:32000/health:registry
+        ports:
+        - containerPort: 3000
+

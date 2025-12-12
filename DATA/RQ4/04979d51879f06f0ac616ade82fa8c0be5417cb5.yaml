@@ -1,0 +1,93 @@
+---
+kind: DaemonSet
+apiVersion: apps/v1
+metadata:
+  name: sriov-device-plugin
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: sriov-device-plugin
+  template:
+    metadata:
+      labels:
+        name: sriov-device-plugin
+    spec:
+      serviceAccountName: sriov-dp
+      initContainers:
+      - name: init-sriov-dp
+        image: nfvpe/sriov-device-plugin:latest
+        command: ["/bin/sh", "-c"]
+        args:
+        - cp /tmp/etc/cni/net.d/* /host/etc/cni/net.d/;
+          /tmp/multus/install-certs.sh;
+        volumeMounts:
+        - mountPath: /tmp/multus
+          name: multus-certs
+          readOnly: false
+        - mountPath: /host/etc/cni/net.d/
+          name: host-cni-conf
+        - mountPath: /tmp/etc/cni/net.d
+          name: multus-cni-conf
+      - name: systemd-restart
+        image: ubuntu:16.04
+        command: ["/bin/sh", "-c"]
+        args:
+        - systemctl daemon-reload;
+          systemctl restart containerd;
+          systemctl restart crio;
+          systemctl restart kubelet;
+        volumeMounts:
+        - mountPath: /var/run/dbus
+          name: host-dbus
+        - mountPath: /run/systemd
+          name: host-systemd
+      containers:
+      - name: sriov-device-plugin
+        image: nfvpe/sriov-device-plugin:latest
+        imagePullPolicy: IfNotPresent
+        command: [ "/bin/sh", "-c" ]
+        args:
+        - /usr/bin/sriovdp --logtostderr -v 10;
+          echo "exit status $?";
+          while true;
+          do sleep 36000; done;
+        volumeMounts:
+        - mountPath: /var/lib/kubelet/device-plugins/
+          name: devicesock
+          readOnly: false
+        - mountPath: /sys/class/net/
+          name: net
+          readOnly: true
+        - mountPath: /etc/pcidp/
+          name: sriov-config
+          readOnly: false
+      volumes:
+      - name: devicesock
+        hostPath:
+         path: /var/lib/kubelet/device-plugins/
+      - name: net
+        hostPath:
+          path: /sys/class/net
+      - name: sriov-config
+        configMap:
+          name: sriov-config
+      - name: multus-certs
+        configMap:
+          defaultMode: 511
+          name: multus-certs
+      - name: host-cni-conf
+        hostPath:
+          path: /etc/cni/net.d
+      - name: multus-cni-conf
+        configMap:
+          name: multus-conf
+      - name: host-systemd
+        hostPath:
+          path: /run/systemd
+      - name: host-dbus
+        hostPath:
+          path: /var/run/dbus
+      hostNetwork: true
+      hostPID: true
+

@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: wikijs
+  name: wikijs
+  namespace: wikijs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wikijs
+  template:
+    metadata:
+      labels:
+        app: wikijs
+    spec:
+      containers:
+        - name: wikijs
+          image: requarks/wiki:2.5
+          env:
+          - name: DB_HOST
+            value: wikijs-mariadb
+          - name: DB_PORT
+            valueFrom:
+              configMapKeyRef:
+                key: DB_PORT
+                name: mariadb-config
+          - name: DB_USER
+            valueFrom:
+              configMapKeyRef:
+                key: DB_USER
+                name: mariadb-config
+          - name: DB_TYPE
+            valueFrom:
+              configMapKeyRef:
+                key: DB_TYPE
+                name: mariadb-config
+          - name: DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                key: DB_NAME
+                name: mariadb-config
+          - name: DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: mariadb-pass
+                key: password
+          ports:
+          - containerPort: 3000
+            protocol: TCP

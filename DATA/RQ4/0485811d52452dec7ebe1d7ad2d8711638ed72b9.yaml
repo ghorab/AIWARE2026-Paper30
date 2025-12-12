@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: ticketing
+  namespace: business-service-progressio
+  labels:
+    app: ticketing
+    spring-boot-monitoring: "true"
+spec:
+  ports:
+  - port: 3335
+    name: web
+    protocol: TCP
+  selector:
+    app: ticketing

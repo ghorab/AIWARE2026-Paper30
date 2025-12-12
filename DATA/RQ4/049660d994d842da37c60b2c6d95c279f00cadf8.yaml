@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: github-releases-notifier
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: github-releases-notifier
+  template:
+    metadata:
+      labels:
+        app: github-releases-notifier
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+      - name: github-releases-notifier
+        image: xrstf/github-releases-notifier
+        env:
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github-releases-notifier
+              key: github
+        - name: SLACK_HOOK
+          valueFrom:
+            secretKeyRef:
+              name: github-releases-notifier
+              key: slack
+        command:
+        - '/bin/github-releases-notifier'
+        args:
+        - '-r=golang/go'
+        - '-r=kubernetes/minikube'
+        - '-r=prometheus/prometheus'
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 25m
+            memory: 64Mi

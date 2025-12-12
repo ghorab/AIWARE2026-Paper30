@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: client-app-go
+  labels:
+    app: client-app-go
+    group: sample
+data:
+  CLIENTGO_KUBE_HOST: "0.0.0.0"
+  CLIENTGO_MONITOR_HOST: "0.0.0.0"
+  CLIENTGO_REST_HOST: "0.0.0.0"
+  CLIENTGO_REST_SERVER_APP_HOST: "server-app-h2"
+  CLIENTGO_REST_SERVER_APP_PORT: "8080"

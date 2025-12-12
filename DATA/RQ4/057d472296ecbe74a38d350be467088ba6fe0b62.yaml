@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "divman-7f1d"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "divman-7f1d"
+  template:
+    metadata:
+      labels:
+        app: "divman-7f1d"
+    spec:
+      containers:
+        - name: "divman-7f1d"
+          image: "divman.azurecr.io/divman7f1d"
+          ports:
+          - containerPort: 8080

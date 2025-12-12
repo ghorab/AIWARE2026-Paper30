@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: k8s-basic-pod
+  labels:
+    app: k8s-basic
+spec:
+  containers:
+  - image: k8s-basic:0.0.1-SNAPSHOT
+    name: k8s-basic
+    livenessProbe:
+      httpGet:
+        path: /actuator/health
+        port: 8080
+      initialDelaySeconds: 30

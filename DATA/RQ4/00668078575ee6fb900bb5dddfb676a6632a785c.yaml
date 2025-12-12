@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+    - name: opa-repo
+      image: openpolicyagent/opa:0.9.2
+      ports:
+        - name: web
+          containerPort: 80
+          protocol: TCP

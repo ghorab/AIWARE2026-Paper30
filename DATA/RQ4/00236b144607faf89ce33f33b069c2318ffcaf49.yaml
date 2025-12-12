@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pyjokes-svc
+spec:
+  ports:
+    - port: 80
+      targetPort: 5000
+  type: LoadBalancer
+  selector:
+    app: pyjokes-app

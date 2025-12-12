@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch-deployment
+  labels:
+    app: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch
+          image: elasticsearch:k8s-test
+          ports:
+            - containerPort: 9200
+          readinessProbe:
+            httpGet:
+              path: /_nodes/_local
+              port: 9200
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 5

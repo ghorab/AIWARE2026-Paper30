@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: utils-tools
+    qcloud-app: utils-tools
+  name: utils-tools
+  namespace: prom
+spec:
+  selector:
+    matchLabels:
+      k8s-app: utils-tools
+      qcloud-app: utils-tools
+  template:
+    metadata:
+      labels:
+        k8s-app: utils-tools
+        qcloud-app: utils-tools
+    spec:
+#      imagePullSecrets:
+#      - name: tcr
+      containers:
+      - env:
+        - name: PATH
+          value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - name: container
+          value: docker
+        image: v-pmwjiang-tcr.tencentcloudcr.com/my/utils:v1
+        imagePullPolicy: Always
+        name: utils-tools

@@ -1,0 +1,28 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-sample-node-chat-demo-app
+  labels:
+    app: cloud-sample-node-chat-demo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloud-sample-node-chat-demo-app
+  template:
+    metadata:
+      labels:
+        app: cloud-sample-node-chat-demo-app
+    spec:
+      containers:
+        - name: cloud-sample-node-chat-demo-app
+          image: gabbi/cloud-sample-node-chat:0.0.2 #update to your image
+          ports:
+            - containerPort: 8089
+          volumeMounts:
+          - mountPath: /tmp
+            name: tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}

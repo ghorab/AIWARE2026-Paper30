@@ -1,0 +1,24 @@
+---
+# Source: vela-core/templates/admission-webhooks/job-patch/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name:  kubevela-vela-core-admission
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app: vela-core-admission
+    helm.sh/chart: vela-core-0.1.0
+    app.kubernetes.io/name: vela-core
+    app.kubernetes.io/instance: kubevela
+    app.kubernetes.io/version: "0.1.0"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubevela-vela-core-admission
+subjects:
+  - kind: ServiceAccount
+    name: kubevela-vela-core-admission
+    namespace: vela-system

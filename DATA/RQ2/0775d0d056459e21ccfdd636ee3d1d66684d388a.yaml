@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: web-server
+  name: web-server
+spec:
+  ports:
+  - name: web-server
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: web-server
+  type: ClusterIP

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-app
+  namespace: todo-app
+data:
+  key: | 
+  APP_NAME: "Todo App"
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_URL: https://todo-app.k8s.rendyananta.my.id
+
+  LOG_CHANNEL: stderr
+  LOG_LEVEL: debug
+
+  BROADCAST_DRIVER: redis
+  CACHE_DRIVER: redis
+  FILESYSTEM_DRIVER: local
+  QUEUE_CONNECTION: redis
+  SESSION_DRIVER: redis
+  SESSION_LIFETIME: "120"
+
+  # MAIL_MAILER: smtp
+  # MAIL_HOST: mailhog
+  # MAIL_PORT: 1025
+  # MAIL_USERNAME: null
+  # MAIL_PASSWORD: null
+  # MAIL_ENCRYPTION: null
+  # MAIL_FROM_ADDRESS: null
+  # MAIL_FROM_NAME: "${APP_NAME}"

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer
+spec:
+  selector:
+    matchLabels:
+      run: consumer
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: consumer
+    spec:
+      serviceAccountName: ksa
+      containers:
+      - name: consumer
+        image: gcr.io/env-service-304211/env-service:832e9dd5f47bcbddc2999ba2f9791b0bc0a61dd0
+        envFrom:
+          - configMapRef:
+              name: infra-config
+        resources:
+          limits:
+            memory: "100Mi"
+            cpu: "1"
+          requests:
+            cpu: "0.1"
+            memory: "10Mi"

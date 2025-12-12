@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discovery
+spec:
+  selector:
+    matchLabels:
+      app: discovery
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: discovery
+    spec:
+      containers:
+      - image: itdaos/dvc-discovery:latest
+        name: discovery
+        env:
+          - name: CONFIG_HOST
+            value: config
+            

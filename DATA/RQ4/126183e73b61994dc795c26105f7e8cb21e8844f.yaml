@@ -1,0 +1,20 @@
+# Source: go-lang-test/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-lang-test
+  labels:
+    chart: "go-lang-test-0.0.4"
+    gitops.jenkins-x.io/pipeline: 'namespaces'
+  annotations:
+    meta.helm.sh/release-name: 'go-lang-test'
+  namespace: jx-staging
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: go-lang-test-go-lang-test

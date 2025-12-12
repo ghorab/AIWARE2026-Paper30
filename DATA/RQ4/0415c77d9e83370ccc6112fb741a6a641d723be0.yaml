@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector
+  labels:
+    app: opentelemetry
+    component: otel-collector
+data:
+  otel-collector-config: |
+    extensions:
+        health_check:
+
+    receivers:
+        jaeger:
+          protocols:
+            thrift_http:
+              endpoint: "otel-collector:14268"            
+        redis:
+          endpoint: "${REDIS_ADDR}"
+          service_name: "cartservice"
+          collection_interval: 10s
+        otlp:
+          protocols:
+            grpc:
+            http:
+        otlp/2:
+          protocols:
+            grpc:
+              endpoint: "0.0.0.0:55690"
+
+    exporters:
+        logging:
+            loglevel: debug
+
+        # configuring otlp to public satellites
+        otlp:
+          endpoint: "0.0.0.0:4317"
+
+        otlp/2:
+          endpoint: 34.72.102.156:8086
+          headers:
+            "Authorization": "Bearer abc"
+          insecure: true
+
+        jaeger:
+          endpoint: 34.72.102.156:14250
+          insecure: true
+
+    processors:
+        batch:
+      
+    service:
+        extensions: [health_check]
+        pipelines:
+          traces:
+            receivers: [otlp, otlp/2, jaeger]
+            exporters: [logging, otlp, jaeger, otlp/2]
+            processors: [batch]
+          metrics:
+            receivers: [otlp, redis]
+            exporters: [logging, otlp]

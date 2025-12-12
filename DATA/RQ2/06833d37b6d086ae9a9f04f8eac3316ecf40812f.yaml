@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: default
+  labels:
+    service: iris-001
+    protocol: iris
+  name: iris-001
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      service: iris-001
+  template:
+    metadata:
+      labels:
+        service: iris-001
+        protocol: iris
+    spec:
+      containers:
+        - name: iris-001
+          image: ryanhendricks/docker-irisnet:latest
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: iris-config
+          volumeMounts:
+            - mountPath: /.iris
+              name: iris-001
+          resources:
+            requests:
+              cpu: 150m
+              memory: 150Mi
+            limits:
+              cpu: 300m
+              memory: 300Mi
+      restartPolicy: Always
+      volumes:
+        - name: iris-001
+          persistentVolumeClaim:
+            claimName: iris-001

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodeapi-tst-oasiss-deployment
+  labels:
+    k8s-app: oasiss-api-tst
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: oasiss-api-tst
+  strategy: 
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        k8s-app: oasiss-api-tst
+    spec:
+      containers:
+      - name: oasiss-api-tst
+        image: nodeapirest:latest  #image: pro-registry.pro.caas.caixabank.com/containers/oasiss/oasiss-src:1.1.0 CXB
+        imagePullPolicy: Never  # Sacar en CXB
+        ports:
+        - containerPort: 8080
+          name: apiport
+        env:
+        - name: MONGO_INITDB_DATABASE
+          value: test
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: example
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: root
+        - name: MONGO_URL
+          value: mongodb://root:example@mongo-tst-oasiss-oasiss:27017/admin?authMechanism=SCRAM-SHA-1
+        - name: NODE_ENV
+          value: Kubernetes
+      imagePullSecrets:
+      - name: registry
+

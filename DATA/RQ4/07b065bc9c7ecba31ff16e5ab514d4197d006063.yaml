@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: medium-daemonset
+spec:
+  selector:
+      matchLabels:
+        name: medium-daemonset
+  template:
+    metadata:
+      labels:
+        name: medium-daemonset
+    spec:
+      priorityClassName: medium-priority
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/worker
+                operator: In
+                values:
+                - ''
+      containers:
+      - image: openshift/hello-openshift
+        imagePullPolicy: Always
+        name: registry
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources:
+          requests:
+            cpu: "12"
+          limits:
+            cpu: "12"
+        terminationMessagePath: /dev/termination-log
+      serviceAccount: default
+      terminationGracePeriodSeconds: 10

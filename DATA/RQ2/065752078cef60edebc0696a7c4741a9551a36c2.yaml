@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  labels:
+    something: app-lable
+spec:
+  replicas: 1                  # Number of pods
+  selector:                    #
+    matchLabels:               # This selector MUST MATCH below labels
+      app: app-lable          #
+
+  # Pod template
+  template:
+    metadata:
+      name: app-pod                
+      labels:
+        app: app-lable        # Pod labels
+    spec:
+      containers:                       
+        - name: app                     
+          image: hieuhv2/node-app      
+          imagePullPolicy: Always       
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: MONGODB_URI
+              value: "mongodb://mongodb-svc:27017/demo"

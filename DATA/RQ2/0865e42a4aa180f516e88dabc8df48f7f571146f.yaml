@@ -1,0 +1,12 @@
+# Appsody Operator would create this ConfigMap automatically during installation, so you don't have to apply this manually.
+apiVersion: v1
+data:
+  java-microprofile: ""
+  java-spring-boot2: ""
+  nodejs: ""
+  nodejs-express: ""
+  swift: ""
+  generic: ""
+kind: ConfigMap
+metadata:
+  name: appsody-operator-constants

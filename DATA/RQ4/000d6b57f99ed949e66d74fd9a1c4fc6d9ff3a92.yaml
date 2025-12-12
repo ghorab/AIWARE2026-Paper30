@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    ports:
+    - protocol: TCP
+      containerPort: 443
+    volumeMounts: ## 마운트 정의
+    - name: cert-vol ## 시크릿의 볼륨 이름
+      mountPath: /etc/cert ## 컨테이너상의 마운트 경로
+  volumes: ## 볼륨 정의
+  - name: cert-vol ## 시크릿의 볼륨 이름
+    secret:
+      secretName: www-cert ## 시크릿의 이름

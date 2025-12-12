@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    chart: '{{.Chart.Name}}-{{.Chart.Version}}'
+    heritage: '{{.Release.Service}}'
+    release: '{{.Release.Name}}'
+  name: '{{ template "fullname" . }}-mypod'
+  namespace: '{{.Values.mypod.namespace}}'
+spec:
+  containers:
+  - image: '{{.Values.mypod.mypod.image}}:{{.Values.mypod.mypod.imageTag}}'
+    imagePullPolicy: '{{.Values.mypod.mypod.imagePullPolicy}}'
+    name: mypod
+    resources:
+      requests:
+        cpu: 100m

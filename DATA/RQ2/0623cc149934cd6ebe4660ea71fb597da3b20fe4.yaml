@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: &name pgio
+  labels:
+    app: *name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: *name
+  template:
+    metadata:
+      labels:
+        app: *name
+    spec:
+      nodeSelector:
+        agentpool: agentpool1
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - postgresql
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - image: alexeldeib/pgio:latest
+        imagePullPolicy: Always
+        name: *name
+        envFrom:
+        - configMapRef:
+            name: pgio-env
+        - secretRef:
+            name: pg-config
+        resources: {}
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: pgpass
+          readOnly: true
+          mountPath: "/tmp/postgres"
+        - name: pgio-conf
+          mountPath: /opt/pgio
+        - name: proc
+          mountPath: /proc
+      terminationGracePeriodSeconds: 5
+      volumes: 
+      - name: pgpass
+        secret:
+          secretName: pg-config
+          items:
+          - key: PGPASS
+            path: .pgpass
+            mode: 0600
+      - name: pgio-conf
+        configMap:
+          name: pgio-conf
+      - name: proc
+        hostPath:
+          path: /proc
+          type: Directory

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secrets
+type: Opaque
+data:
+  mysql_root_password: YXNkZg==
+  jenkins_options: LS1hcmd1bWVudHNSZWFsbS5wYXNzd2QuamVua2lucz1qZW5raW5zIC0tYXJndW1lbnRzUmVhbG0ucm9sZXMuamVua2lucz1hZG1pbic=

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: social-cpu-and-mem
+  namespace: social-ns
+  annotations:
+    v8tix.com/created-by: "V8TIX"
+    v8tix.com/mail: "info@v8tix.com"
+    v8tix.com/app: "Katix"
+    v8tix.com/app-tier: "Back-end"
+    v8tix.com/environment: "Development"
+    v8tix.com/release: "Canary"
+    v8tix.com/tenant: "None"
+spec:
+  hard:
+    requests.cpu: 4
+    requests.memory: 4Gi
+    limits.cpu: 4
+    limits.memory: 4Gi

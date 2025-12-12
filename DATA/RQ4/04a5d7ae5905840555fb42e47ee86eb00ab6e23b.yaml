@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-web-deploy
+  labels:
+    app: sample-web
+    stage: production
+  namespace: production
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sample-web-pod
+  template:
+    metadata:
+      name: sample-web-pod
+      labels:
+        app: sample-web-pod
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-preemptible: "true"
+      tolerations:
+      - key: cloud.google.com/gke-preemptible
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
+      containers:
+      - name: sample-web
+        image: miaulne/sample-web-golang:prod
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 20m
+            memory: 30Mi
+          requests:
+            cpu: 10m
+            memory: 15Mi
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /
+            port: 8080
+          initialDelaySeconds: 2
+          periodSeconds: 3
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 100
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 1
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+

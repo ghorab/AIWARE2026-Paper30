@@ -1,0 +1,48 @@
+project_name: kube-score
+version: 2
+
+builds:
+- env:
+  - CGO_ENABLED=0
+  goos:
+  - linux
+  - darwin
+  - windows
+  goarch:
+  - amd64
+  - arm
+  - arm64
+  dir: cmd/kube-score
+
+archives:
+  - id: binary
+    format: binary
+    files:
+      - LICENSE
+
+  # A release in archive format is needed for the homebrew release
+  - id: default
+    files:
+      - LICENSE
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  version_template: "{{ .Tag }}-next"
+
+changelog:
+  sort: asc
+
+brews:
+  - name: kube-score
+    ids:
+    - default
+    repository:
+      owner: kube-score
+      name: homebrew-tap
+    directory: Formula
+    url_template: "https://github.com/zegl/kube-score/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    homepage: "https://kube-score.com/"
+    install: |
+      bin.install "kube-score"

@@ -1,0 +1,83 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.openshift.io/vcs-ref: master
+    jkube.io/git-branch: master
+    jkube.io/scm-url: https://github.com/snowdrop/spring-boot-bom/workshop-main
+    jkube.io/issue-system: GitHub
+    jkube.io/issue-tracker-url: https://github.com/snowdrop/spring-boot-bom/issues
+    jkube.io/git-url: https://github.com/likhia/INTERNAL_SERVICE_INIT.git
+    app.openshift.io/vcs-uri: https://github.com/likhia/INTERNAL_SERVICE_INIT.git
+    jkube.io/scm-tag: 2.3.2.Beta1
+    jkube.io/git-commit: c2fb9a395ef9b5c15559b73075524a89b9edae40
+  labels:
+    app: workshop-main
+    provider: jkube
+    version: 1.0.0-SNAPSHOT
+    group: com.workshop.main
+  name: workshop-main
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: workshop-main
+      provider: jkube
+      group: com.workshop.main
+  template:
+    metadata:
+      labels:
+        app: workshop-main
+        provider: jkube
+        version: 1.0.0-SNAPSHOT
+        group: com.workshop.main
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: workshop-main:latest
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 180
+          successThreshold: 1
+        name: spring-boot
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 9779
+          name: prometheus
+          protocol: TCP
+        - containerPort: 8778
+          name: jolokia
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          successThreshold: 1
+        securityContext:
+          privileged: false
+        volumeMounts:
+        - mountPath: /deployments/config
+          name: config
+          readOnly: true
+      volumes:
+      - configMap:
+          items:
+          - key: application.properties
+            path: application.properties
+          name: service-config-map
+        name: config

@@ -1,0 +1,35 @@
+spec:
+  containers:
+  - name: postgres
+    image: rspeer/conceptnet-data:5.5.5
+    # disable this in production
+    imagePullPolicy: IfNotPresent
+    ports:
+    - containerPort: 5432
+    volumeMounts:
+    - name: data
+      mountPath: /data/conceptnet
+    - name: psql
+      mountPath: /var/lib/postgresql/data
+      readOnly: true
+  # PostgreSQL Data
+  # Connecting the existing persistent disk
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: data
+  - name: psql
+    persistentVolumeClaim:
+      claimName: psql
+metadata:
+ name: postgres
+kind: Service
+apiVersion: v1
+spec:
+  ports:
+  - name: postgres
+    protocol: TCP
+    port: 5432
+    targetPort: 5432
+  selector:
+    name: postgres

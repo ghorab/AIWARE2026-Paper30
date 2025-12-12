@@ -1,0 +1,93 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-providers
+  namespace: monitoring
+  labels:
+    app: grafana
+data:
+  dashboardproviders.yaml: |
+    apiVersion: 1
+    providers:
+    - name: k8s-cluster-summary
+      folder: homelab
+      options:
+        path: /var/lib/grafana/dashboards/k8s-cluster-summary
+      orgId: 1
+      type: file
+      disableDeletion: false
+    - name: k8s-cluster-monitoring
+      folder: homelab
+      options:
+        path: /var/lib/grafana/dashboards/k8s-cluster-monitoring
+      orgId: 1
+      type: file
+      disableDeletion: false
+    - name: node-exporter-full
+      folder: homelab
+      options:
+        path: /var/lib/grafana/dashboards/node-exporter-full
+      orgId: 1
+      type: file
+      disableDeletion: false
+    - name: etcd-summary
+      folder: homelab
+      options:
+        path: /var/lib/grafana/dashboards/etcd-summary
+      orgId: 1
+      type: file
+    - name: bind-summary
+      folder: homelab
+      options:
+        path: /var/lib/grafana/dashboards/bind-summary
+      orgId: 1
+      type: file
+    - name: haproxy-summary
+      folder: homelab
+      options:
+        path: /var/lib/grafana/dashboards/haproxy-summary
+      orgId: 1
+      type: file
+    - name: mikrotik-summary
+      folder: homelab
+      options:
+        path: /var/lib/grafana/dashboards/mikrotik-summary
+      orgId: 1
+      type: file
+    - name: x509-cert-summary
+      folder: homelab
+      options:
+        path: /var/lib/grafana/dashboards/x509-cert-summary
+      orgId: 1
+      type: file
+    - name: cloudwatch-aws-billing
+      folder: aws
+      options:
+        path: /var/lib/grafana/dashboards/cloudwatch-aws-billing
+      orgId: 1
+      type: file
+    - name: cloudwatch-aws-ec2
+      folder: aws
+      options:
+        path: /var/lib/grafana/dashboards/cloudwatch-aws-ec2
+      orgId: 1
+      type: file
+    - name: cloudwatch-amazon-ebs
+      folder: aws
+      options:
+        path: /var/lib/grafana/dashboards/cloudwatch-amazon-ebs
+      orgId: 1
+      type: file
+    - name: cloudwatch-amazon-ec2
+      folder: aws
+      options:
+        path: /var/lib/grafana/dashboards/cloudwatch-amazon-ec2
+      orgId: 1
+      type: file
+    - name: pihole-exporter
+      folder: homelab
+      options:
+        path: /var/lib/grafana/dashboards/pihole-exporter
+      orgId: 1
+      type: file

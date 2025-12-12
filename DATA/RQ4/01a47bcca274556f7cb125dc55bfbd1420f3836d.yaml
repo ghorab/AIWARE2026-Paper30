@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    fabric8.io/git-commit: 2ebbe3448c2a1fd5c903badd7a8b264253f39124
+    fabric8.io/git-branch: master
+    fabric8.io/scm-con-url: scm:git:git@github.com:fabric8io/fabric8-platform.git/apps/auth-db
+    fabric8.io/scm-devcon-url: scm:git:git@github.com:fabric8io/fabric8-platform.git/apps/auth-db
+    fabric8.io/scm-tag: app-console-2.0.1
+    fabric8.io/scm-url: http://github.com/fabric8io/fabric8-platform/apps/auth-db
+  labels:
+    service: auth-db
+    app: auth-db
+    provider: fabric8
+    version: 4.0-SNAPSHOT
+    group: io.fabric8.platform.apps
+  name: auth-db
+spec:
+  ports:
+  - name: postgres
+    port: 5432
+    protocol: TCP
+    targetPort: 5432
+  selector:
+    service: auth-db
+    app: auth-db
+    provider: fabric8
+    group: io.fabric8.platform.apps
+  type: ClusterIP

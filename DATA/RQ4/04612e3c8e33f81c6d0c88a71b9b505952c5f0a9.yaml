@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: notification-server
+  namespace: samples-web-push
+spec:
+  containers:
+  - name: notification-server
+    image: notification-server:0.1
+    # Change the status of the container to running, and execute bin/sh to access the container.
+    command: ["sleep", "3600"]
+    envFrom:
+    - configMapRef:
+        name: notification-server-config
+      prefix: NOTIFICATION_

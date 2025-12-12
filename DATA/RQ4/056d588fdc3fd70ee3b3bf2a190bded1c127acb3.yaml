@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: mysql-server
+spec: #spec do deployment
+    replicas: 1
+
+    selector:  #facilita na criação do service
+        matchLabels:
+            app: mysql-server #selector especifico para ser reconhecido na criação do serviço
+            tier: db
+
+    template: #referente ao POD
+        metadata: #metadata dos pods
+            labels: #podemos criar varias labels quisermos
+                app: mysql-server
+                tier: db #label responsável por identificar o tipo de aplicação (fala onde se encontra a aplicação)
+        spec: #spec do POD
+            containers:
+            - image: mysql:5.7
+              name: mysql-server
+              args:
+                - "--ignore-db-dir=lost+found"
+              
+              env:
+              - name: MYSQL_ROOT_PASSWORD
+                valueFrom: 
+                  secretKeyRef:
+                    name: mysql-pass
+                    key: password
+              
+              ports:
+              - containerPort: 3306
+
+              volumeMounts: #monta o volume persistente (diferente do confiMap)
+              - name: mysql-persistent-storage #mesmo nome definido no volume abaixo
+                mountPath: /var/lib/mysql #local onde o mysql guarda os arquivos
+            
+            volumes: #definição do volume
+            - name: mysql-persistent-storage # nome do volume
+              persistentVolumeClaim:
+                claimName: mysql-pv-claim # mesmo nome devido no arquivo do persistent-volume.yaml 
+
+
+
+        

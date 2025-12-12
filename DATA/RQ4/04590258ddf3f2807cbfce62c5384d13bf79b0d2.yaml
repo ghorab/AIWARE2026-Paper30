@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-cli-deployment
+spec:
+  selector:
+    matchLabels:
+      app: kafka-cli-deployment
+  template:
+    metadata:
+      labels:
+        app: kafka-cli-deployment
+    spec:
+      containers:
+      - name: kafka-cli-deployment
+        image: gcr.io/ucdlib-pubreg/kafka-cli:v0.0.1
+        imagePullPolicy: Always
+        env:
+        - name: KRM_ENV
+          value: "gce-prod"
+        - name: DECODER_KAFKA_HOST
+          value: kafka-service
+        - name: DECODER_KAFKA_PORT
+          value: "9092"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+      nodeSelector:
+        intendedfor: decoders

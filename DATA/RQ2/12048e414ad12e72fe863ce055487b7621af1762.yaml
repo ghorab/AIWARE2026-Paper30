@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: phpservermon
+  name: phpservermon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpservermon
+  template:
+    metadata:
+      labels:
+        app: phpservermon
+    spec:
+      containers:
+      - env:
+          - name: PSM_BASE_URL
+            value: http://phpservermon.lan/
+          - name: PSM_DB_HOST
+            value: mariadb
+          - name: PSM_DB_NAME
+            value: phpservermon
+          - name: PSM_DB_USER
+            value: root
+          - name: PSM_DB_PASS
+            value: password
+          - name: PSM_DB_PREFIX
+            value: psm_
+          - name: PHP_TIMEZONE
+            value: America/New_York
+        image: benoitpodwinski/phpservermon:latest
+        imagePullPolicy: Always
+        name: phpservermon-app
+        ports:
+        - containerPort: 80
+      restartPolicy: Always

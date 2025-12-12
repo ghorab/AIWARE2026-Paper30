@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pretendapp-prod
+  namespace: identity-demo
+spec:
+  selector:
+    matchLabels:
+      app: pretendapp-prod
+  template:
+    metadata:
+      labels:
+        app: pretendapp-prod
+    spec:
+      containers:
+      - name: pretendapp-prod-app
+        #image: logindotgov/pretend-app:master-f4b4bbffafdec6b509c5e56d7a12a9be2d7e09ac
+        image: logindotgov/pretend-app:master-6edd6c10e9966d245a36c3bddf3b7a7b7caf70db
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80

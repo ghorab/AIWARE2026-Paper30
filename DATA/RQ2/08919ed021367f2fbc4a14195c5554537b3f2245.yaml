@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "aksdiaggarwaks-4d16"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "aksdiaggarwaks-4d16"
+  template:
+    metadata:
+      labels:
+        app: "aksdiaggarwaks-4d16"
+    spec:
+      containers:
+        - name: "aksdiaggarwaks-4d16"
+          image: "aaaatiwarishubregistry.azurecr.io/aksdiaggarwaks"
+          ports:
+          - containerPort: 8080

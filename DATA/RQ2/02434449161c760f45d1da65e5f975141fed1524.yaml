@@ -1,0 +1,20 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: anilkumarmaheswarlapipelinesjavascriptdocker 
+spec:
+  progressDeadlineSeconds: 30
+  replicas: 2
+  selector:
+    matchLabels:
+      app: anilkumarmaheswarlapipelinesjavascriptdocker
+  template:
+    metadata:
+      labels:
+        app: anilkumarmaheswarlapipelinesjavascriptdocker 
+    spec:
+      containers:
+        - name: anilkumarmaheswarlapipelinesjavascriptdocker 
+          image: akscrfordevops.azurecr.io/anilkumarmaheswarlapipelinesjavascriptdocker
+          ports:
+          - containerPort: 8080

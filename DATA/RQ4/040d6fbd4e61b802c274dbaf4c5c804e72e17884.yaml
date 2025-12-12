@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nest-js-deployment
+  labels:
+    app: nest-js
+    function: backend
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nest-js
+      function: backend
+  template:
+    metadata:
+      labels:
+        app: nest-js
+        function: backend
+    spec:
+      containers:
+        - name: nest-js
+          image: adityam1311/nest-js-backend-microservice:1.0.0
+          ports:
+            - containerPort: 3000

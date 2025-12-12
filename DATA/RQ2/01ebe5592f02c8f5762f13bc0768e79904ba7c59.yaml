@@ -1,0 +1,24 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: math-add-job
+spec:
+  schedule: '*/1 * * * *'
+
+  jobTemplate:
+    spec:
+      # Must succeed 5 times. Will create new pods until it stops failing and fulfills the desired state
+      completions: 5
+      parallelism: 2
+
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: math
+              image: alpine
+              command:
+                - 'expr'
+                - '3'
+                - '+'
+                - '2'

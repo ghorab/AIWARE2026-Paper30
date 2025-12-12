@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: production-litmuschaos
+  name: production-litmuschaos-service
+  namespace: litmuschaos
+spec:
+  ports:
+  - name: production-litmuschaos
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  type: LoadBalancer
+  selector:
+    app: production-litmuschaos

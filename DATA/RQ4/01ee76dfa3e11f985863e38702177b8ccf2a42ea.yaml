@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dustenproject1
+  labels:
+    app: dustenproject1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dustenproject1
+  template:
+    metadata:
+      labels:
+        app: dustenproject1 
+    spec:
+      containers:
+        - name: dustenproject1 
+          image: project1container.azurecr.io/dustenproject1
+          env: 
+          - name: DB_CONNECTION_STR
+            valueFrom:
+              secretKeyRef:
+                name: db-secret
+                key: connection-str
+          ports:
+          - containerPort: 80

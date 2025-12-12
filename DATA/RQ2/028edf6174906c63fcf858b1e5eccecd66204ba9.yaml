@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: invoicing
+  labels:
+    app: invoicing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: invoicing
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25% 
+  template:
+    metadata:
+      labels:
+        app: invoicing
+    spec:      
+      containers:
+      - name: invoicing
+        image: thecloudgarage/k8s-springboot-kafka-order-management:mskafka_invoicing
+        ports:
+        - name: invoicing-http
+          containerPort: 8080
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /invoice.html
+            port: 8080
+          initialDelaySeconds: 5        
+        readinessProbe:
+          httpGet:
+             path: /invoice.html
+             port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          successThreshold: 1
+        env:
+        - name: postgresql
+          value: postgresql
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka-service.kafka-cluster:9092"

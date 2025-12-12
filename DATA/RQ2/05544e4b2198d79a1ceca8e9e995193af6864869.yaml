@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: orange-talents-06-pix-keymanager-grpc-secrets
+type: Opaque
+data:
+  DB_PASSWORD: "rK2q&6h3C~V)U]y"

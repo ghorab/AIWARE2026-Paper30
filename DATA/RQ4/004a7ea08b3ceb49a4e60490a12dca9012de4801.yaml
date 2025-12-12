@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-env-configmap
+data:
+  ARGOCD_SERVER: cluster.nandaja.space
+  ARGOCD_APPLICATION_NAME: myblog
+  ARGOCD_APPLICATION_REVISION: HEAD

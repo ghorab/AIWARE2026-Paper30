@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: stream-cities
+spec:
+  containers:
+  - name: meetup-streamcities
+    image: numberouane2001/meetup-streamcities

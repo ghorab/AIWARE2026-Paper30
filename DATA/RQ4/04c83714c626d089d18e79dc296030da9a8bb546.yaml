@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: besu-config-toml-configmap-writer
+  labels:
+    app: besu-config-toml-configmap-writer
+  namespace: lacchain-protest-net
+data:
+  config.toml.template: |-
+    # Node Information
+    data-path="/data"
+    genesis-file="/etc/genesis/genesis.json"
+
+    # TODO : insert as command line & mount Volume
+    # rpc-http-authentication-credentials-file="none"
+    # TODO : insert as command line & mount Volume
+    # rpc-ws-authentication-credentials-file="none"
+    logging="INFO"
+
+    min-gas-price=0
+    # Transaction Pool
+    #tx-pool-retention-hours=6
+    #tx-pool-max-size=1024
+
+    # P2P network
+    p2p-enabled=true
+    discovery-enabled=true
+    p2p-host="${P2P_HOST}"
+    p2p-port=${P2P_PORT}
+    bootnodes=["enode://9636ad55b62cd519bcc9c738516e6c51906565c43e1aa14d779f027f78171f245750ce524dbdec0d7945d8b49d6e550f0c9bae91b39f13fbfb668ddfb370ea85@23.251.144.110:60606","enode://fead4eeea1f1cce8bf1f3ad955d8504aaecda86a1b8850294386ebc5179e60959c208fbe8fb7294b4f7d87b1dafb4863be83096e9fca2be7c03f89e461bafa71@35.229.76.38:60606","enode://26c79b1c307a40b14f86a020590703aa60ecd20c5faca9ddfc2a2513a25c1976c3fb37dadecc18162134e408d17ae9421b22dd30f09600f288a1ce8cc37a7b29@35.247.241.166:60606","enode://916b8cc76db4a19035a352976622bf0c2185d36af83c11eabcf387372fccfb6aacb47e9ce0ba6e331436ce8fe8faa00547b1a7074d02865a0fbe42f75e3a4b06@35.197.76.152:60606","enode://fe50d1c3d1ebbc37cdfb54f6c767e3510a415b91e60c1a6c495b9f91bbf2eb74011cfb0e60547d90dc189a3f74703e847bd8daff93a58c494767bc7a6b94762d@18.211.130.14:60606","enode://140626be59e4f2c57ab9787481dd571bc8ed87764a5b035fa33f38f746d770484cfc0eca0dc5d00c7bfb18caa057477462f7af216a84bd9faea68e446e4ed1c7@35.196.221.232:60606","enode://9639ef4c952086ca568c59f69a228e6d36d81891b0ffd726fdb36ef004138d715908c1cda5ab9a040f3c4b290961e7d4309782b9eab22b572941e1b0d9a3e1dc@13.72.98.253:60606"]
+
+
+    #host-allowlist=["*"]
+    host-whitelist=["*"]
+
+    # JSON-RPC
+    rpc-http-enabled=true
+    rpc-http-host="0.0.0.0"
+    rpc-http-port=4545
+    rpc-http-api=["ETH","NET","IBFT","WEB3","EEA","PRIV"]
+    rpc-http-cors-origins=["*"]
+    rpc-http-authentication-enabled=false
+
+    # GRAPHQL-RPC
+    graphql-http-enabled=true
+    graphql-http-host="0.0.0.0"
+    graphql-http-port=4547
+    graphql-http-cors-origins=["*"]
+
+    # WebSockets API
+    rpc-ws-enabled=true
+    rpc-ws-host="0.0.0.0"
+    rpc-ws-port=4546
+    rpc-ws-api=["ETH","NET","IBFT","WEB3","EEA","PRIV"]
+    rpc-ws-authentication-enabled=false
+
+    # Metrics
+    metrics-push-enabled=true
+    metrics-push-port=9091
+    metrics-push-host="146.148.100.227"
+    metrics-push-interval=5
+    metrics-push-prometheus-job="${NODE_NAME}"
+
+  
+

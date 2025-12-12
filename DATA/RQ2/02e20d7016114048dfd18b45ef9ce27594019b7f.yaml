@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${project.artifactId}
+data:
+  amqp.properties: |
+    amqp.user: amq
+    amqp.password: amq
+    amqp.uri: amqp://192.168.42.1:5672
+  camel.properties: |
+    endpoint.event.test: amqp-ngss:topic:event.test
+    endpoint.ExpiryQueue: amqp-ngss:ExpiryQueue
+    endpoint.cdk.test.queue: amqp-ngss://cdk-test-queue
+    endpoint.timer: timer://foo?period=30000
+    endpoint.log: log:CDK-AMQ7-CDI-Test?showAll=true&amp;multiline=true

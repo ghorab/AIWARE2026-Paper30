@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resources-deployment
+  namespace: microservices-namespace
+  labels:
+    app: resources-deployment
+    moduleid: microservice-resources-service
+    version: 1.70.0-master
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: resources-deployment
+  template:
+    metadata:
+      labels:
+        app: resources-deployment
+    spec:
+      containers:
+        -
+          name: app
+          image: 'repoflow/microservice-resources-container:1.70.0-master'
+          env:
+            -
+              name: RESOURCES_BASE_ROUTE
+              value: /resources
+            -
+              name: RESOURCES_INTERNAL_PORT
+              value: '4000'
+          ports:
+            -
+              containerPort: 4000

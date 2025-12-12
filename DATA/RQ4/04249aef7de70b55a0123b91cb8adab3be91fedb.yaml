@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: go-service-secret
+  namespace: backend-applications
+data:
+  GO_PORT: NzAwMQ==

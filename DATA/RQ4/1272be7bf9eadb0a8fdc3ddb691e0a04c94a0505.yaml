@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-lab20
+  labels:
+    app: frontend-lab20
+spec:
+  selector:
+    matchLabels:
+      app: frontend-lab20
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: frontend-lab20
+    spec:
+      containers:
+        - name: frontend-lab20
+          image: yunzero/frontend-lab20
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000

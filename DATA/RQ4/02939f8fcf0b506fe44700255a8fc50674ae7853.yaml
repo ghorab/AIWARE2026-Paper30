@@ -1,0 +1,24 @@
+# This example is a second version of echo-deployment.yaml.
+# The only difference is the version of the container image.
+# When this file is applied, Deployment-Controller will notice the difference
+# and set ReplicaSet-Controller to reach the desired state.
+# Previous ReplicaSet will be scaled down one by one while new ReplicaSet will be scaled up one by one.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo-deploy
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: echo
+      tier: app
+  template:
+    metadata:
+      labels:
+        app: echo
+        tier: app
+    spec:
+      containers:
+        - name: echo
+          image: "ghcr.io/subicura/echo:v2"

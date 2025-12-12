@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-shopping-cart-service-deployment
+  labels:
+    app: product-shopping-cart-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-shopping-cart-service
+  template:
+    metadata:
+      labels:
+        app: product-shopping-cart-service
+    spec:
+      containers:
+      - name: product-shopping-cart-service
+        image: benjaminsh/blue_cart_product_shopping_cart_service:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MONGO_DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: bluecartsecrets
+              key:  MONGO_DB_USERNAME
+        - name: MONGO_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bluecartsecrets
+              key:  MONGO_DB_PASSWORD
+        - name: MONGO_DB_CLUSTER_ADDRESS
+          valueFrom:
+            secretKeyRef:
+              name: bluecartsecrets
+              key:  MONGO_DB_CLUSTER_ADDRESS

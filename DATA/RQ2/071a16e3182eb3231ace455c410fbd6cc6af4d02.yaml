@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simpleserver
+spec:
+  selector:
+    matchLabels:
+      app: simpleserver
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: simpleserver
+    spec:
+      containers:
+      - name: simpleserver
+        image: ccr.ccs.tencentyun.com/tarsbase/simpleserver:20201122105724
+        readinessProbe:
+            exec:
+              command: ["tarscli", "hzcheck"]
+            failureThreshold: 10
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+        lifecycle:
+          preStop:
+            exec:
+              command: ["tarscli", "prestop"]
+      terminationGracePeriodSeconds: 90
+

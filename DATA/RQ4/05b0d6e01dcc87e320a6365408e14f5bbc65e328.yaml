@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: "tdedahaks-cce9"
+    labels:
+        app: "tdedahaks-cce9"
+spec:
+    type: LoadBalancer
+    ports:
+    - port: 4000
+      targetPort: 4000
+      protocol: TCP
+      name: http
+    selector:
+        app: "tdedahaks-cce9"

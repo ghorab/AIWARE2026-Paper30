@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nugetregistry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: nugetregistry
+  template:
+    metadata:
+      labels:
+        component: nugetregistry
+    spec:
+      containers:
+        - name: baget
+          image: loicsharma/baget:latest
+          resources:
+            limits:
+              cpu:  30m
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          volumeMounts:
+            - name: baget-persistent-storage
+              mountPath: /var/baget
+          env:
+            - name: ApiKey
+              value: 9a1ec93c-cb39-4744-a8fc-9a0f7e5f49fa
+            - name: Storage__Type
+              value: FileSystem
+            - name: Storage__Path
+              value: /var/baget/packages
+            - name: Database__Type
+              value: Sqlite
+            - name: Database__ConnectionString
+              value: Data Source=/var/baget/baget.db
+            - name: Search__Type
+              value: Database
+      volumes:
+        - name: baget-persistent-storage
+          persistentVolumeClaim:
+            claimName: baget-pv-claim

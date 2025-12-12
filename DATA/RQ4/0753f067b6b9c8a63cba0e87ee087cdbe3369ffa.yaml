@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lobby-deployment
+spec:
+  selector:
+    matchLabels:
+      app: lobby
+  template:
+    metadata:
+      labels:
+        app: lobby
+    spec:
+      containers:
+      # - name: login
+      #   image: hardplant/login
+      #   resources:
+      #     requests:
+      #       memory: "32Mi"
+      #       cpu: "100m"
+      #     limits:
+      #       memory: "128Mi"
+      #       cpu: "500m"
+      #   ports:
+      #   - containerPort: 8080
+      - name: matchmaker
+        image: hardplant/matchmaker:v1.0
+        ports:
+        - containerPort: 8080

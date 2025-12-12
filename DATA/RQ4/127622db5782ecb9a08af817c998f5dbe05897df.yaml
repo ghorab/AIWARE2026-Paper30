@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sampleapp
+  namespace: default # Namespace가 없는 경우 제거
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: test
+      kind: deployment
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+      labels:
+        app: test
+        kind: deployment
+    spec:
+      containers:
+        - image: 'lto7cqab.private-ncr.fin-ntruss.com/dev:prod' # Private docker registry 주소 및 이미지 tag
+          imagePullPolicy: Always  # 쿠버네티스는 가비지에서 image를 그 기간또는 양이 초과했을경우임, 따라서 이미지를 같은것을 받을수 있게 지정.(https://kubernetes.io/ko/docs/concepts/containers/images/)
+          name: sampleapp
+          ports:
+            - containerPort: 8000
+            - containerPort: 8080
+      imagePullSecrets: # 위에서 생성한 Private docker registry 사용을 위해 필수(secret 명)
+        - name: fin  # secret 명

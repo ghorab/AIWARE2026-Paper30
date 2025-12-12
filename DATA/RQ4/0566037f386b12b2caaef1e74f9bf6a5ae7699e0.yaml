@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-cluster
+  namespace: mysql-cluster
+  labels:
+    app: mysql-cluster
+data:
+  master.cnf: |
+    # master node, only one node, the sequence is 0.
+    [mysqld]
+    sync_binlog=1
+  slave.cnf: |
+    # slave node(s), one or multi nodes, the sequence is beginning from 1.
+    [mysqld]
+    super-read-only
+    relay-log=${HOSTNAME}-relay-bin
+  10-master-root.sql: |
+    CREATE USER 'root'@'%' IDENTIFIED WITH MYSQL_NATIVE_PASSWORD BY '${MYSQL_ROOT_PASSWORD}';
+    GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+    GRANT PROXY ON ''@'' TO 'root'@'%' WITH GRANT OPTION ;
+    FLUSH PRIVILEGES;
+  90-master-export.sh: |
+    mysqldump -h localhost -uroot -p${MYSQL_ROOT_PASSWORD} --all-databases --master-data=1 >/var/lib/mysql-cluster/master.dump
+  20-slave-repl.sql: |
+    SOURCE /var/lib/mysql-cluster/master.dump;
+    CHANGE MASTER TO
+      MASTER_HOST='mysql-cluster-master.${MY_POD_NAMESPACE}',
+      MASTER_USER='root',
+      MASTER_PASSWORD='${MYSQL_ROOT_PASSWORD}',
+      MASTER_CONNECT_RETRY=10;
+    START SLAVE;
+    SHOW SLAVE STATUS \G
+  30-slave-readonly.sh: |
+    # Mysqld started with slave.cnf first time, and then exec script files.
+    # So "super-read-only" must be removed from slave.cnf for slaves import master data.
+    # And then, slaves should restart with option "super-read-only".
+    sed -i "/^\[mysqld\]$/asuper-read-only" /etc/my.cnf.d/slave.cnf
+  99-init-end.sh: |
+    touch /var/lib/mysql-cluster/${HOSTNAME}

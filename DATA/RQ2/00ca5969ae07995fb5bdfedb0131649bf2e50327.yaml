@@ -1,0 +1,29 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cutime
+  namespace: default
+  labels:
+    app: cutime
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cutime
+  template:
+    metadata:
+      labels:
+        app: cutime
+    spec:
+      containers:
+        - name: devops
+          image: thedeadferryman/devops
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 125m
+              memory: 64Mi
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30

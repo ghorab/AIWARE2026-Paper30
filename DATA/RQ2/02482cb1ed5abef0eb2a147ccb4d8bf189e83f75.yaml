@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: clamav-server
+  labels:
+    app.kubernetes.io/name: clamav
+    app.kubernetes.io/component: server
+
+spec:
+  selector:
+    app.kubernetes.io/name: clamav
+    app.kubernetes.io/component: server
+
+  ports:
+    - name: clamd
+      port: 3310
+    - name: milter
+      port: 7357
+
+...

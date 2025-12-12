@@ -1,0 +1,331 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ibm-common-service-operator
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: ibm-common-service-operator
+  template:
+    metadata:
+      labels:
+        name: ibm-common-service-operator
+      annotations:
+        csOperandConfig: |-
+          apiVersion: operator.ibm.com/v1alpha1
+          kind: OperandConfig
+          metadata:
+            name: common-service
+            namespace: placeholder
+            annotations:
+              version: "7"
+          spec:
+            services:
+            - name: ibm-licensing-operator
+              spec:
+                IBMLicensing:
+                  datasource: datacollector
+                operandBindInfo: {}
+            - name: ibm-mongodb-operator
+              spec:
+                mongoDB: {}
+                operandRequest: {}
+            - name: ibm-cert-manager-operator
+              spec:
+                certManager: {}
+                issuer: {}
+                certificate: {}
+                clusterIssuer: {}
+            - name: ibm-iam-operator
+              spec:
+                authentication: {}
+                oidcclientwatcher: {}
+                pap: {}
+                policydecision: {}
+                secretwatcher: {}
+                securityonboarding: {}
+                operandBindInfo: {}
+                operandRequest: {}
+            - name: ibm-healthcheck-operator
+              spec:
+                healthService: {}
+                mustgatherService: {}
+                mustgatherConfig: {}
+            - name: ibm-commonui-operator
+              spec:
+                commonWebUI: {}
+                switcheritem: {}
+                operandRequest: {}
+                navconfiguration: {}
+            - name: ibm-management-ingress-operator
+              spec:
+                managementIngress: {}
+                operandBindInfo: {}
+                operandRequest: {}
+            - name: ibm-ingress-nginx-operator
+              spec:
+                nginxIngress: {}
+            - name: ibm-auditlogging-operator
+              spec:
+                auditLogging: {}
+                operandBindInfo: {}
+                operandRequest: {}
+            - name: ibm-catalog-ui-operator
+              spec:
+                catalogUI: {}
+                operandRequest: {}
+            - name: ibm-platform-api-operator
+              spec:
+                platformApi: {}
+                operandRequest: {}
+            - name: ibm-monitoring-exporters-operator
+              spec:
+                exporter: {}
+                operandRequest: {}
+            - name: ibm-monitoring-prometheusext-operator
+              spec:
+                prometheusExt: {}
+                operandRequest: {}
+            - name: ibm-monitoring-grafana-operator
+              spec:
+                grafana: {}
+                operandRequest: {}
+            - name: ibm-elastic-stack-operator
+              spec:
+                elasticStack: {}
+                operandBindInfo: {}
+                operandRequest: {}
+        csOperandRegistry: |-
+          apiVersion: operator.ibm.com/v1alpha1
+          kind: OperandRegistry
+          metadata:
+            name: common-service
+            namespace: placeholder
+            annotations:
+              version: "10"
+          spec:
+            operators:
+            - name: ibm-licensing-operator
+              namespace: placeholder
+              channel: v3
+              packageName: ibm-licensing-operator-app
+              scope: public
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+            - name: ibm-mongodb-operator
+              namespace: placeholder
+              channel: v3
+              packageName: ibm-mongodb-operator-app
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+            - name: ibm-cert-manager-operator
+              namespace: placeholder
+              channel: v3
+              packageName: ibm-cert-manager-operator
+              scope: public
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+            - name: ibm-iam-operator
+              namespace: placeholder
+              channel: v3
+              packageName: ibm-iam-operator
+              scope: public
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+            - name: ibm-healthcheck-operator
+              namespace: placeholder
+              channel: v3
+              packageName: ibm-healthcheck-operator-app
+              scope: public
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+            - name: ibm-commonui-operator
+              namespace: placeholder
+              channel: v3
+              packageName: ibm-commonui-operator-app
+              scope: public
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+            - name: ibm-management-ingress-operator
+              namespace: placeholder
+              channel: v3
+              packageName: ibm-management-ingress-operator-app
+              scope: public
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+            - name: ibm-ingress-nginx-operator
+              namespace: placeholder
+              channel: v3
+              packageName: ibm-ingress-nginx-operator-app
+              scope: public
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+            - name: ibm-auditlogging-operator
+              namespace: placeholder
+              channel: v3
+              packageName: ibm-auditlogging-operator-app
+              scope: public
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+            - name: ibm-platform-api-operator
+              namespace: placeholder
+              channel: v3
+              packageName: ibm-platform-api-operator-app
+              scope: public
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+            - name: ibm-monitoring-exporters-operator
+              namespace: placeholder
+              channel: v3
+              packageName: ibm-monitoring-exporters-operator-app
+              scope: public
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+            - name: ibm-monitoring-prometheusext-operator
+              namespace: placeholder
+              channel: v3
+              packageName: ibm-monitoring-prometheusext-operator-app
+              scope: public
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+            - channel: v3
+              name: ibm-monitoring-grafana-operator
+              namespace: placeholder
+              packageName: ibm-monitoring-grafana-operator-app
+              scope: public
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+            - channel: v3
+              name: ibm-events-operator
+              namespace: placeholder
+              packageName: ibm-events-operator
+              scope: public
+              sourceName: opencloud-operators
+              sourceNamespace: openshift-marketplace
+        csOperatorSubscription: |-
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: ibm-common-service-operator
+            namespace: placeholder
+            annotations:
+              version: "10"
+          spec:
+            channel: v3
+            installPlanApproval: Automatic
+            name: ibm-common-service-operator
+            source: opencloud-operators
+            sourceNamespace: openshift-marketplace
+        description: The IBM Common Service Operator is used to deploy IBM Common Services
+        nsRestrictedSubscription: |-
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: ibm-namespace-scope-operator-restricted
+            namespace: placeholder
+            annotations:
+              version: "10"
+          spec:
+            channel: v3
+            installPlanApproval: Automatic
+            name: ibm-namespace-scope-operator-restricted
+            source: opencloud-operators
+            sourceNamespace: openshift-marketplace
+        nsSubscription: |-
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: ibm-namespace-scope-operator
+            namespace: placeholder
+            annotations:
+              version: "10"
+          spec:
+            channel: v3
+            installPlanApproval: Automatic
+            name: ibm-namespace-scope-operator
+            source: opencloud-operators
+            sourceNamespace: openshift-marketplace
+        odlmClusterSubscription: |-
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: operand-deployment-lifecycle-manager-app
+            namespace: placeholder
+            annotations:
+              version: "11"
+          spec:
+            channel: v3
+            installPlanApproval: Automatic
+            name: ibm-odlm
+            source: opencloud-operators
+            sourceNamespace: openshift-marketplace
+        odlmNamespacedSubscription: |-
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: operand-deployment-lifecycle-manager-app
+            namespace: placeholder
+            annotations:
+              version: "11"
+          spec:
+            channel: v3
+            installPlanApproval: Automatic
+            name: ibm-odlm
+            source: opencloud-operators
+            sourceNamespace: openshift-marketplace
+            config:
+              env:
+              - name: INSTALL_SCOPE
+                value: namespaced
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+                - ppc64le
+                - s390x
+      containers:
+      - command:
+        - /manager
+        env:
+        - name: OPERATOR_NAME
+          value: ibm-common-service-operator
+        - name: IBM_CS_WEBHOOK_IMAGE
+          value: quay.io/opencloudio/ibm-cs-webhook:1.2.1
+        - name: IBM_SECRETSHARE_OPERATOR_IMAGE
+          value: quay.io/opencloudio/ibm-secretshare-operator:1.3.1
+        image: siji/operator:cs
+        imagePullPolicy: Always
+        name: ibm-common-service-operator
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: ibm-common-service-operator
+      serviceAccountName: ibm-common-service-operator
+      terminationGracePeriodSeconds: 10

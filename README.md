@@ -1,131 +1,124 @@
-# Replication Package
-## Towards Secure and Reliable Kubernetes Configurations
+# Replication Package – AIWARE 2026
 
-This replication package accompanies the paper:
-
-> **Towards Secure and Reliable Kubernetes Configurations: A Taxonomy of Misconfigurations and Automated Correction with Large Language Models**
-
-submitted to **The ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering (FSE 2026)**.
-
-This replication package is distributed as a **fully self-contained virtual machine image**.  
-**All datasets, source code, executable artifacts, tools, and dependencies are already included inside the image.**  
-No external installation or environment configuration is required.
+## Kubernetes Misconfigurations in the Wild:
+### Taxonomy, Evolution, and Automated Repair with Large Language Models
 
 ---
 
-## 🎥 Video Demonstration
+## Overview
 
-A video demonstrating the tool, execution environment, and replication workflow is available at:
+This repository provides the replication package for the AIWARE 2026 paper:
 
-* https://youtu.be/PzxQsXRym3Y
+*Kubernetes Misconfigurations in the Wild: Taxonomy, Evolution, and Automated Repair with Large Language Models*
 
----
+The objective of this package is to ensure transparency, reproducibility, and reusability of the results. It includes all datasets, scripts, and experimental artifacts required to reproduce the findings related to:
 
-## 📦 Contents (Inside the VM Image)
-
-The virtual machine image contains all components required to reproduce the experiments presented in the paper.
-
-### 📊 Taxonomy
-* Complete taxonomy of Kubernetes misconfigurations  
-* Five main categories and twenty-one subcategories  
-* Severity levels normalized into **Low / Medium / High**
-
-### 💻 Source Code & Executable
-* Full source code of the detection and correction system  
-* Ready-to-run executable **JAR**  
-* Configuration files and scripts used in the experiments
-
-### 🔍 Misconfiguration Detection Tools
-The following tools are pre-installed and pre-configured inside the VM:
-* **Datree**
-* **Kube-Score**
-* **Snyk**
-
-Detection results are aggregated, normalized, and deduplicated automatically.
-
-### 🤖 LLM-Based Correction
-* Prompt templates corresponding to multiple correction settings:
-  * Configuration only  
-  * Configuration + misconfiguration type  
-  * Configuration + type + short description  
-* Support for multiple Large Language Models
+- RQ1: Taxonomy construction of Kubernetes misconfigurations  
+- RQ2: Severity analysis across object types and categories  
+- RQ3: Evolution of misconfigurations across project maturity  
+- RQ4: LLM-based automated correction and schema-guided validation  
 
 ---
 
-## 🛡️ Kubecurity: Schema-Guided Kubernetes Configuration Correction
+## Repository Structure
 
-Kubecurity is a schema-guided, rule-based correction framework integrated into the replication package.
+The repository is organized as follows:
 
-While Large Language Models are effective at reasoning about Kubernetes misconfigurations, their outputs may violate structural constraints, such as missing required fields, incorrect nesting, or invalid data types. Kubecurity enforces **deterministic compliance with official Kubernetes JSON schemas**, ensuring that corrected configurations are syntactically valid and parsable.
-
-### Design Principles
-* **Schema Awareness** – validation against official Kubernetes JSON schemas  
-* **Deterministic Correction** – reproducible, rule-based fixes  
-* **LLM Complementarity** – reinforces LLM reasoning without replacing it  
-* **Minimal Intervention** – only schema-violating elements are modified  
-
-### Correction Workflow
-* **Pre-LLM Validation**
-  * Repairs deterministic structural issues  
-  * Normalizes object hierarchy and indentation  
-* **Post-LLM Validation**
-  * Re-validates LLM-generated configurations  
-  * Corrects residual schema violations  
-
-### Correction Capabilities
-* Insert missing mandatory fields  
-* Resolve type mismatches (e.g., string vs integer)  
-* Reconstruct invalid configuration trees  
-* Remove obsolete or invalid sections  
-* Enforce canonical Kubernetes object structure  
-
-A configuration is considered **successfully corrected** only if:
-* It passes Kubernetes JSON schema validation, and  
-* It is no longer flagged by Datree, Kube-Score, or Snyk  
+.
+├── data/            # Datasets used across all research questions  
+├── taxonomy/        # Taxonomy definitions and mapping tables  
+├── scripts/         # Data collection and preprocessing pipelines  
+├── experiments/     # LLM prompts, configurations, and outputs  
+├── kubecurity/      # Schema-guided correction framework  
+├── results/         # Aggregated results and evaluation outputs  
 
 ---
 
-## 🔁 Replication Workflow
+## Reproducing the Results
 
-* Load Kubernetes configuration files  
-* Detect misconfigurations using Datree, Kube-Score, and Snyk  
-* Map detections to taxonomy categories and severity levels  
-* Apply LLM-based correction  
-* Enforce deterministic schema compliance using Kubecurity  
+### 1. Data Preparation
+Datasets are available in the `data/` directory. They can also be regenerated using the provided scripts for:
+- Stack Overflow extraction (RQ1)  
+- GitHub Kubernetes configurations (RQ2, RQ4)  
+- Helm charts (RQ3)  
 
----
+### 2. Taxonomy Construction (RQ1)
+- Run the BERTopic pipeline from `scripts/`  
+- Reproduce hierarchical clustering and taxonomy generation  
 
-## ▶️ How to Run
+### 3. Severity Analysis (RQ2)
+- Execute misconfiguration detection tools:  
+  - Datree  
+  - Snyk  
+  - KubeScore  
+- Apply severity normalization and taxonomy mapping  
 
-* Launch the provided OVH virtual machine image  
-* Open a terminal inside the VM  
-* Run the tool:
-  ```bash
-  java -jar KubeCurty.jar
+### 4. Evolution Analysis (RQ3)
+- Compare incubator and stable Helm charts  
+- Run analysis scripts to compute correction and emergence metrics  
 
+### 5. LLM-Based Correction (RQ4)
+- Use prompt templates from `experiments/`  
+- Execute the four experimental settings  
+- Evaluate outputs using:
+  - Kubernetes schema validation  
+  - Detection tools  
 
-## ⚠️ Notes
-
-Some functionalities may require user-provided credentials (e.g., API keys).
-
----
-
-## 📄 Citation
-
-If you use this replication package, please cite the corresponding **FSE 2026** paper.  
-(Citation details will be added upon acceptance.)
-
----
-
-## 📜 License
-
-MIT License
+Optional:
+- Enable the Kubecurity framework for schema-guided correction (Experiment 4)
 
 ---
 
-## ⚠️ Work in Progress
+## Requirements
 
-This replication package will be extended with:
-* Additional datasets
-* New Kubecurity versions
-* Fully automated experiment pipelines
+- Python 3.10 or higher  
+- Access to:
+  - Stack Exchange API  
+  - GitHub API  
+- Kubernetes validation tools  
+- Misconfiguration detection tools (Datree, Snyk, KubeScore)  
+
+Optional:
+- GPU for large-scale experiments  
+- Access to LLM APIs or local models  
+
+---
+
+## Reproducibility Statement
+
+All results reported in the paper can be reproduced using this package.  
+Intermediate outputs and logs are provided to ensure:
+
+- Full traceability  
+- Deterministic evaluation  
+- Independent verification  
+
+---
+
+## Extensibility
+
+This replication package is designed to support further research. It can be extended to:
+
+- Evaluate additional or more recent LLMs  
+- Extend the taxonomy with new misconfiguration categories  
+- Integrate alternative detection tools  
+- Apply the methodology to other configuration systems  
+
+---
+
+## Citation
+
+If you use this repository, please cite:
+
+@inproceedings{ghorab2026aiware,
+  title={Kubernetes Misconfigurations in the Wild: Taxonomy, Evolution, and Automated Repair with Large Language Models},
+  author={Ghorab, Mostafa Anouar and Abdel Latif, Ahmad and Saied, Mohamed Aymen},
+  booktitle={AIWARE 2026},
+  year={2026}
+}
+
+---
+
+## Contact
+
+For questions or reproducibility issues, please open an issue in this repository.
